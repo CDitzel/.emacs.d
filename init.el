@@ -18,7 +18,7 @@
 
 ;; no more having to use :straight t in (use-package ...)
 (setq straight-use-package-by-default t)
-(require 'gnutls)
+;(require 'gnutls)
 ;; You can still provide a custom recipe for a package if desired
 ; (use-package el-patch
 ;  :straight (el-patch :type git :host github :repo "raxod502/el-patch"
@@ -42,27 +42,33 @@
 ;(auto-laod "./bazel.el")
 ;; (byte-compile-file "home/ubuntu/.emacs.d/bazel.el" 'load)
 (byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
+;(byte-compile-file (expand-file-name "~/.emacs.d/git-timemachine.el") 'load)
+
+
+;;(setenv "PATH" (concat (getenv "PATH")":/usr/local/cuda-10.0/bin/cuda-gdb"))
+;;(setenv "PATH" (concat (getenv "PATH")":/usr/bin/cuda-gdb"))
+(setenv "PATH" (concat (getenv "PATH")"~/cuda-gdb"))
+(setq exec-path (append exec-path '("/home/ubuntu/cuda-gdb")))
+(setq exec-path (append exec-path '("/usr/local/cuda-11.8/bin")))
+(setq gud-gdb-command-name "cuda-gdb --annotate=3")
+(setq gud-gdb-command-name "gdb --i=mi ")
+(setq gdb-many-windows t)
+(setq gdb-use-separate-io-buffer t)
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(column-number-indicator-zero-based nil)
- '(column-number-mode nil)
  '(custom-enabled-themes '(manoj-dark))
- '(ediff-diff-options "-w")
- '(ediff-split-window-function 'split-window-vertically)
- '(ediff-window-setup-function 'ediff-setup-windows-plain)
- '(flymake-mode-line-counter-format nil)
- '(flymake-mode-line-format nil)
- '(mode-line-percent-position nil)
- '(rg-default-alias-fallback "everything"))
+ '(custom-safe-themes
+   '("2f1877ab51dfc2222180c507dc698f5c52e7e64a988b70b8fa5efd0b40c69993" default))
+ '(ido-cr+-replace-completely t)
+ '(rg-ignore-case nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(eglot-highlight-symbol-face ((t (:inherit nil))))
- '(eglot-mode-line ((t nil)))
- '(show-paren-match ((t (:background "blue4")))))
+ '(eglot-highlight-symbol-face ((t (:inherit nil)))))

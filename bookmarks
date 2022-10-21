@@ -1,0 +1,35 @@
+;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("ndas"
+ (filename . "~/git-ndas/ndas/")
+ (front-context-string . "3rdparty/\n  drwx")
+ (rear-context-string . "0K Oct  4 12:55 ")
+ (position . 123))
+("sampleGrid"
+ (filename . "~/git-ndas/ndas/samples/experimental/radargrid/")
+ (front-context-string . "dwModule/functio")
+ (rear-context-string . "58 Oct  4 12:55 ")
+ (position . 153))
+("unitTests"
+ (filename . "~/git-ndas/ndas/src/dwexperimental/radarperception/radargrid/functional_code/tests/")
+ (front-context-string . "  /home/ubuntu/g")
+ (rear-context-string)
+ (position . 1))
+("nodeTests"
+ (filename . "~/git-ndas/ndas/tests/framework/nodes/perception/radargrid/")
+ (front-context-string . "golden_values/\n ")
+ (rear-context-string . "0K Oct  4 11:25 ")
+ (position . 164))
+("dwradargridnode"
+ (filename . "~/git-ndas/ndas/src/dwframework/avnodes/perception/dwradargridnode/")
+ (front-context-string . "impl/\n  -rw-rw-r")
+ (rear-context-string . "95 Oct  4 11:25 ")
+ (position . 172))
+("radargrid"
+ (filename . "~/git-ndas/ndas/src/dwexperimental/radarperception/radargrid/")
+ (front-context-string . "functional_code/")
+ (rear-context-string . "0K Oct  4 12:55 ")
+ (position . 166))
+)
