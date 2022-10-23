@@ -2,6 +2,7 @@
 #+BEGIN_SRC emacs-lisp
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+(tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t) 
 (setq fill-column 80) 
@@ -430,16 +431,4 @@ goto source file and use git timemachine
 	  ;; display magit buffer in current window
 	  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
 	  (setq magit-ediff-dwim-show-on-hunks t))
-
-
-;(use-package git-timemachine)
-	  ;:config
-	  ;(global-set-key (kbd "C-c t") 'git-timemachine-toggle))
-
-	;(custom-set-variables
-;	 '(ediff-window-setup-function 'ediff-setup-windows-plain)
-;	 '(ediff-diff-options "-w")
-;	 '(ediff-split-window-function 'split-window-vertically))
-	;(add-hook 'ediff-after-quit-hook-internal 'winner-undo)
-
 #+END_SRC
