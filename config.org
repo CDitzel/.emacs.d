@@ -163,8 +163,8 @@ C-u C-s mark word under points -> C-s to find further occurences, also in other 
 (global-set-key (kbd "C-c r") 'my/config-reload)
 (global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
 (global-set-key (kbd "C-a") 'my/smarter-move-beginning-of-line)
-(global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "/home/ubuntu/org/wiki/wiki.org")))
-(global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "/home/ubuntu/org/wiki/daimler.org")))
+(global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
+(global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
 (global-set-key (kbd "s-1") (lambda () (interactive) (tab-bar-select-tab 1)))
 (global-set-key (kbd "s-2") (lambda () (interactive) (tab-bar-select-tab 2)))
 (global-set-key (kbd "s-3") (lambda () (interactive) (tab-bar-select-tab 3)))
@@ -431,4 +431,17 @@ goto source file and use git timemachine
 	  ;; display magit buffer in current window
 	  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
 	  (setq magit-ediff-dwim-show-on-hunks t))
+(use-package undo-tree
+    :defer 5
+    :config
+    (global-undo-tree-mode 1))
+(use-package deadgrep)
+
+(use-package exec-path-from-shell
+    :config
+    (exec-path-from-shell-initialize))
+
+(setq c-default-style "linux"
+      c-basic-offset 2)
+;electric pair mode
 #+END_SRC
