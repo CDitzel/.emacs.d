@@ -41,7 +41,7 @@
 ;(add-to-list 'load-path "./bazel.el")
 ;(auto-laod "./bazel.el")
 ;; (byte-compile-file "home/ubuntu/.emacs.d/bazel.el" 'load)
-(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
+;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
 ;(byte-compile-file (expand-file-name "~/.emacs.d/git-timemachine.el") 'load)
 
 
@@ -65,7 +65,7 @@
  '(custom-safe-themes
    '("2f1877ab51dfc2222180c507dc698f5c52e7e64a988b70b8fa5efd0b40c69993" default))
  '(ido-cr+-replace-completely t)
- '(rg-ignore-case nil))
+ '(rg-ignore-case 'case-fold-search))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
