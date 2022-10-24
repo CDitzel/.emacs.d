@@ -24,11 +24,13 @@
   (setq show-paren-delay 0)
   (setq vc-follow-symlinks t)
   (setq show-paren-style 'parenthesis)
+  (setq global-auto-revert-non-file-buffers t)
+  (setq auto-revert-verbose nil)
   (fringe-mode 0)
   (defalias 'yes-or-no-p 'y-or-n-p)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (show-paren-mode t)
-
+  (global-auto-revert-mode t)
   (fset 'menu-bar-open nil)
 
 #+END_SRC
