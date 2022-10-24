@@ -1,33 +1,40 @@
 * Customizations
 #+BEGIN_SRC emacs-lisp
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(delete-selection-mode t) 
-(setq fill-column 80) 
-(setq inhibit-startup-screen 1)
-(setq initial-scratch-message nil)
-(setq mouse-yank-at-point t)
-(setq-default cursor-in-non-selected-windows nil)  
-(setq echo-keystrokes 0)
-(setq save-place-mode 1)
-(setq scroll-preserve-screen-position 'always)
-(setq confirm-kill-emacs 'y-or-n-p)
-(setq use-dialog-box nil)
-(setq lazy-highlight-initial-delay 0)
-(setq create-lockfiles nil)
-(setq auto-save-default nil)
-(setq make-backup-files nil)
-(setq tab-bar-mode t)
-(setq tab-bar-new-tab-choice "*scratch*")
-(setq show-paren-delay 0)
-(setq show-paren-style 'parenthesis)
-(fringe-mode 0)
-(defalias 'yes-or-no-p 'y-or-n-p)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-(show-paren-mode t)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (delete-selection-mode t) 
+  (setq fill-column 80) 
+  (setq inhibit-startup-screen 1)
+  (setq initial-scratch-message nil)
+  (setq mouse-yank-at-point t)
+  (setq-default cursor-in-non-selected-windows nil)  
+  (setq echo-keystrokes 0)
+  (setq save-place-mode 1)
+  (setq scroll-preserve-screen-position 'always)
+  (setq confirm-kill-emacs 'y-or-n-p)
+  (setq use-dialog-box nil)
+  (setq lazy-highlight-initial-delay 0)
+  (setq create-lockfiles nil)
+  (setq auto-save-default nil)
+  (setq make-backup-files nil)
+  ;(setq tab-bar-mode t)
+  (setq tab-bar-show nil)
+  (setq tab-bar-new-tab-choice "*scratch*")
+  (setq show-paren-delay 0)
+  (setq vc-follow-symlinks t)
+  (setq show-paren-style 'parenthesis)
+  (fringe-mode 0)
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  (show-paren-mode t)
+
+  (fset 'menu-bar-open nil)
 
 #+END_SRC
+
+#+RESULTS:
+
 * Functions
   #+BEGIN_SRC emacs-lisp
 (defun contrib/isearchp-remove-failed-part-or-last-char ()
@@ -159,7 +166,7 @@ C-u C-s mark word under points -> C-s to find further occurences, also in other 
 (require 'view)
 (global-set-key "\C-v"   'View-scroll-half-page-forward)
 (global-set-key "\M-v"   'View-scroll-half-page-backward)
-(global-set-key (kbd "C-c r") 'my/config-reload)
+;(global-set-key (kbd "C-c r") 'my/config-reload)
 (global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
 (global-set-key (kbd "C-a") 'my/smarter-move-beginning-of-line)
 (global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "/home/ubuntu/org/wiki/wiki.org")))
@@ -185,6 +192,7 @@ C-u C-s mark word under points -> C-s to find further occurences, also in other 
 (global-set-key (kbd "C-o") (kbd "C-x o"))
 (global-set-key (kbd "<C-return>") 'open-line-below)
 (global-set-key (kbd "<S-return>") 'open-line-above)
+(global-set-key (kbd "C-x 2") 'tab-bar-new-tab)
 (bind-keys* ("C-c C-r" . rg)
 ("C-c C-f" . bookmark-jump)
 ("C-x d" . find-name-dired))
@@ -337,10 +345,14 @@ and it will show commits but only related to those files?
 
 * Eglot
 #+BEGIN_SRC emacs-lisp
-(use-package eglot
-:config
-(add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-10"))
-(setq eldoc-echo-area-use-multiline-p 1))
+  (use-package eglot
+    :config
+    (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-10"))
+
+    (setq eldoc-echo-area-use-multiline-p 1)
+    (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
+    (define-key eglot-mode-map (kbd "C-c o") 'eglot-code-action-organize-imports)
+    (define-key eglot-mode-map (kbd "C-c h") 'eldoc))
 #+END_SRC
 
 * GDB
