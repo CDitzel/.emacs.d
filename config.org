@@ -1,43 +1,34 @@
 * Customizations
 #+BEGIN_SRC emacs-lisp
-  (tool-bar-mode -1)
-  (menu-bar-mode -1)
-  (scroll-bar-mode -1)
-  (delete-selection-mode t) 
-  (setq fill-column 80) 
-  (setq inhibit-startup-screen 1)
-  (setq initial-scratch-message nil)
-  (setq mouse-yank-at-point t)
-  (setq-default cursor-in-non-selected-windows nil)  
-  (setq echo-keystrokes 0)
-  (setq save-place-mode 1)
-  (setq scroll-preserve-screen-position 'always)
-  (setq confirm-kill-emacs 'y-or-n-p)
-  (setq use-dialog-box nil)
-  (setq lazy-highlight-initial-delay 0)
-  (setq create-lockfiles nil)
-  (setq auto-save-default nil)
-  (setq make-backup-files nil)
-  ;(setq tab-bar-mode t)
-  (setq tab-bar-show nil)
-  (setq tab-bar-new-tab-choice "*scratch*")
-  (setq show-paren-delay 0)
-  (setq vc-follow-symlinks t)
-  (setq show-paren-style 'parenthesis)
-  (setq global-auto-revert-non-file-buffers t)
-  (setq auto-revert-verbose nil)
-  (fringe-mode 0)
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (show-paren-mode t)
-  (global-auto-revert-mode t)
-  (fset 'menu-bar-open nil)
-  (electric-pair-mode 1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(tooltip-mode -1)
+(scroll-bar-mode -1)
+(delete-selection-mode t) 
+(setq fill-column 80) 
+(setq inhibit-startup-screen 1)
+(setq initial-scratch-message nil)
+(setq mouse-yank-at-point t)
+(setq-default cursor-in-non-selected-windows nil)  
+(setq echo-keystrokes 0)
+(setq save-place-mode 1)
+(setq scroll-preserve-screen-position 'always)
+(setq confirm-kill-emacs 'y-or-n-p)
+(setq use-dialog-box nil)
+(setq lazy-highlight-initial-delay 0)
+(setq create-lockfiles nil)
+(setq auto-save-default nil)
+(setq make-backup-files nil)
+(setq tab-bar-mode t)
+(setq tab-bar-new-tab-choice "*scratch*")
+(setq show-paren-delay 0)
+(setq show-paren-style 'parenthesis)
+(fringe-mode 0)
+(defalias 'yes-or-no-p 'y-or-n-p)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(show-paren-mode t)
 
 #+END_SRC
-
-#+RESULTS:
-
 * Functions
   #+BEGIN_SRC emacs-lisp
 (defun contrib/isearchp-remove-failed-part-or-last-char ()
@@ -165,43 +156,39 @@ C-M-a and C-M-e to move back and forward a function at a time.
 C-u C-s mark word under points -> C-s to find further occurences, also in other windows
 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key "%" 'my/match-paren)
-  (require 'view)
-  (global-set-key "\C-v"   'View-scroll-half-page-forward)
-  (global-set-key "\M-v"   'View-scroll-half-page-backward)
-  ;(global-set-key (kbd "C-c r") 'my/config-reload)
-  (global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
-  (global-set-key (kbd "C-a") 'my/smarter-move-beginning-of-line)
-  (global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
-  (global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
-  (global-set-key (kbd "s-1") (lambda () (interactive) (tab-bar-select-tab 1)))
-  (global-set-key (kbd "s-2") (lambda () (interactive) (tab-bar-select-tab 2)))
-  (global-set-key (kbd "s-3") (lambda () (interactive) (tab-bar-select-tab 3)))
-  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-  (global-set-key (kbd "M-m") 'goto-last-change)
-  (global-set-key (kbd "C-,") 'comment-line)
-  (global-set-key (kbd "C-x k") 'kill-current-buffer)
-  (global-set-key [remap isearch-forward] #'my/isearch-symbol-with-prefix)
-  (define-key isearch-mode-map (kbd "C-s") 'isearch-repeat-forward+)
-  (define-key isearch-mode-map (kbd "C-r") 'isearch-repeat-backward+)
-  (define-key isearch-mode-map (kbd "DEL") 'contrib/isearchp-remove-failed-part-or-last-char)
-  (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
-  (global-set-key (kbd "H-i") 'goto-line)
-  (global-set-key (kbd "s-j") 'smart-join-line)
-  (global-set-key (kbd "C-t") 'duplicate-line)
-  (global-set-key (kbd "M-a") (kbd "C-M-a"))
-  (global-set-key (kbd "M-e") (kbd "C-M-e"))
-  (global-set-key (kbd "C-x b") 'ibuffer)
-  (global-set-key (kbd "C-o") (kbd "C-x o"))
-  (global-set-key (kbd "<C-return>") 'open-line-below)
-  (global-set-key (kbd "<S-return>") 'open-line-above)
-  (global-set-key (kbd "C-x 2") 'tab-bar-new-tab)
-  (bind-keys* ("C-c C-r" . rg)
-  ("C-c C-f" . bookmark-jump)
-  ("C-x d" . find-name-dired))
-  (global-set-key (kbd "C-c b") 'gud-break)
-  ;(global-set-key (kbd "C-c m") 'gud-remove)
-  (global-set-key (kbd "C-c u") 'gud-until)
+(global-set-key "%" 'my/match-paren)
+(require 'view)
+(global-set-key "\C-v"   'View-scroll-half-page-forward)
+(global-set-key "\M-v"   'View-scroll-half-page-backward)
+(global-set-key (kbd "C-c r") 'my/config-reload)
+(global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
+(global-set-key (kbd "C-a") 'my/smarter-move-beginning-of-line)
+(global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
+(global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
+(global-set-key (kbd "s-1") (lambda () (interactive) (tab-bar-select-tab 1)))
+(global-set-key (kbd "s-2") (lambda () (interactive) (tab-bar-select-tab 2)))
+(global-set-key (kbd "s-3") (lambda () (interactive) (tab-bar-select-tab 3)))
+(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
+(global-set-key (kbd "M-m") 'goto-last-change)
+(global-set-key (kbd "C-,") 'comment-line)
+(global-set-key (kbd "C-x k") 'kill-current-buffer)
+(global-set-key [remap isearch-forward] #'my/isearch-symbol-with-prefix)
+(define-key isearch-mode-map (kbd "C-s") 'isearch-repeat-forward+)
+(define-key isearch-mode-map (kbd "C-r") 'isearch-repeat-backward+)
+(define-key isearch-mode-map (kbd "DEL") 'contrib/isearchp-remove-failed-part-or-last-char)
+(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
+(global-set-key (kbd "H-i") 'goto-line)
+(global-set-key (kbd "s-j") 'smart-join-line)
+(global-set-key (kbd "C-t") 'duplicate-line)
+(global-set-key (kbd "M-a") (kbd "C-M-a"))
+(global-set-key (kbd "M-e") (kbd "C-M-e"))
+(global-set-key (kbd "C-x b") 'ibuffer)
+(global-set-key (kbd "C-o") (kbd "C-x o"))
+(global-set-key (kbd "<C-return>") 'open-line-below)
+(global-set-key (kbd "<S-return>") 'open-line-above)
+(bind-keys* ("C-c C-r" . rg)
+("C-c C-f" . bookmark-jump)
+("C-x d" . find-name-dired))
 #+END_SRC
 
 * Packages
@@ -351,14 +338,10 @@ and it will show commits but only related to those files?
 
 * Eglot
 #+BEGIN_SRC emacs-lisp
-  (use-package eglot
-    :config
-    (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-10"))
-
-    (setq eldoc-echo-area-use-multiline-p 1)
-    (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
-    (define-key eglot-mode-map (kbd "C-c o") 'eglot-code-action-organize-imports)
-    (define-key eglot-mode-map (kbd "C-c h") 'eldoc))
+(use-package eglot
+:config
+(add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-10"))
+(setq eldoc-echo-area-use-multiline-p 1))
 #+END_SRC
 
 * GDB
@@ -369,42 +352,44 @@ and it will show commits but only related to those files?
 
 * Ido
 #+BEGIN_SRC emacs-lisp
-(ido-mode t)
-;; Ido support for files and buffers
-(setq ido-everywhere t)
-;; use recentf to save buffer history
-(setq ido-use-virtual-buffers t)
-(setq ido-enable-flex-matching t)
-(setq ido-max-prospects 7)
-;; dont ask for permission when creating new buffer
-(setq ido-create-new-buffer 'always)
-;; Ido's default behavior when there is no matching file in the current directory is to look in recent working directories
-(setq ido-auto-merge-work-directories-length nil)
-;; show any name that has the chars you typed
-(setq ido-enable-prefix nil)
-;(setq ido-handle-duplicate-virtual-buffers 2)
-(setq ido-max-prospects 7)
-;; case-insensitive fuzzy matching
-(setq ido-case-fold t)
-;; dont pre-fill find command with stuff currently under point
-(setq ido-use-filename-at-point nil)
-;; use current pane for newly opened file
-(setq ido-default-file-method 'selected-window)
-;; use current window for newly opened buffer
-(setq ido-default-buffer-method 'selected-window)
-;; big minibuffer height, for ido to show choices vertically
-;(setq max-mini-window-height 2.5)
-; No need to confirm anything when there is a unique match.
-(setq ido-confirm-unique-completion nil)
-; Keep track of selected directories (recall that navigating history is done
-; with M-n and M-p).
-(setq ido-enable-last-directory-history t)
+    ;; make buffer switch command do suggestions, also for find-file command
+    (ido-mode t)
+    ;; Ido support for files and buffers
+    (setq ido-everywhere t)
+    ;; use recentf to save buffer history
+    (setq ido-use-virtual-buffers t)
+    ;; dont ask for permission when creating new buffer
+    (setq ido-create-new-buffer 'always)
+    ;; Ido's default behavior when there is no matching file in the current directory is to look in recent working directories
+    (setq ido-auto-merge-work-directories-length nil)
+    ;; show any name that has the chars you typed
+    (setq ido-enable-flex-matching t)
+    (setq ido-enable-prefix nil)
+    ;(setq ido-handle-duplicate-virtual-buffers 2)
+    (setq ido-max-prospects 7)
+    ;; case-insensitive fuzzy matching
+    (setq ido-case-fold t)
+    ;; dont pre-fill find command with stuff currently under point
+    (setq ido-use-filename-at-point nil)
+    ;; use current pane for newly opened file
+    (setq ido-default-file-method 'selected-window)
+    ;; use current window for newly opened buffer
+    (setq ido-default-buffer-method 'selected-window)
+    ;; big minibuffer height, for ido to show choices vertically
+    ;(setq max-mini-window-height 2.5)
+    ; No need to confirm anything when there is a unique match.
+    (setq ido-confirm-unique-completion nil)
+    ; Keep track of selected directories (recall that navigating history is done
+    ; with M-n and M-p).
+    (setq ido-enable-last-directory-history t)
 
-(use-package ido-completing-read+
-:after ido
-:config
-(ido-ubiquitous-mode 1))
-(setq ido-cr+-replace-completely 1)
+	;; This package replaces stock emacs completion with completion wherever it
+	;; is possible to do so without breaking things (i.e. what you were probably
+	;; hoping for when you set -everywhere to t).
+	(use-package ido-completing-read+
+	  :after ido
+	  :config
+	  (ido-ubiquitous-mode 1))
 
 (use-package ido-vertical-mode
   :init
@@ -459,6 +444,6 @@ goto source file and use git timemachine
     (exec-path-from-shell-initialize))
 
 (setq c-default-style "linux"
-      c-basic-offset 4)
+      c-basic-offset 2)
 ;electric pair mode
 #+END_SRC
