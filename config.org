@@ -1,10 +1,42 @@
 * Customizations
 #+BEGIN_SRC emacs-lisp
+(use-package goto-chg)
+;(require 'goto-chg)
+(global-set-key (kbd "C-c b ,") 'goto-last-change)
+(global-set-key (kbd "C-c b .") 'goto-last-change-reverse)
+(global-set-key (kbd "C-x w") 'delete-frame)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ediff                                                                  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'ediff)
+;; don't start another frame
+;; this is done by default in preluse
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+;; put windows side by side
+(setq ediff-split-window-function (quote split-window-horizontally))
+;;revert windows on exit - needs winner mode
+(winner-mode)
+(add-hook 'ediff-after-quit-hook-internal 'winner-undo)
+
+(defun switch-to-previous-buffer ()
+  "Switch to most recent buffer. Repeated calls toggle back and forth between the most recent two buffers."
+  (interactive)
+  (switch-to-buffer (other-buffer (current-buffer) 1)))
+
+;If you need to indent all of the lines in a region correctly (mainly useful for writing code), then select a region and use C-M-\ to indent it. TAB will often work too, but may behave differently in some modes.
+
+;Remember you can select the whole buffer with C-x h or use expand region to semantically expand your selection.
+
+;; set key binding
+(global-set-key (kbd "C-`") 'switch-to-previous-buffer)
+
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t) 
+(setq scroll-margin 3)
 (setq fill-column 80) 
 (setq inhibit-startup-screen 1)
 (setq initial-scratch-message nil)
@@ -23,14 +55,61 @@
 (setq tab-bar-new-tab-choice "*scratch*")
 (setq show-paren-delay 0)
 (setq show-paren-style 'parenthesis)
+(setq show-paren-style 'parenthesis)
+(setq c-default-style "linux")
+(setq c-basic-offset 2)
+(setq sentence-end-double-space nil)
+
 (fringe-mode 0)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (show-paren-mode t)
+(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
 
 #+END_SRC
 * Functions
   #+BEGIN_SRC emacs-lisp
+
+(defun crux-other-window-or-switch-buffer ()
+  "Call `other-window' if more than one window is visible.
+Switch to most recent buffer otherwise."
+  (interactive)
+  (if (one-window-p)
+      (switch-to-buffer nil)
+    (other-window 1)))
+
+(defun crux-get-positions-of-line-or-region ()
+  "Return positions (beg . end) of the current line or region."
+  (let (beg end)
+    (if (and mark-active (> (point) (mark)))
+        (exchange-point-and-mark))
+    (setq beg (line-beginning-position))
+    (if mark-active
+        (exchange-point-and-mark))
+    (setq end (line-end-position))
+    (cons beg end)))
+
+
+(defun crux-duplicate-and-comment-current-line-or-region (arg)
+  "Duplicates and comments the current line or region ARG times.
+If there's no region, the current line will be duplicated.  However, if
+there's a region, all lines that region covers will be duplicated."
+  (interactive "p")
+  (pcase-let* ((origin (point))
+               (`(,beg . ,end) (crux-get-positions-of-line-or-region))
+               (region (buffer-substring-no-properties beg end)))
+    (comment-or-uncomment-region beg end)
+    (setq end (line-end-position))
+    (dotimes (_ arg)
+      (goto-char end)
+      (unless (use-region-p)
+        (newline))
+      (insert region)
+      (setq end (point)))
+    (goto-char (+ origin (* (length region) arg) arg))))
+
+
 (defun contrib/isearchp-remove-failed-part-or-last-char ()
 "Remove failed part of search string, or last char if successful.
 Do nothing if search string is empty to start with."
@@ -154,7 +233,18 @@ backard / forward paragraph (M-{ / M-}
 C-M-a and C-M-e to move back and forward a function at a time.
 [[\[\[https://www.masteringemacs.org/article/effective-editing-movement\]\]][Efficienly move within Emacs]]
 C-u C-s mark word under points -> C-s to find further occurences, also in other windows
+Use M-{ and M-} to move forward or backward by paragraph.
 
+Use M-h to mark (highlight) the current paragraph.
+
+
+
+A useful extra tip is that pressing C-s or C-r for a second time before entering your search string will reuse the previous search string.
+
+Use C-x DEL to delete back to the beginning of a sentence, and M-k to delete forward to the end of a sentence (we already covered moving by sentences and how Emacs defines a sentence).
+
+In other words, C-l recentres the window while keeping the point on the same
+line, while M-r moves the point without recentring the window.
 #+BEGIN_SRC emacs-lisp
 (global-set-key "%" 'my/match-paren)
 (require 'view)
@@ -169,7 +259,9 @@ C-u C-s mark word under points -> C-s to find further occurences, also in other 
 (global-set-key (kbd "s-2") (lambda () (interactive) (tab-bar-select-tab 2)))
 (global-set-key (kbd "s-3") (lambda () (interactive) (tab-bar-select-tab 3)))
 (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
+;(global-set-key (kbd "M-m") 'goto-last-change)
 (global-set-key (kbd "M-m") 'goto-last-change)
+(global-set-key (kbd "C-r") 'ido-recentf-open)
 (global-set-key (kbd "C-,") 'comment-line)
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key [remap isearch-forward] #'my/isearch-symbol-with-prefix)
@@ -186,6 +278,8 @@ C-u C-s mark word under points -> C-s to find further occurences, also in other 
 (global-set-key (kbd "C-o") (kbd "C-x o"))
 (global-set-key (kbd "<C-return>") 'open-line-below)
 (global-set-key (kbd "<S-return>") 'open-line-above)
+(global-set-key (kbd "s-n") (kbd "C-u 1 C-v"))
+(global-set-key (kbd "s-p") (kbd "C-u 1 M-v"))
 (bind-keys* ("C-c C-r" . rg)
 ("C-c C-f" . bookmark-jump)
 ("C-x d" . find-name-dired))
@@ -229,7 +323,6 @@ C-u C-s mark word under points -> C-s to find further occurences, also in other 
 			   avy-lead-face-0)
   "Face sequence for `avy--overlay-at-full'.")
 (avy-setup-default)
-(global-set-key (kbd "C-c M-j") 'avy-resume)
 (setq avy-all-windows t)
 
 (use-package multiple-cursors
@@ -245,13 +338,12 @@ C-u C-s mark word under points -> C-s to find further occurences, also in other 
 (mood-line-mode))
 (load "~/.emacs.d/my-manoj-dark-theme.el")
 
-(use-package goto-last-change
-:bind ("M-m" . goto-last-change))
+;(use-package goto-last-change
+;:bind ("M-m" . goto-last-change))
 #+END_SRC
 
 * Dired
 [[https://www.reddit.com/r/emacs/comments/byhf6w/file_management_with_dired_in_emacs/][Dired reddit post]]
-
 C-x C-q make dired buffer writeable
 %-m filter by regex
 u/U to unmark
@@ -316,24 +408,16 @@ and it will show commits but only related to those files?
 (lambda () (interactive) (find-alternate-file "..")))))
 #+END_SRC
 
-* C++/Cuda
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
-#+END_SRC
 * Abbrevs
 #+BEGIN_SRC emacs-lisp
-	 (setq abbrev-file-name             ;; tell emacs where to read abbrev
-		   "~/.emacs.d/abbrev_defs")    ;; definitions from...
-	(setq save-abbrevs 'silent)        ;; save abbrevs when files are saved
-	  (setq-default abbrev-mode t)
-	  (add-hook 'text-mode-hook #'abbrev-mode)
-
-	 (define-abbrev-table 'global-abbrev-table '(
-	  ("rr" "- [ ]")
-	  ("pp" "[/]")
-	  ("cd" "// TODO(cditzel MB): ")
-	  ))
+(setq abbrev-file-name "~/.emacs.d/abbrev_defs")
+(setq save-abbrevs 'silent)
+(setq-default abbrev-mode t)
+(add-hook 'text-mode-hook #'abbrev-mode)
+(define-abbrev-table 'global-abbrev-table '(
+("rr" "- [ ]")
+("pp" "[/]")
+("cd" "// TODO(cditzel MB): ")))
 #+END_SRC
 
 * Eglot
@@ -411,7 +495,6 @@ and it will show commits but only related to those files?
     (if (find-file (ido-completing-read "Find recent file: " recentf-list))
 (message "Opening file...")
       (message "Aborting")))
-(global-set-key (kbd "C-r") 'ido-recentf-open)
 
 #+END_SRC
 * Magit
@@ -419,7 +502,7 @@ and it will show commits but only related to those files?
 3 ways to diff
 - from the log wie scroll the commits and change over to the changes and collapse/decollapse hunks
 - ediff
-goto source file and use git timemachine
+- goto source file and use git timemachine
 #+BEGIN_SRC emacs-lisp
   ;; M-Tab in status buffer
   ;; C-c M-g b for blame on every file line
@@ -433,17 +516,9 @@ goto source file and use git timemachine
 	  ;; display magit buffer in current window
 	  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
 	  (setq magit-ediff-dwim-show-on-hunks t))
-(use-package undo-tree
-    :defer 5
-    :config
-    (global-undo-tree-mode 1))
-(use-package deadgrep)
 
 (use-package exec-path-from-shell
     :config
     (exec-path-from-shell-initialize))
 
-(setq c-default-style "linux"
-      c-basic-offset 2)
-;electric pair mode
 #+END_SRC
