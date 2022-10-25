@@ -64,6 +64,7 @@
  '(custom-enabled-themes '(manoj-dark))
  '(custom-safe-themes
    '("2f1877ab51dfc2222180c507dc698f5c52e7e64a988b70b8fa5efd0b40c69993" default))
+ '(gdb-locals-value-limit 200)
  '(ido-cr+-replace-completely t)
  '(rg-ignore-case 'case-fold-search))
 (custom-set-faces

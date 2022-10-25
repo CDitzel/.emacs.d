@@ -1,47 +1,27 @@
 * Customizations
 #+BEGIN_SRC emacs-lisp
-(use-package goto-chg)
-;(require 'goto-chg)
-(global-set-key (kbd "C-c b ,") 'goto-last-change)
-(global-set-key (kbd "C-c b .") 'goto-last-change-reverse)
-(global-set-key (kbd "C-x w") 'delete-frame)
+  ;If you need to indent all of the lines in a region correctly (mainly
+  ;useful for writing code), then select a region and use C-M-\ to
+  ;indent it. TAB will often work too, but may behave differently in
+  ;some modes.
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ediff                                                                  ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'ediff)
-;; don't start another frame
-;; this is done by default in preluse
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-;; put windows side by side
-(setq ediff-split-window-function (quote split-window-horizontally))
-;;revert windows on exit - needs winner mode
-(winner-mode)
-(add-hook 'ediff-after-quit-hook-internal 'winner-undo)
+  ;Remember you can select the whole buffer with C-x h or use expand
+  ;region to semantically expand your selection.
 
-(defun switch-to-previous-buffer ()
-  "Switch to most recent buffer. Repeated calls toggle back and forth between the most recent two buffers."
-  (interactive)
-  (switch-to-buffer (other-buffer (current-buffer) 1)))
-
-;If you need to indent all of the lines in a region correctly (mainly useful for writing code), then select a region and use C-M-\ to indent it. TAB will often work too, but may behave differently in some modes.
-
-;Remember you can select the whole buffer with C-x h or use expand region to semantically expand your selection.
-
-;; set key binding
-(global-set-key (kbd "C-`") 'switch-to-previous-buffer)
+  ;; set key binding
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (tooltip-mode -1)
 (scroll-bar-mode -1)
-(delete-selection-mode t) 
+(delete-selection-mode t)
+(setq x-super-keysym  'ctrl)
 (setq scroll-margin 3)
-(setq fill-column 80) 
-(setq inhibit-startup-screen 1)
+(setq fill-column 80)
+(setq  inhibit-startup-screen 1)
 (setq initial-scratch-message nil)
-(setq mouse-yank-at-point t)
-(setq-default cursor-in-non-selected-windows nil)  
+(setq  mouse-yank-at-point t)
+(setq-default cursor-in-non-selected-windows nil)
 (setq echo-keystrokes 0)
 (setq save-place-mode 1)
 (setq scroll-preserve-screen-position 'always)
@@ -52,176 +32,174 @@
 (setq auto-save-default nil)
 (setq make-backup-files nil)
 (setq tab-bar-mode t)
+(setq tab-bar-show nil)
 (setq tab-bar-new-tab-choice "*scratch*")
 (setq show-paren-delay 0)
 (setq show-paren-style 'parenthesis)
 (setq show-paren-style 'parenthesis)
 (setq c-default-style "linux")
-(setq c-basic-offset 2)
+(setq c-basic-offset 4)
 (setq sentence-end-double-space nil)
+(global-auto-revert-mode)
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
 
-(fringe-mode 0)
-(defalias 'yes-or-no-p 'y-or-n-p)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-(show-paren-mode t)
-(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
+(fringe-mode 0) (defalias 'yes-or-no-p 'y-or-n-p) (add-to-list
+'default-frame-alist '(fullscreen . maximized)) (show-paren-mode t)
+(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode)) (add-to-list
+'auto-mode-alist '("\\.cuh\\'" . c++-mode))
 
 #+END_SRC
 * Functions
-  #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
+(defun switch-to-previous-buffer ()
+    "Switch to most recent buffer. Repeated calls toggle back and forth between the most recent two buffers."
+    (interactive)
+    (switch-to-buffer (other-buffer (current-buffer) 1)))
 
-(defun crux-other-window-or-switch-buffer ()
-  "Call `other-window' if more than one window is visible.
-Switch to most recent buffer otherwise."
+  (defun crux-get-positions-of-line-or-region ()
+    "Return positions (beg . end) of the current line or region."
+    (let (beg end)
+      (if (and mark-active (> (point) (mark)))
+	  (exchange-point-and-mark))
+      (setq beg (line-beginning-position))
+      (if mark-active
+	  (exchange-point-and-mark))
+      (setq end (line-end-position))
+      (cons beg end)))
+
+
+  (defun duplicate-and-comment-current-line-or-region (arg)
+    "Duplicates and comments the current line or region ARG times.
+  If there's no region, the current line will be duplicated.  However, if
+  there's a region, all lines that region covers will be duplicated."
+    (interactive "p")
+    (pcase-let* ((origin (point))
+		 (`(,beg . ,end) (crux-get-positions-of-line-or-region))
+		 (region (buffer-substring-no-properties beg end)))
+      (comment-or-uncomment-region beg end)
+      (setq end (line-end-position))
+      (dotimes (_ arg)
+	(goto-char end)
+	(unless (use-region-p)
+	  (newline))
+	(insert region)
+	(setq end (point)))
+      (goto-char (+ origin (* (length region) arg) arg))))
+
+
+  (defun contrib/isearchp-remove-failed-part-or-last-char ()
+  "Remove failed part of search string, or last char if successful.
+  Do nothing if search string is empty to start with."
   (interactive)
-  (if (one-window-p)
-      (switch-to-buffer nil)
-    (other-window 1)))
-
-(defun crux-get-positions-of-line-or-region ()
-  "Return positions (beg . end) of the current line or region."
-  (let (beg end)
-    (if (and mark-active (> (point) (mark)))
-        (exchange-point-and-mark))
-    (setq beg (line-beginning-position))
-    (if mark-active
-        (exchange-point-and-mark))
-    (setq end (line-end-position))
-    (cons beg end)))
+  (if (equal isearch-string "")
+   (isearch-update)
+  (if isearch-success
+     (isearch-delete-char)
+   (while (isearch-fail-pos) (isearch-pop-state)))
+  (isearch-update)))
 
 
-(defun crux-duplicate-and-comment-current-line-or-region (arg)
-  "Duplicates and comments the current line or region ARG times.
-If there's no region, the current line will be duplicated.  However, if
-there's a region, all lines that region covers will be duplicated."
+  ; automatically wrap around search if beginning or end of buffer are reached
+  (defun isearch-repeat-forward+ ()
+  (interactive)
+  (unless isearch-forward
+  (goto-char isearch-other-end))
+  (isearch-repeat-forward)
+  (unless isearch-success
+  (isearch-repeat-forward)))
+
+  (defun isearch-repeat-backward+ ()
+  (interactive)
+  (when (and isearch-forward isearch-other-end)
+  (goto-char isearch-other-end))
+  (isearch-repeat-backward)
+  (unless isearch-success
+  (isearch-repeat-backward)))
+
+
+  (defun my/isearch-symbol-with-prefix (p)
+  "Like isearch, unless prefix argument is provided.
+  With a prefix argument P, isearch for the symbol at point."
+  (interactive "P")
+  (let ((current-prefix-arg nil))
+  (call-interactively
+  (if p #'isearch-forward-symbol-at-point
+  #'isearch-forward))))
+
+  (defun my/match-paren (arg)
+  "Go to the matching paren if on a paren; otherwise insert %."
   (interactive "p")
-  (pcase-let* ((origin (point))
-               (`(,beg . ,end) (crux-get-positions-of-line-or-region))
-               (region (buffer-substring-no-properties beg end)))
-    (comment-or-uncomment-region beg end)
-    (setq end (line-end-position))
-    (dotimes (_ arg)
-      (goto-char end)
-      (unless (use-region-p)
-        (newline))
-      (insert region)
-      (setq end (point)))
-    (goto-char (+ origin (* (length region) arg) arg))))
+    (cond ((looking-at "\\s(") (forward-list 1) (backward-char 1))
+	  ((looking-at "\\s)") (forward-char 1) (backward-list 1))
+	  (t (self-insert-command (or arg 1)))))
 
+  (defun my/split-and-follow-vertically ()
+  (interactive)
+  (split-window-right)
+  (balance-windows)
+  (other-window 1))
 
-(defun contrib/isearchp-remove-failed-part-or-last-char ()
-"Remove failed part of search string, or last char if successful.
-Do nothing if search string is empty to start with."
-(interactive)
-(if (equal isearch-string "")
- (isearch-update)
-(if isearch-success
-   (isearch-delete-char)
- (while (isearch-fail-pos) (isearch-pop-state)))
-(isearch-update)))
+  (defun my/config-reload ()
+  "Reloads ~/.emacs.d/config.org at runtime"
+  (interactive)
+  (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
 
+  (defun my/smarter-move-beginning-of-line (arg)
+  (interactive "^p")
+  (setq arg (or arg 1))
+  (when (/= arg 1)
+  (let ((line-move-visual nil))
+  (forward-line (1- arg))))
+  (let ((orig-point (point)))
+  (back-to-indentation)
+  (when (= orig-point (point))
+  (move-beginning-of-line 1))))
 
-; automatically wrap around search if beginning or end of buffer are reached
-(defun isearch-repeat-forward+ ()
-(interactive)
-(unless isearch-forward
-(goto-char isearch-other-end))
-(isearch-repeat-forward)
-(unless isearch-success
-(isearch-repeat-forward)))
+  (defun top-join-line ()
+  "Join the current line with the next line."
+  (interactive)
+  (delete-indentation 1))
 
-(defun isearch-repeat-backward+ ()
-(interactive)
-(when (and isearch-forward isearch-other-end)
-(goto-char isearch-other-end))
-(isearch-repeat-backward)
-(unless isearch-success
-(isearch-repeat-backward)))
+  (defun join-region (beg end)
+  "Join all the lines in the region."
+  (interactive "r")
+  (if mark-active
+  (let ((beg (region-beginning))
+  (end (copy-marker (region-end))))
+  (goto-char beg)
+  (while (< (point) end)
+  (join-line 1)))))
 
+  (defun smart-join-line (beg end)
+  "If in a region, join all the lines in it. If not, join the current line with the next line."
+  (interactive "r")
+  (if mark-active
+  (join-region beg end)
+  (top-join-line)))
 
-(defun my/isearch-symbol-with-prefix (p)
-"Like isearch, unless prefix argument is provided.
-With a prefix argument P, isearch for the symbol at point."
-(interactive "P")
-(let ((current-prefix-arg nil))
-(call-interactively
-(if p #'isearch-forward-symbol-at-point
-#'isearch-forward))))
+  (defun open-line-below ()
+  "Insert an empty line after the current line. Position the cursor at its beginning, according to the current mode."
+  (interactive)
+  (move-end-of-line nil)
+  (newline-and-indent))
 
-(defun my/match-paren (arg)
-"Go to the matching paren if on a paren; otherwise insert %."
-(interactive "p")
-  (cond ((looking-at "\\s(") (forward-list 1) (backward-char 1))
-        ((looking-at "\\s)") (forward-char 1) (backward-list 1))
-        (t (self-insert-command (or arg 1)))))
+  (defun open-line-above ()
+  "Insert an empty line above the current line. Position the cursor at it's beginning, according to the current mode."
+  (interactive)
+  (move-beginning-of-line nil)
+  (newline-and-indent)
+  (forward-line -1)
+  (indent-according-to-mode))
 
-(defun my/split-and-follow-vertically ()
-(interactive)
-(split-window-right)
-(balance-windows)
-(other-window 1))
-
-(defun my/config-reload ()
-"Reloads ~/.emacs.d/config.org at runtime"
-(interactive)
-(org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-
-(defun my/smarter-move-beginning-of-line (arg)
-(interactive "^p")
-(setq arg (or arg 1))
-(when (/= arg 1)
-(let ((line-move-visual nil))
-(forward-line (1- arg))))
-(let ((orig-point (point)))
-(back-to-indentation)
-(when (= orig-point (point))
-(move-beginning-of-line 1))))
-
-(defun top-join-line ()
-"Join the current line with the next line."
-(interactive)
-(delete-indentation 1))
-
-(defun join-region (beg end)
-"Join all the lines in the region."
-(interactive "r")
-(if mark-active
-(let ((beg (region-beginning))
-(end (copy-marker (region-end))))
-(goto-char beg)
-(while (< (point) end)
-(join-line 1)))))
-
-(defun smart-join-line (beg end)
-"If in a region, join all the lines in it. If not, join the current line with the next line."
-(interactive "r")
-(if mark-active
-(join-region beg end)
-(top-join-line)))
-
-(defun open-line-below ()
-"Insert an empty line after the current line. Position the cursor at its beginning, according to the current mode."
-(interactive)
-(move-end-of-line nil)
-(newline-and-indent))
-
-(defun open-line-above ()
-"Insert an empty line above the current line. Position the cursor at it's beginning, according to the current mode."
-(interactive)
-(move-beginning-of-line nil)
-(newline-and-indent)
-(forward-line -1)
-(indent-according-to-mode))
-
-(defun duplicate-line()
-(interactive)
-(move-beginning-of-line 1)
-(kill-line)
-(yank)
-(open-line 1)
-(next-line 1)
-(yank))
+  (defun duplicate-line()
+  (interactive)
+  (move-beginning-of-line 1)
+  (kill-line)
+  (yank)
+  (open-line 1)
+  (next-line 1)
+  (yank))
 #+END_SRC
 
 * Keybindings
@@ -246,103 +224,109 @@ Use C-x DEL to delete back to the beginning of a sentence, and M-k to delete for
 In other words, C-l recentres the window while keeping the point on the same
 line, while M-r moves the point without recentring the window.
 #+BEGIN_SRC emacs-lisp
-(global-set-key "%" 'my/match-paren)
-(require 'view)
-(global-set-key "\C-v"   'View-scroll-half-page-forward)
-(global-set-key "\M-v"   'View-scroll-half-page-backward)
-(global-set-key (kbd "C-c r") 'my/config-reload)
-(global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
-(global-set-key (kbd "C-a") 'my/smarter-move-beginning-of-line)
-(global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
-(global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
-(global-set-key (kbd "s-1") (lambda () (interactive) (tab-bar-select-tab 1)))
-(global-set-key (kbd "s-2") (lambda () (interactive) (tab-bar-select-tab 2)))
-(global-set-key (kbd "s-3") (lambda () (interactive) (tab-bar-select-tab 3)))
-(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-;(global-set-key (kbd "M-m") 'goto-last-change)
-(global-set-key (kbd "M-m") 'goto-last-change)
-(global-set-key (kbd "C-r") 'ido-recentf-open)
-(global-set-key (kbd "C-,") 'comment-line)
-(global-set-key (kbd "C-x k") 'kill-current-buffer)
-(global-set-key [remap isearch-forward] #'my/isearch-symbol-with-prefix)
-(define-key isearch-mode-map (kbd "C-s") 'isearch-repeat-forward+)
-(define-key isearch-mode-map (kbd "C-r") 'isearch-repeat-backward+)
-(define-key isearch-mode-map (kbd "DEL") 'contrib/isearchp-remove-failed-part-or-last-char)
-(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
-(global-set-key (kbd "H-i") 'goto-line)
-(global-set-key (kbd "s-j") 'smart-join-line)
-(global-set-key (kbd "C-t") 'duplicate-line)
-(global-set-key (kbd "M-a") (kbd "C-M-a"))
-(global-set-key (kbd "M-e") (kbd "C-M-e"))
-(global-set-key (kbd "C-x b") 'ibuffer)
-(global-set-key (kbd "C-o") (kbd "C-x o"))
-(global-set-key (kbd "<C-return>") 'open-line-below)
-(global-set-key (kbd "<S-return>") 'open-line-above)
-(global-set-key (kbd "s-n") (kbd "C-u 1 C-v"))
-(global-set-key (kbd "s-p") (kbd "C-u 1 M-v"))
-(bind-keys* ("C-c C-r" . rg)
-("C-c C-f" . bookmark-jump)
-("C-x d" . find-name-dired))
+  (global-set-key "%" 'my/match-paren)
+  (require 'view)
+  (global-set-key "\C-v"   'View-scroll-half-page-forward)
+  (global-set-key "\M-v"   'View-scroll-half-page-backward)
+  (global-set-key (kbd "C-c r") 'my/config-reload)
+  (global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
+  (global-set-key (kbd "C-a") 'my/smarter-move-beginning-of-line)
+  (global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
+  (global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
+  (global-set-key (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
+  (global-set-key (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
+  (global-set-key (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
+  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
+  ;(global-set-key (kbd "M-m") 'goto-last-change)
+  (global-set-key (kbd "M-m") 'goto-last-change)
+  (global-set-key (kbd "C-r") 'ido-recentf-open)
+  (global-set-key (kbd "C-,") 'comment-line)
+  (global-set-key (kbd "C-x k") 'kill-current-buffer)
+  (global-set-key [remap isearch-forward] #'my/isearch-symbol-with-prefix)
+  (define-key isearch-mode-map (kbd "C-s") 'isearch-repeat-forward+)
+  (define-key isearch-mode-map (kbd "C-r") 'isearch-repeat-backward+)
+  (define-key isearch-mode-map (kbd "DEL") 'contrib/isearchp-remove-failed-part-or-last-char)
+  (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
+  (global-set-key (kbd "H-i") 'goto-line)
+  (global-set-key (kbd "s-j") 'smart-join-line)
+  (global-set-key (kbd "C-t") 'duplicate-line)
+  (global-set-key (kbd "M-a") (kbd "C-M-a"))
+  (global-set-key (kbd "M-e") (kbd "C-M-e"))
+  (global-set-key (kbd "C-x b") 'ibuffer)
+  (global-set-key (kbd "C-o") (kbd "C-x o"))
+  (global-set-key (kbd "<C-return>") 'open-line-below)
+  (global-set-key (kbd "<S-return>") 'open-line-above)
+  (global-set-key (kbd "s-n") (kbd "C-u 1 C-v"))
+  (global-set-key (kbd "s-p") (kbd "C-u 1 M-v"))
+  (global-set-key (kbd "C-x 2") 'tab-bar-new-tab)
+  (global-set-key (kbd "C-`") 'switch-to-previous-buffer)
+  (global-set-key (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
+  (bind-keys* ("C-c C-r" . rg)
+  ("C-c C-f" . bookmark-jump)
+  ("C-x d" . find-name-dired))
+
 #+END_SRC
 
 * Packages
 #+BEGIN_SRC emacs-lisp
-(use-package rg
-:config
-(rg-enable-default-bindings))
-(setq rg-default-alias-fallback "everything")
+  (use-package rg
+  :config
+  (rg-enable-default-bindings))
+  (setq rg-default-alias-fallback "everything")
 
-(use-package expand-region)
-(bind-keys* ("C-'" . er/expand-region)
-("C-;" . er/contract-region))
+  (use-package expand-region)
+  (bind-keys* ("C-'" . er/expand-region)
+  ("C-;" . er/contract-region))
   
-(use-package whole-line-or-region)
-(whole-line-or-region-global-mode t)
+  (use-package whole-line-or-region)
+  (whole-line-or-region-global-mode t)
 
-(use-package window-numbering
-:config
-(window-numbering-mode t))
+  (use-package window-numbering
+  :config
+  (window-numbering-mode t))
 
-(use-package move-text)
-(bind-keys* ("M-n" . move-text-down)
-("M-p" . move-text-up))
+  (use-package move-text)
+  (bind-keys* ("M-n" . move-text-down)
+  ("M-p" . move-text-up))
 
-(use-package avy)
-(bind-keys* ("C-j" . avy-goto-char-timer)
-("M-o" . avy-org-goto-heading-timer))
-(setq avy-timeout-seconds 0.2)
-(setq avy-style 'words)
-(setq avy-case-fold-search nil)
-(setq avy-highlight-first t)
 
-(defconst avy-lead-faces '(avy-lead-face-0
- 			   avy-lead-face-0
- 			   avy-lead-face-0
-			   avy-lead-face-0
-			   avy-lead-face-0
-			   avy-lead-face-0)
-  "Face sequence for `avy--overlay-at-full'.")
-(avy-setup-default)
-(setq avy-all-windows t)
+  
+  (use-package avy)
+  (bind-keys* ("C-j" . avy-goto-char-timer)
+  ("M-o" . avy-org-goto-heading-timer))
+  (setq avy-timeout-seconds 0.2)
+  (setq avy-style 'words)
+  (setq avy-case-fold-search nil)
+  (setq avy-highlight-first t)
 
-(use-package multiple-cursors
-:bind (("C-c n" . mc/mark-n111ext-like-this)
-("C-c p" . mc/mark-previous-like-this)
-("C-c m a" . mc/mark-all-like-this)
-("C-c m e" . mc/edit-lines)
-("C-c m b" . mc/edit-beginnings-of-lines))
-)
+  (defconst avy-lead-faces '(avy-lead-face-0
+			     avy-lead-face-0
+			     avy-lead-face-0
+			     avy-lead-face-0
+			     avy-lead-face-0
+			     avy-lead-face-0)
+    "Face sequence for `avy--overlay-at-full'.")
+  (avy-setup-default)
+  (setq avy-all-windows t)
 
-(use-package mood-line
-:init
-(mood-line-mode))
-(load "~/.emacs.d/my-manoj-dark-theme.el")
+  (use-package multiple-cursors
+  :bind (("C-c n" . mc/mark-n111ext-like-this)
+  ("C-c p" . mc/mark-previous-like-this)
+  ("C-c m a" . mc/mark-all-like-this)
+  ("C-c m e" . mc/edit-lines)
+  ("C-c m b" . mc/edit-beginnings-of-lines))
+  )
 
-;(use-package goto-last-change
-;:bind ("M-m" . goto-last-change))
+  (use-package mood-line
+  :init
+  (mood-line-mode))
+  (load "~/.emacs.d/my-manoj-dark-theme.el")
+
+  ;(use-package goto-last-change
+  ;:bind ("M-m" . goto-last-change))
 #+END_SRC
 
-* Dired
+* COMMENT Dired
 [[https://www.reddit.com/r/emacs/comments/byhf6w/file_management_with_dired_in_emacs/][Dired reddit post]]
 C-x C-q make dired buffer writeable
 %-m filter by regex
@@ -379,6 +363,7 @@ and it will show commits but only related to those files?
 (setq delete-by-moving-to-trash t)
 (setq wdired-allow-to-change-permissions t)
 (setq dired-dwim-target t)
+(setq dired-kill-when-opening-new-dired-buffer t)
 ; Collapse dir structures with only single entries to on path cf. github
 (use-package dired-collapse
 :init
@@ -402,10 +387,10 @@ and it will show commits but only related to those files?
 ))
 
 ;; kill the current directory buffer if going up one level (reverse of using a to drill down)
-(add-hook 'dired-mode-hook
-(lambda ()
-(define-key dired-mode-map (kbd "^")
-(lambda () (interactive) (find-alternate-file "..")))))
+;(add-hook 'dired-mode-hook
+;(lambda ()
+;(define-key dired-mode-map (kbd "^")
+;(lambda () (interactive) (find-alternate-file "..")))))
 #+END_SRC
 
 * Abbrevs
@@ -424,79 +409,115 @@ and it will show commits but only related to those files?
 #+BEGIN_SRC emacs-lisp
 (use-package eglot
 :config
-(add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-10"))
+(add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-15"))
 (setq eldoc-echo-area-use-multiline-p 1))
 #+END_SRC
 
 * GDB
 #+BEGIN_SRC emacs-lisp
-(advice-add 'gdb-setup-windows :after
-(lambda () (set-window-dedicated-p (selected-window) t)))
+;; Force gdb-mi to not dedicate any windows
+(advice-add 'gdb-display-buffer
+	    :around (lambda (orig-fun &rest r)
+		      (let ((window (apply orig-fun r)))
+			(set-window-dedicated-p window nil)
+			window)))
+
+(advice-add 'gdb-set-window-buffer
+	    :around (lambda (orig-fun name &optional ignore-dedicated window)
+		      (funcall orig-fun name ignore-dedicated window)
+		      (set-window-dedicated-p window nil)))
+  
+    (advice-add 'gdb-setup-windows :after
+    (lambda () (set-window-dedicated-p (selected-window) t)))
+
+  ;; recenter and highlight current line
+    (defvar gud-overlay
+    (let* ((ov (make-overlay (point-min) (point-min))))
+      (overlay-put ov 'face '(:background "#F6FECD")) ;; colors for Leuven theme
+      ov)
+    "Overlay variable for GUD highlighting.")
+  (defadvice gud-display-line (after my-gud-highlight act)
+   "Highlight current line."
+   (let* ((ov gud-overlay)
+	  (bf (gud-find-file true-file)))
+     (save-excursion
+       (with-selected-window (get-buffer-window bf)
+	 (save-restriction
+	   (goto-line (ad-get-arg 1))
+	   (recenter)))
+       (set-buffer bf)
+       (move-overlay ov (line-beginning-position) (line-end-position)
+		     (current-buffer)))))
 #+END_SRC
 
 * Ido
 #+BEGIN_SRC emacs-lisp
-    ;; make buffer switch command do suggestions, also for find-file command
-    (ido-mode t)
-    ;; Ido support for files and buffers
-    (setq ido-everywhere t)
-    ;; use recentf to save buffer history
-    (setq ido-use-virtual-buffers t)
-    ;; dont ask for permission when creating new buffer
-    (setq ido-create-new-buffer 'always)
-    ;; Ido's default behavior when there is no matching file in the current directory is to look in recent working directories
-    (setq ido-auto-merge-work-directories-length nil)
-    ;; show any name that has the chars you typed
-    (setq ido-enable-flex-matching t)
-    (setq ido-enable-prefix nil)
-    ;(setq ido-handle-duplicate-virtual-buffers 2)
-    (setq ido-max-prospects 7)
-    ;; case-insensitive fuzzy matching
-    (setq ido-case-fold t)
-    ;; dont pre-fill find command with stuff currently under point
-    (setq ido-use-filename-at-point nil)
-    ;; use current pane for newly opened file
-    (setq ido-default-file-method 'selected-window)
-    ;; use current window for newly opened buffer
-    (setq ido-default-buffer-method 'selected-window)
-    ;; big minibuffer height, for ido to show choices vertically
-    ;(setq max-mini-window-height 2.5)
-    ; No need to confirm anything when there is a unique match.
-    (setq ido-confirm-unique-completion nil)
-    ; Keep track of selected directories (recall that navigating history is done
-    ; with M-n and M-p).
-    (setq ido-enable-last-directory-history t)
 
-	;; This package replaces stock emacs completion with completion wherever it
-	;; is possible to do so without breaking things (i.e. what you were probably
-	;; hoping for when you set -everywhere to t).
-	(use-package ido-completing-read+
-	  :after ido
-	  :config
-	  (ido-ubiquitous-mode 1))
+(fido-vertical-mode 1)
 
-(use-package ido-vertical-mode
-  :init
-  (ido-vertical-mode 1))
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-(setq ido-vertical-show-count t)
-
-(use-package amx
-  :hook
-  (after-init . amx-mode)
-  :bind
-  ("M-x" . amx))
- 
-(recentf-mode t)
-(setq recentf-max-saved-items 500)
-  (defun ido-recentf-open ()
-  ;  "Use `ido-completing-read' to \\[find-file] a recent file"
-    (interactive)
-    (if (find-file (ido-completing-read "Find recent file: " recentf-list))
-(message "Opening file...")
-      (message "Aborting")))
-
+  
+  ;    ;; make buffer switch command do suggestions, also for find-file command
+  ;    (ido-mode t)
+  ;    ;; Ido support for files and buffers
+  ;    (setq ido-everywhere t)
+  ;    ;; use recentf to save buffer history
+  ;    (setq ido-use-virtual-buffers t)
+  ;    ;; dont ask for permission when creating new buffer
+  ;    (setq ido-create-new-buffer 'always)
+  ;    ;; Ido's default behavior when there is no matching file in the current directory is to look in recent working directories
+  ;    (setq ido-auto-merge-work-directories-length nil)
+  ;    ;; show any name that has the chars you typed
+  ;    (setq ido-enable-flex-matching t)
+  ;    (setq ido-enable-prefix nil)
+  ;    ;(setq ido-handle-duplicate-virtual-buffers 2)
+  ;    (setq ido-max-prospects 7)
+  ;    ;; case-insensitive fuzzy matching
+  ;    (setq ido-case-fold t)
+  ;    ;; dont pre-fill find command with stuff currently under point
+  ;    (setq ido-use-filename-at-point nil)
+  ;    ;; use current pane for newly opened file
+  ;    (setq ido-default-file-method 'selected-window)
+  ;    ;; use current window for newly opened buffer
+  ;    (setq ido-default-buffer-method 'selected-window)
+  ;    ;; big minibuffer height, for ido to show choices vertically
+  ;    ;(setq max-mini-window-height 2.5)
+  ;    ; No need to confirm anything when there is a unique match.
+  ;    (setq ido-confirm-unique-completion nil)
+  ;    ; Keep track of selected directories (recall that navigating history is done
+  ;    ; with M-n and M-p).
+  ;    (setq ido-enable-last-directory-history t)
+  ;
+  ;	;; This package replaces stock emacs completion with completion wherever it
+  ;	;; is possible to do so without breaking things (i.e. what you were probably
+  ;	;; hoping for when you set -everywhere to t).
+  ;	(use-package ido-completing-read+
+  ;	  :after ido
+  ;	  :config
+  ;	  (ido-ubiquitous-mode 1))
+  ;
+  ;(use-package ido-vertical-mode
+  ;  :init
+  ;  (ido-vertical-mode 1))
+  ;  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+  ;(setq ido-vertical-show-count t)
+  ;
+  ;(use-package amx
+  ;  :hook
+  ;  (after-init . amx-mode)
+  ;  :bind
+  ;  ("M-x" . amx))
+  ; 
+  ;(recentf-mode t)
+  ;(setq recentf-max-saved-items 500)
+  ;  (defun ido-recentf-open ()
+  ;  ;  "Use `ido-completing-read' to \\[find-file] a recent file"
+  ;    (interactive)
+  ;    (if (find-file (ido-completing-read "Find recent file: " recentf-list))
+  ;(message "Opening file...")
+  ;      (message "Aborting")))
+  ;
 #+END_SRC
+
 * Magit
 - [[http://www.howardism.org/Technical/Emacs/magit-squashing.html][how to squash in magit]]
 3 ways to diff
@@ -522,3 +543,18 @@ and it will show commits but only related to those files?
     (exec-path-from-shell-initialize))
 
 #+END_SRC
+* Maybe
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; ediff                                                                  ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;(require 'ediff)
+  ;; don't start another frame
+  ;; this is done by default in preluse
+  ;(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  ;; put windows side by side
+  ;(setq ediff-split-window-function (quote split-window-horizontally))
+  ;;revert windows on exit - needs winner mode
+  ;(winner-mode)
+  ;(add-hook 'ediff-after-quit-hook-internal 'winner-undo)
+  
+
