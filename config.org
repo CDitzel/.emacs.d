@@ -1,62 +1,67 @@
 * Customizations
 #+BEGIN_SRC emacs-lisp
-	(setq x-super-keysym 'ctrl)
-	(setq scroll-margin 3)
-	(setq fill-column 80)
-	(setq inhibit-startup-screen 1)
-	(setq initial-scratch-message nil)
-	(setq mouse-yank-at-point t)
-	(setq-default cursor-in-non-selected-windows nil)
-	(setq echo-keystrokes 0)
-	(setq save-place-mode 1)
-	(setq scroll-preserve-screen-position 'always)
-	(setq confirm-kill-emacs 'y-or-n-p)
-	(setq use-dialog-box nil)
-	(setq lazy-highlight-initial-delay 0)
-	(setq create-lockfiles nil)
-	(setq auto-save-default nil)
-	(setq make-backup-files nil)
-	(setq tab-bar-mode t)
-	(setq tab-bar-show nil)
-	(setq tab-bar-new-tab-choice "*scratch*")
-	(setq show-paren-delay 0)
-	(setq show-paren-style 'parenthesis)
-	(setq show-paren-style 'parenthesis)
-	(setq c-default-style "linux")
-	(setq c-basic-offset 4)
-	(setq use-short-answers t)
-	(setq sentence-end-double-space nil)
-	(setq global-auto-revert-non-file-buffers t)
-	(setq auto-revert-verbose nil)
-	(setq direc-auto-revert-buffer nil)
-	(setq window-combination-resize t)
-      (setq completion-auto-help nil)
-	(setq recentf-max-saved-items nil)
-	(setq recentf-max-menu-items 25)
-	(setq gc-cons-threshold (* 8 1024 1024))
-      (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-      (setq ediff-split-window-function (quote split-window-horizontally))
-      (global-auto-revert-mode)
-	(add-to-list'default-frame-alist '(fullscreen . maximized))
-	(show-paren-mode t)
-	(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
-	(add-to-list'auto-mode-alist '("\\.cuh\\'" . c++-mode))
-	(run-at-time nil (* 30 60) 'recentf-save-list)
-	(fido-vertical-mode 1)
-	(fringe-mode 0)
-    (recentf-mode t)
-    (tool-bar-mode -1)
-      (menu-bar-mode -1)
-      (tooltip-mode -1)
-      (scroll-bar-mode -1)
-      (delete-selection-mode t)
+	  (setq x-super-keysym 'ctrl)
+	  (setq scroll-margin 3)
+	  (setq fill-column 80)
+	  (setq inhibit-startup-screen 1)
+	  (setq initial-scratch-message nil)
+	  (setq mouse-yank-at-point t)
+	  (setq-default cursor-in-non-selected-windows nil)
+	  (setq echo-keystrokes 0)
+	  (setq save-place-mode 1)
+	  (setq scroll-preserve-screen-position 'always)
+	  (setq confirm-kill-emacs 'y-or-n-p)
+	  (setq use-dialog-box nil)
+	  (setq lazy-highlight-initial-delay 0)
+	  (setq create-lockfiles nil)
+	  (setq auto-save-default nil)
+	  (setq make-backup-files nil)
+	  (setq tab-bar-mode t)
+	  (setq tab-bar-show nil)
+	  (setq tab-bar-new-tab-choice "*scratch*")
+	  (setq show-paren-delay 0)
+	  (setq show-paren-style 'parenthesis)
+	  (setq show-paren-style 'parenthesis)
+	  (setq c-default-style "linux")
+	  (setq c-basic-offset 4)
+	  (setq use-short-answers t)
+	  (setq sentence-end-double-space nil)
+	  (setq global-auto-revert-non-file-buffers t)
+	  (setq auto-revert-verbose nil)
+	  (setq direc-auto-revert-buffer nil)
+	  (setq window-combination-resize t)
+	(setq completion-auto-help nil)
+	  (setq recentf-max-saved-items nil)
+	  (setq recentf-max-menu-items 25)
+	  (setq gc-cons-threshold (* 8 1024 1024))
+	(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+	(setq ediff-split-window-function (quote split-window-horizontally))
+    (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
+	(global-auto-revert-mode)
+	  (add-to-list'default-frame-alist '(fullscreen . maximized))
+	  (show-paren-mode t)
+	  (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
+	  (add-to-list'auto-mode-alist '("\\.cuh\\'" . c++-mode))
+	  (run-at-time nil (* 30 60) 'recentf-save-list)
+	  (fido-vertical-mode 1)
+	  (fringe-mode 0)
+      (recentf-mode t)
+      (tool-bar-mode -1)
+	(menu-bar-mode -1)
+	(tooltip-mode -1)
+	(scroll-bar-mode -1)
+	(delete-selection-mode t)
 
-    (setq-default abbrev-mode t)
-  (define-abbrev-table 'global-abbrev-table '(
-  ("rr" "- [ ]")
-  ("pp" "[/]")
-  ("cd" "// TODO(cditzel MB): ")))
-  
+    (require 'eglot)
+  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-15"))
+  (setq eldoc-echo-area-use-multiline-p 1)
+
+      (setq-default abbrev-mode t)
+    (define-abbrev-table 'global-abbrev-table '(
+    ("rr" "- [ ]")
+    ("pp" "[/]")
+    ("cd" "// TODO(cditzel MB): ")))
+
 #+END_SRC
 * Functions
 #+BEGIN_SRC emacs-lisp
@@ -237,100 +242,111 @@ want to delete the selected one. Check icomplete-fido-mode-map for
 more details on the available key bindings.
 
 #+BEGIN_SRC emacs-lisp
-      (global-set-key "%" 'my/match-paren)
-      (require 'view)
-      (global-set-key "\C-v"   'View-scroll-half-page-forward)
-      (global-set-key "\M-v"   'View-scroll-half-page-backward)
-      (global-set-key (kbd "C-c r") 'my/config-reload)
-      (global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
-      (global-set-key (kbd "C-a") 'my/smarter-move-beginning-of-line)
-      (global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
-      (global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
-      (global-set-key (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
-      (global-set-key (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
-      (global-set-key (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
-      (global-set-key (kbd "M-m") 'goto-last-change)
-      (global-set-key (kbd "C-r") 'recentf-open-files)
-      (global-set-key (kbd "C-x C-r") 'recentf-open-files-compl)
-      (global-set-key (kbd "C-,") 'comment-line)
-      (global-set-key (kbd "C-x k") 'kill-current-buffer)
-      (global-set-key [remap isearch-forward] #'my/isearch-symbol-with-prefix)
-      (define-key isearch-mode-map (kbd "C-s") 'isearch-repeat-forward+)
-      (define-key isearch-mode-map (kbd "C-r") 'isearch-repeat-backward+)
-      (define-key isearch-mode-map (kbd "DEL") 'my/isearchp-remove-failed-part-or-last-char)
-      (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
-      (global-set-key (kbd "H-i") 'goto-line)
-      (global-set-key (kbd "M-j") 'smart-join-line)
-      (global-set-key (kbd "C-t") 'duplicate-line)
-      (global-set-key (kbd "M-a") (kbd "C-M-a"))
-      (global-set-key (kbd "M-e") (kbd "C-M-e"))
-      (global-set-key (kbd "s-n") (kbd "C-u 1 C-v"))
-      (global-set-key (kbd "s-p") (kbd "C-u 1 M-v"))
-      (global-set-key (kbd "C-x 2") 'tab-bar-new-tab)
-      (global-set-key (kbd "C-`") 'switch-to-previous-buffer)
-      (global-set-key (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
-      (global-set-key (kbd "C-<backspace>") (lambda () (interactive) (kill-line 0)))
-      (global-unset-key (kbd "C-x C-z"))
-      (define-key dired-mode-map "e" 'dired-toggle-read-only)
-      (bind-keys*
-       ("C-c C-r" . rg)
-      ("C-c C-f" . bookmark-jump)
-      ("C-x d" . find-name-dired)
-      ("C-x C-d" . dired)
-      ("<C-return>" . open-line-below)
-      ("<S-return>" . open-line-above))
+  (global-set-key "%" 'my/match-paren)
+  (require 'view)
+  (global-set-key "\C-v"   'View-scroll-half-page-forward)
+  (global-set-key "\M-v"   'View-scroll-half-page-backward)
+  (global-set-key (kbd "C-c r") 'my/config-reload)
+  (global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
+  (global-set-key (kbd "C-a") 'my/smarter-move-beginning-of-line)
+  (global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
+  (global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
+  (global-set-key (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
+  (global-set-key (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
+  (global-set-key (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
+  (global-set-key (kbd "M-m") 'goto-last-change)
+  (global-set-key (kbd "C-r") 'recentf-open-files)
+  ;(global-set-key (kbd "C-c C-j") 'recentf-open-files-compl)
+  (global-set-key (kbd "C-,") 'comment-line)
+  (global-set-key (kbd "C-x k") 'kill-current-buffer)
+  (global-set-key [remap isearch-forward] #'my/isearch-symbol-with-prefix)
+  (define-key isearch-mode-map (kbd "C-s") 'isearch-repeat-forward+)
+  (define-key isearch-mode-map (kbd "C-r") 'isearch-repeat-backward+)
+  (define-key isearch-mode-map (kbd "DEL") 'my/isearchp-remove-failed-part-or-last-char)
+  (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
+  (global-set-key (kbd "H-i") 'goto-line)
+  (global-set-key (kbd "M-j") 'smart-join-line)
+  (global-set-key (kbd "C-t") 'duplicate-line)
+  (global-set-key (kbd "M-a") (kbd "C-M-a"))
+  (global-set-key (kbd "M-e") (kbd "C-M-e"))
+  (global-set-key (kbd "s-n") (kbd "C-u 1 C-v"))
+  (global-set-key (kbd "s-p") (kbd "C-u 1 M-v"))
+  (global-set-key (kbd "C-x 2") 'tab-bar-new-tab)
+  (global-set-key (kbd "C-`") 'switch-to-previous-buffer)
+  (global-set-key (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
+  (global-set-key (kbd "C-<backspace>") (lambda () (interactive) (kill-line 0)))
+  (global-unset-key (kbd "C-x C-z"))
+  (global-set-key (kbd "C-c g") 'magit-status)
+
+  (bind-keys*
+   ("C-c C-r" . rg)
+  ("C-c C-f" . bookmark-jump)
+  ("C-x d" . find-name-dired)
+  ("C-x C-d" . dired)
+  ("<C-return>" . open-line-below)
+  ("<S-return>" . open-line-above)
+  ("C-c C-n" . recentf-open-files-compl)
+  )
 #+END_SRC
 
 * Packages
 #+BEGIN_SRC emacs-lisp
-  (use-package rg
-  :config
-  (rg-enable-default-bindings))
-  (setq rg-default-alias-fallback "everything")
+      (use-package magit)
+  ;; [[http://www.howardism.org/Technical/Emacs/magit-squashing.html][how to squash in magit]]
+  ;; 3 ways to diff
+  ;; - from the log wie scroll the commits and change over to the changes and collapse/decollapse hunks
+  ;; - ediff
+  ;; - goto source file and use git timemachine
+  ;; M-Tab in status buffer
+  ;; C-c M-g b for blame on every file line
+  ;; b s in status buffer if started to work on sth. but forget to create a new branch first
+  ;; l l for log view and then Space on a commit, opens committed stuff in new buffer and if n/p through the log buffer updates the stuff view accordingly
+  ;; C-<return> opens up editable source buffer, e.g. for git-timemachine scrolling
 
-  (use-package expand-region)
-  (bind-keys* ("C-'" . er/expand-region)
-  ("C-;" . er/contract-region))
+    (use-package rg
+    :config
+    (rg-enable-default-bindings))
+    (setq rg-default-alias-fallback "everything")
 
-  (use-package whole-line-or-region)
-  (whole-line-or-region-global-mode t)
+    (use-package expand-region)
+    (bind-keys* ("C-'" . er/expand-region)
+    ("C-;" . er/contract-region))
 
-  (use-package window-numbering
-  :config
-  (window-numbering-mode t))
+    (use-package whole-line-or-region)
+    (whole-line-or-region-global-mode t)
 
-  (use-package move-text)
-  (bind-keys* ("M-n" . move-text-down)
-  ("M-p" . move-text-up))
+    (use-package window-numbering
+    :config
+    (window-numbering-mode t))
 
-  (use-package avy)
-  ;; C-j j for goto-line 
-  (bind-keys* ("C-j" . avy-goto-char-timer))
-  (setq avy-timeout-seconds 0.2)
-  (setq avy-style 'words)
-  (setq avy-case-fold-search nil)
-  (setq avy-all-windows t)
+    (use-package move-text)
+    (bind-keys* ("M-n" . move-text-down)
+    ("M-p" . move-text-up))
 
-  (use-package multiple-cursors
-  :bind (("C-c n" . mc/mark-next-like-this)
-  ("C-c p" . mc/mark-previous-like-this)
-  ("C-c m a" . mc/mark-all-like-this)
-  ("C-c m e" . mc/edit-lines)
-  ("C-c m b" . mc/edit-beginnings-of-lines))
-  )
-    (use-package amx
-      :hook
-      (after-init . amx-mode)
-      :bind
-      ("M-x" . amx))
+    (use-package avy)
+    ;; C-j C-j for goto-line 
+    (bind-keys* ("C-j" . avy-goto-char-timer))
+    (setq avy-timeout-seconds 0.2)
+    (setq avy-style 'words)
+    (setq avy-case-fold-search nil)
+    (setq avy-all-windows t)
+
+    (use-package multiple-cursors
+    :bind (("C-c m e" . mc/mark-all-like-this)))
   
-  (use-package mood-line
-  :init
-  (mood-line-mode))
-  (load "~/.emacs.d/my-manoj-dark-theme.el")
+      (use-package amx
+	:hook
+	(after-init . amx-mode)
+	:bind
+	("M-x" . amx))
 
-  (use-package goto-last-change
-  :bind ("M-m" . goto-last-change))
+    (use-package mood-line
+    :init
+    (mood-line-mode))
+    (load "~/.emacs.d/my-manoj-dark-theme.el")
+
+    (use-package goto-last-change
+    :bind ("M-m" . goto-last-change))
 #+END_SRC
 
 * Dired
@@ -356,41 +372,19 @@ G chgrp
 Did you know, you can mark files in Dired buffer and then do *M-x magit-dired-log*
 and it will show commits but only related to those files?
 #+BEGIN_SRC emacs-lisp
-(setq dired-listing-switches "-lAFGh1v --group-directories-first")
-(setq dired-recursive-copies 'always)
-(setq dired-recursive-deletes 'always)
-(setq dired-ls-F-marks-symlinks t)
-(setq delete-by-moving-to-trash t)
-(setq wdired-allow-to-change-permissions t)
-(setq dired-dwim-target t)
-(setq dired-kill-when-opening-new-dired-buffer t)
-#+END_SRC
-
-* Eglot
-#+BEGIN_SRC emacs-lisp
-(use-package eglot
-:config
-(add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-15"))
-(setq eldoc-echo-area-use-multiline-p 1))
+  (setq dired-listing-switches "-lAFGh1v --group-directories-first")
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+  (setq dired-ls-F-marks-symlinks t)
+  (setq delete-by-moving-to-trash t)
+  (setq wdired-allow-to-change-permissions t)
+  (setq dired-dwim-target t)
+  (setq dired-kill-when-opening-new-dired-buffer t)
+(define-key dired-mode-map "e" 'dired-toggle-read-only)
 #+END_SRC
 
 * GDB
 #+BEGIN_SRC emacs-lisp
-;; Force gdb-mi to not dedicate any windows
-(advice-add 'gdb-display-buffer
-	    :around (lambda (orig-fun &rest r)
-		      (let ((window (apply orig-fun r)))
-			(set-window-dedicated-p window nil)
-			window)))
-
-(advice-add 'gdb-set-window-buffer
-	    :around (lambda (orig-fun name &optional ignore-dedicated window)
-		      (funcall orig-fun name ignore-dedicated window)
-		      (set-window-dedicated-p window nil)))
-  
-    (advice-add 'gdb-setup-windows :after
-    (lambda () (set-window-dedicated-p (selected-window) t)))
-
   ;; recenter and highlight current line
     (defvar gud-overlay
     (let* ((ov (make-overlay (point-min) (point-min))))
@@ -410,27 +404,4 @@ and it will show commits but only related to those files?
        (move-overlay ov (line-beginning-position) (line-end-position)
 		     (current-buffer)))))
 #+END_SRC
-
-* Magit
-- [[http://www.howardism.org/Technical/Emacs/magit-squashing.html][how to squash in magit]]
-3 ways to diff
-- from the log wie scroll the commits and change over to the changes and collapse/decollapse hunks
-- ediff
-- goto source file and use git timemachine
-#+BEGIN_SRC emacs-lisp
-    ;; M-Tab in status buffer
-    ;; C-c M-g b for blame on every file line
-    ;; b s in status buffer if started to work on sth. but forget to create a new branch first
-    ;; l l for log view and then Space on a commit, opens committed stuff in new buffer and if n/p through the log buffer updates the stuff view accordingly
-    ;; C-<return> opens up editable source buffer, e.g. for git-timemachine scrolling
-    (use-package magit
-	  :config
-	  (global-set-key (kbd "C-c g") 'magit-status)
-	  (setq magit-completing-read-function 'magit-ido-completing-read)
-	    ;; display magit buffer in current window
-	    (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
-	    (setq magit-ediff-dwim-show-on-hunks t))
-
-#+END_SRC
-
 
