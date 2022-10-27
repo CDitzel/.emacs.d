@@ -61,8 +61,10 @@
     ("rr" "- [ ]")
     ("pp" "[/]")
     ("cd" "// TODO(cditzel MB): ")))
+(load "~/.emacs.d/my-manoj-dark-theme.el")
 
 #+END_SRC
+
 * Functions
 #+BEGIN_SRC emacs-lisp
   (defun recentf-open-files-compl ()
@@ -242,7 +244,6 @@ want to delete the selected one. Check icomplete-fido-mode-map for
 more details on the available key bindings.
 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key "%" 'my/match-paren)
   (require 'view)
   (global-set-key "\C-v"   'View-scroll-half-page-forward)
   (global-set-key "\M-v"   'View-scroll-half-page-backward)
@@ -255,8 +256,7 @@ more details on the available key bindings.
   (global-set-key (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
   (global-set-key (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
   (global-set-key (kbd "M-m") 'goto-last-change)
-  (global-set-key (kbd "C-r") 'recentf-open-files)
-  ;(global-set-key (kbd "C-c C-j") 'recentf-open-files-compl)
+  (global-set-key (kbd "C-r") 'recentf-open-files-compl)
   (global-set-key (kbd "C-,") 'comment-line)
   (global-set-key (kbd "C-x k") 'kill-current-buffer)
   (global-set-key [remap isearch-forward] #'my/isearch-symbol-with-prefix)
@@ -276,16 +276,17 @@ more details on the available key bindings.
   (global-set-key (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
   (global-set-key (kbd "C-<backspace>") (lambda () (interactive) (kill-line 0)))
   (global-unset-key (kbd "C-x C-z"))
+  (global-set-key (kbd "C-.") 'my/match-paren)
   (global-set-key (kbd "C-c g") 'magit-status)
 
   (bind-keys*
-   ("C-c C-r" . rg)
+  ("C-c C-r" . rg)
   ("C-c C-f" . bookmark-jump)
   ("C-x d" . find-name-dired)
   ("C-x C-d" . dired)
   ("<C-return>" . open-line-below)
   ("<S-return>" . open-line-above)
-  ("C-c C-n" . recentf-open-files-compl)
+  ("C-c C-n" . switch-to-buffer)
   )
 #+END_SRC
 
@@ -331,9 +332,18 @@ more details on the available key bindings.
     (setq avy-case-fold-search nil)
     (setq avy-all-windows t)
 
-    (use-package multiple-cursors
-    :bind (("C-c m e" . mc/mark-all-like-this)))
-  
+    ;(use-package multiple-cursors
+    ;:bind (("C-c m e" . mc/mark-all-like-this)))
+
+  (use-package multiple-cursors
+  :bind (("H-SPC" . set-rectangular-region-anchor)
+         ("C-M-SPC" . set-rectangular-region-anchor)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-c C->" . mc/mark-all-like-this)
+         ("C-c C-SPC" . mc/edit-lines)
+         ))
+
       (use-package amx
 	:hook
 	(after-init . amx-mode)
@@ -388,7 +398,7 @@ and it will show commits but only related to those files?
   ;; recenter and highlight current line
     (defvar gud-overlay
     (let* ((ov (make-overlay (point-min) (point-min))))
-      (overlay-put ov 'face '(:background "#F6FECD")) ;; colors for Leuven theme
+      (overlay-put ov 'face '(:background "#22aafF")) ;; colors for Leuven theme
       ov)
     "Overlay variable for GUD highlighting.")
   (defadvice gud-display-line (after my-gud-highlight act)
