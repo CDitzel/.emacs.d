@@ -1,95 +1,76 @@
-;; bootstrap straight.el as the package manager of choice instead of package.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+(package-install 'expand-region)
+(package-install 'avy)
+(package-install 'multiple-cursors)
 
-(defun ditzel/visit-emacs-config () (interactive) (find-file "~/.emacs.d/init.el"))
-(global-set-key (kbd "C-c e") 'ditzel/visit-emacs-config)
+;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el"))
 
-;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
-
-(setq isearch-repeat-on-direction-change t)
-(setq isearch-lazy-count t)
-(setq lazy-highlight-cleanup nil)
-(setq lazy-highlight-buffer t)
-(setq x-super-keysym 'ctrl)
-(setq scroll-margin 3)
-(setq inhibit-startup-screen 1)
-(setq initial-scratch-message nil)
-(setq mouse-yank-at-point t)
-(setq-default cursor-in-non-selected-windows nil)
-(setq echo-keystrokes 0)
-(setq save-place-mode 1)
-(setq scroll-preserve-screen-position 'always)
-(setq confirm-kill-emacs 'y-or-n-p)
-(setq use-dialog-box nil)
-(setq lazy-highlight-initial-delay 0)
-(setq create-lockfiles nil)
-(setq auto-save-default nil)
-(setq make-backup-files nil)
-(setq tab-bar-mode t)
-(setq tab-bar-show nil)
-(setq tab-bar-new-tab-choice "*scratch*")
-(setq show-paren-delay 0)
-(setq use-short-answers t)
-(setq global-auto-revert-non-file-buffers t)
-(setq auto-revert-verbose nil)
-(setq dired-auto-revert-buffer t)
-(setq window-combination-resize t)
-(setq completion-auto-help nil)
-(setq recentf-max-saved-items nil)
-(setq recentf-max-menu-items 25)
-(setq dired-dwim-target t)
-(setq dired-listing-switches "-lAFGh1v --group-directories-first")
-(setq dired-kill-when-opening-new-dired-buffer t)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-(setq ediff-split-window-function (quote split-window-horizontally))
-(setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
-(global-auto-revert-mode)
+(global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
 (show-paren-mode t)
 (add-to-list 'auto-mode-alist '("\.cu$" . c++-mode))
 (run-at-time nil (* 30 60) 'recentf-save-list)
 (fido-vertical-mode 1)
 (fringe-mode 0)
+(savehist-mode 1)
 (recentf-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t)
+(setq-default cursor-in-non-selected-windows nil
+	      inhibit-startup-screen 1
+	      initial-scratch-message nil
+	      mode-line-position (list (concat "%l/"(number-to-string (count-lines (point-min) (point-max)))))
+	      isearch-repeat-on-direction-change t
+	      isearch-lazy-count t
+	      save-interprogram-paste-before-kill t
+	      lazy-highlight-cleanup nil
+	      lazy-highlight-buffer t
+	      mouse-yank-at-point t
+	      echo-keystrokes 0.01
+	      save-place-mode 1
+	      scroll-preserve-screen-position 'always
+	      confirm-kill-emacs 'y-or-n-p
+	      use-dialog-box nil
+	      lazy-highlight-initial-delay 0
+	      create-lockfiles nil
+	      auto-save-default nil
+	      make-backup-files nil
+	      abbrev-mode t
+	      avy-timeout-seconds 0.2
+	      tab-bar-mode t
+	      tab-bar-show nil
+	      tab-bar-new-tab-choice "*scratch*"
+	      show-paren-delay 0
+	      use-short-answers t
+	      global-auto-revert-non-file-buffers t
+	      auto-revert-verbose nil
+	      dired-auto-revert-buffer t
+	      window-combination-resize t
+	      completion-auto-help nil
+	      recentf-max-saved-items nil
+	      recentf-max-menu-items 25
+	      dired-recursive-copies 'always
+	      dired-recursive-deletes 'always
+	      dired-dwim-target t
+	      dired-listing-switches "-lAFGh1v --group-directories-first"
+	      dired-kill-when-opening-new-dired-buffer t
+	      ediff-window-setup-function 'ediff-setup-windows-plain
+	      ediff-split-window-function (quote split-window-horizontally)
+	      magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
+
 
 (require 'eglot)
 (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-15"))
 (setq eldoc-echo-area-use-multiline-p 1)
 
-(setq-default abbrev-mode t)
 (define-abbrev-table 'global-abbrev-table '(
 					    ("rr" "- [ ]")
 					    ("cd" "// TODO(cditzel MB): ")))
-(load "~/.emacs.d/my-manoj-dark-theme.el")
 
-(defun system-is-lenovo ()
-  (interactive)
-  (string-equal system-name "lenovo"))
-(if (system-is-lenovo)
-    (set-face-attribute 'default nil :height 200))
-
-(defun switch-to-previous-buffer ()
-  "Switch to most recent buffer. Repeated calls toggle back and forth between the most recent two buffers."
-  (interactive)
-  (switch-to-buffer (other-buffer (current-buffer) 1)))
+(defun ditzel/visit-emacs-config () (interactive) (find-file "~/.emacs.d/init.el"))
 
 (defun my/get-positions-of-line-or-region ()
   "Return positions (beg . end) of the current line or region."
@@ -126,6 +107,34 @@ there's a region, all lines that region covers will be duplicated."
   (balance-windows)
   (other-window 1))
 
+(defun system-is-lenovo ()
+  (interactive)
+  (string-equal (system-name) "lenovo"))
+(if (system-is-lenovo)
+    (set-face-attribute 'default nil :height 200)
+  (setq x-super-keysym 'ctrl)
+)
+
+(defun switch-to-previous-buffer ()
+  "Switch to most recent buffer"
+  (interactive)
+  (switch-to-buffer (other-buffer (current-buffer) 1)))
+
+(defadvice kill-region (before slick-cut activate compile)
+  "When called interactively with no active region, kill a single line instead."
+  (interactive
+   (if mark-active
+       (list (region-beginning) (region-end))
+     (list (line-beginning-position) (line-beginning-position 2)))))
+
+(defadvice kill-ring-save (before slick-copy activate compile)
+  "When called interactively with no active region, copy a single line instead."
+  (interactive
+   (if mark-active
+       (list (region-beginning) (region-end))
+     (message "Copied line")
+     (list (line-beginning-position) (line-beginning-position 2)))))
+
 (defun top-join-line ()
   (interactive)
   (delete-indentation 1))
@@ -157,17 +166,97 @@ there's a region, all lines that region covers will be duplicated."
   (forward-line -1)
   (indent-according-to-mode))
 
-(defun duplicate-line()
+(defun duplicate-line ()
+  "Duplicate current line"
   (interactive)
-  (move-beginning-of-line 1)
-  (kill-line)
+  (kill-whole-line)
   (yank)
-  (open-line 1)
-  (next-line 1)
   (yank))
 
+;(require 'view)
+;(global-set-key "\C-v"   'View-scroll-half-page-forward)
+;(global-set-key "\M-v"   'View-scroll-half-page-backward)
+
+
+(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
+(global-unset-key (kbd "C-x C-z"))
+(define-key isearch-mode-map (kbd "C-j") 'isearch-forward-thing-at-point)
+
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "<C-return>") 'open-line-below)
+    (define-key map (kbd "<S-return>") 'open-line-above)
+    (define-key map (kbd "C-o") 'other-window)
+    (define-key map (kbd "C-x 3") 'my/split-and-follow-vertically)
+    (define-key map (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
+    (define-key map (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
+    (define-key map (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
+    (define-key map (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
+    (define-key map (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
+    (define-key map (kbd "C-,") 'comment-line)
+    (define-key map (kbd "C-x k") 'kill-current-buffer)
+    (define-key map (kbd "H-i") 'goto-line)
+    (define-key map (kbd "M-j") 'smart-join-line)
+    (define-key map (kbd "C-t") 'duplicate-line)
+    (define-key map (kbd "C-x 2") 'tab-bar-new-tab)
+    (define-key map (kbd "C-`") 'switch-to-previous-buffer)
+    (define-key map (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
+    (define-key map (kbd "C-<backspace>") (lambda () (interactive) (kill-line 0)))
+    (define-key map (kbd "C-c f") 'bookmark-jump)
+    (define-key map (kbd "C-x C-d") 'dired)
+    (define-key map (kbd "C-c C-n") 'switch-to-buffer)
+    (define-key map (kbd "C-x d") 'find-name-dired)
+    (define-key map (kbd "C-c C-r") 'rgrep)
+    (define-key map (kbd "C-r") 'recentf)
+    (define-key map (kbd "s-n") (kbd "C-u 1 C-v"))
+    (define-key map (kbd "s-p") (kbd "C-u 1 M-v"))
+    (define-key map (kbd "C-.") 'goto-last-change)
+    (define-key map (kbd "C-j") 'avy-goto-char-timer)
+    (define-key map (kbd "C-c C-SPC") 'mc/edit-lines)
+    (define-key map (kbd "C-'") 'er/expand-region)
+    (define-key map (kbd "C-;") 'er/contract-region)
+    (define-key map (kbd "M-C-s") 'isearch-forward-thing-at-point)
+    (define-key map (kbd "C-c e") 'ditzel/visit-emacs-config)
+    (define-key map (kbd "C-c r") 'eval-buffer)
+    map)
+  "my-keys-minor-mode keymap.")
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+
+(my-keys-minor-mode 1)
+
+(setenv "PATH" (concat (getenv "PATH")"~/cuda-gdb"))
+(setq exec-path (append exec-path '("/home/ubuntu/cuda-gdb")))
+(setq exec-path (append exec-path '("/usr/local/cuda-11.8/bin")))
+;(setq gud-gdb-comanmd-name "cuda-gdb --annotate=3")
+(setq gud-gdb-command-name "gdb --i=mi ")
+(setq gdb-many-windows t)
+;(setq gdb-use-separate-io-buffer t)
+
+;; recenter and highlight current line
+(defvar gud-overlay
+  (let* ((ov (make-overlay (point-min) (point-min))))
+    (overlay-put ov 'face '(:background "#22aafF")) ;; colors for Leuven theme
+    ov)
+  "Overlay variable for GUD highlighting.")
+(defadvice gud-display-line (after my-gud-highlight act)
+  "Highlight current line."
+  (let* ((ov gud-overlay)
+	 (bf (gud-find-file true-file)))
+    (save-excursion
+      (with-selected-window (get-buffer-window bf)
+	(save-restriction
+	  (goto-line (ad-get-arg 1))
+	  (recenter)))
+      (set-buffer bf)
+      (move-overlay ov (line-beginning-position) (line-end-position)
+		    (current-buffer)))))
+
 ;; Dont kill but switch buffer in the future
-;; C-x TAB after highlighting region to indent 
+;; C-x TAB after highlighting region to indent
 ;; C-M-f,b,a,e,n,p etc. moves in larger chunks
 ;; C-u C-SPC back to saved mark
 ;; C-M-v scroll-other-window and C-M-S-v scroll-other-window-down
@@ -190,6 +279,7 @@ there's a region, all lines that region covers will be duplicated."
 ;; current line or, for instance, if we are completing files asks if we
 ;; want to delete the selected one. Check icomplete-fido-mode-map for
 ;; more details on the available key bindings.
+;; M-m beginn of indentation
 ;; C-s C-w matching until end of word for search
 ;; M-s . matching entire word
 ;; then M-s o calls occur (buffer local) (C-u to call with line ctx) e goes into edit mode
@@ -205,102 +295,88 @@ there's a region, all lines that region covers will be duplicated."
 ;; to the matching closing one. This works even if there are nested
 ;; parentheses. You can use C-M-p to go back.
 ;; M-x (M-p) for cached commands
-;; 
+;;M-n		isearch-ring-advance
+;;M-p		isearch-ring-retreat
 ;; C-M-... commands
+;; find-file then M-n for find-file-at-point
 
-  (require 'view)
-  (global-set-key "\C-v"   'View-scroll-half-page-forward)
-  (global-set-key "\M-v"   'View-scroll-half-page-backward)
-  (global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
-  (global-set-key (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
-  (global-set-key (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
-  (global-set-key (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
-  (global-set-key (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
-  (global-set-key (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
-  (global-set-key (kbd "M-m") 'goto-last-change)
-  (global-set-key (kbd "C-r") 'recentf)
-  (global-set-key (kbd "C-,") 'comment-line)
-  (global-set-key (kbd "C-x k") 'kill-current-buffer)
-  (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
-  (global-set-key (kbd "H-i") 'goto-line)
-  (global-set-key (kbd "M-j") 'smart-join-line)
-  (global-set-key (kbd "C-t") 'duplicate-line)
-  (global-set-key (kbd "C-o") (kbd "C-x o"))
-  (global-set-key (kbd "M-a") (kbd "C-M-a"))
-  (global-set-key (kbd "M-e") (kbd "C-M-e"))
-  (global-set-key (kbd "s-n") (kbd "C-u 1 C-v"))
-  (global-set-key (kbd "s-p") (kbd "C-u 1 M-v"))
-  (global-set-key (kbd "C-x 2") 'tab-bar-new-tab)
-  (global-set-key (kbd "C-`") 'switch-to-previous-buffer)
-  (global-set-key (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
-  (global-set-key (kbd "C-<backspace>") (lambda () (interactive) (kill-line 0)))
-  (global-unset-key (kbd "C-x C-z"))
-  (global-set-key (kbd "C-c g") 'magit-status)
+(defvar goto-last-change-undo nil
+  "The `buffer-undo-list' entry of the previous \\[goto-last-change] command.")
+(make-variable-buffer-local 'goto-last-change-undo)
 
-(bind-keys*
- ("C-c C-r" . rgrep)
- ("C-c C-f" . bookmark-jump)
- ("C-x d" . find-name-dired)
- ("C-x C-d" . dired)
- ("<C-return>" . open-line-below)
- ("<S-return>" . open-line-above)
- ("C-c C-n" . switch-to-buffer)
- ("C-u C-s" . isearch-forward-thing-at-point)
+
+(defun goto-last-change (&optional mark-point minimal-line-distance)
+  "Set point to the position of the last change.
+Consecutive calls set point to the position of the previous change.
+With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
+\\[exchange-point-and-mark]
+will return point to the current position."
+  (interactive "P")
+  (when (eq buffer-undo-list t)
+    (error "No undo information in this buffer"))
+  (when mark-point
+    (push-mark))
+  (unless minimal-line-distance
+    (setq minimal-line-distance 10))
+  (let ((position nil)
+	(undo-list (if (and (eq this-command last-command)
+			    goto-last-change-undo)
+		       (cdr (memq goto-last-change-undo buffer-undo-list))
+		     buffer-undo-list))
+	undo)
+    (while (and undo-list
+                (or (not position)
+                    (eql position (point))
+                    (and minimal-line-distance
+                         ;; The first invocation always goes to the last change, subsequent ones skip
+                         ;; changes closer to (point) then minimal-line-distance.
+                         (memq last-command '(goto-last-change
+                                              goto-last-change-with-auto-marks))
+                         (< (count-lines (min position (point-max)) (point))
+                            minimal-line-distance))))
+      (setq undo (car undo-list))
+      (cond ((and (consp undo) (integerp (car undo)) (integerp (cdr undo)))
+	     ;; (BEG . END)
+	     (setq position (cdr undo)))
+	    ((and (consp undo) (stringp (car undo))) ; (TEXT . POSITION)
+	     (setq position (abs (cdr undo))))
+	    ((and (consp undo) (eq (car undo) t))) ; (t HIGH . LOW)
+	    ((and (consp undo) (null (car undo)))
+	     ;; (nil PROPERTY VALUE BEG . END)
+	     (setq position (cdr (last undo))))
+	    ((and (consp undo) (markerp (car undo)))) ; (MARKER . DISTANCE)
+	    ((integerp undo))		; POSITION
+	    ((null undo))		; nil
+	    (t (error "Invalid undo entry: %s" undo)))
+      (setq undo-list (cdr undo-list)))
+    (cond (position
+	   (setq goto-last-change-undo undo)
+	   (goto-char (min position (point-max))))
+	  ((and (eq this-command last-command)
+		goto-last-change-undo)
+	   (setq goto-last-change-undo nil)
+	   (error "No further undo information"))
+	  (t
+	   (setq goto-last-change-undo nil)
+	   (error "Buffer not modified")))))
+
+(defun goto-last-change-with-auto-marks (&optional minimal-line-distance)
+  "Calls goto-last-change and sets the mark at only the first invocations
+in a sequence of invocations."
+  (interactive "P")
+  (goto-last-change (not (or (eq last-command 'goto-last-change-with-auto-marks)
+                             (eq last-command t)))
+                    minimal-line-distance))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(multiple-cursors expand-region avy)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
-
-(use-package magit)
-;; http://www.howardism.org/Technical/Emacs/magit-squashing.html]
-
-(use-package expand-region)
-(bind-keys* ("C-'" . er/expand-region)
-	    ("C-;" . er/contract-region))
-
-(use-package whole-line-or-region)
-(whole-line-or-region-global-mode t)
-
-(use-package avy)
-;; C-j C-j for goto-line 
-(bind-keys* ("C-j" . avy-goto-char-timer))
-(setq avy-timeout-seconds 0.2)
-(setq avy-style 'words)
-(setq avy-case-fold-search nil)
-(setq avy-all-windows t)
-
-(use-package multiple-cursors
-  :bind (("C-c C-SPC" . mc/edit-lines)))
-
-(use-package mood-line
-  :init
-  (mood-line-mode))
-(load "~/.emacs.d/my-manoj-dark-theme.el")
-
-(use-package goto-last-change
-  :bind ("M-m" . goto-last-change))
-
-
-(setenv "PATH" (concat (getenv "PATH")"~/cuda-gdb"))
-(setq exec-path (append exec-path '("/home/ubuntu/cuda-gdb")))
-(setq exec-path (append exec-path '("/usr/local/cuda-11.8/bin")))
-(setq gud-gdb-command-name "cuda-gdb --annotate=3")
-(setq gud-gdb-command-name "gdb --i=mi ")
-(setq gdb-many-windows t)
-(setq gdb-use-separate-io-buffer t)
-
-;; recenter and highlight current line
-(defvar gud-overlay
-  (let* ((ov (make-overlay (point-min) (point-min))))
-    (overlay-put ov 'face '(:background "#22aafF")) ;; colors for Leuven theme
-    ov)
-  "Overlay variable for GUD highlighting.")
-(defadvice gud-display-line (after my-gud-highlight act)
-  "Highlight current line."
-  (let* ((ov gud-overlay)
-	 (bf (gud-find-file true-file)))
-    (save-excursion
-      (with-selected-window (get-buffer-window bf)
-	(save-restriction
-	  (goto-line (ad-get-arg 1))
-	  (recenter)))
-      (set-buffer bf)
-      (move-overlay ov (line-beginning-position) (line-end-position)
-		    (current-buffer)))))
