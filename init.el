@@ -2,6 +2,7 @@
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
+(package-install 'magit)
 
 ;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el"))
 
@@ -63,7 +64,20 @@
 
 
 (require 'eglot)
-(add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-15"))
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((c-mode c++-mode)
+                 . ("clangd-15"
+                    "-j=8"
+                    "--log=error"
+                    "--malloc-trim"
+                    "--background-index"
+                    "--clang-tidy"
+                    "--cross-file-rename"
+                    "--completion-style=detailed"
+                    "--pch-storage=memory"
+                    "--header-insertion=never"
+                    "--header-insertion-decorators=0"))))
 (setq eldoc-echo-area-use-multiline-p 1)
 
 (define-abbrev-table 'global-abbrev-table '(
@@ -218,6 +232,7 @@ there's a region, all lines that region covers will be duplicated."
     (define-key map (kbd "M-C-s") 'isearch-forward-thing-at-point)
     (define-key map (kbd "C-c e") 'ditzel/visit-emacs-config)
     (define-key map (kbd "C-c r") 'eval-buffer)
+    (define-key map (kbd "C-c g") 'magit-status)
     map)
   "my-keys-minor-mode keymap.")
 
