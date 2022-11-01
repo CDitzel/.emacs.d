@@ -1,16 +1,15 @@
-
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
-;(package-install 'magit)
 
-					;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el"))
+(add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
+(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(basic flex))))
 
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
 (show-paren-mode t)
 (add-to-list 'auto-mode-alist '("\.cu$" . c++-mode))
-(run-at-time nil (* 30 60) 'recentf-save-list)
+					;(run-at-time nil (* 30 60) 'recentf-save-list)
 (fido-vertical-mode 1)
 (fringe-mode 0)
 (savehist-mode 1)
@@ -20,21 +19,23 @@
 (tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t)
+
 (setq-default cursor-in-non-selected-windows nil
 	      inhibit-startup-screen 1
 	      initial-scratch-message nil
 	      isearch-repeat-on-direction-change t
 	      isearch-lazy-count t
+	      lazy-highlight-initial-delay 0
 	      save-interprogram-paste-before-kill t
 	      lazy-highlight-cleanup nil
 	      lazy-highlight-buffer t
 	      mouse-yank-at-point t
-	      echo-keystrokes 0.01
+	      echo-keystrokes 0
 	      save-place-mode 1
 	      scroll-preserve-screen-position 'always
+	      help-window-select t
 	      confirm-kill-emacs 'y-or-n-p
 	      use-dialog-box nil
-	      lazy-highlight-initial-delay 0
 	      create-lockfiles nil
 	      auto-save-default nil
 	      make-backup-files nil
@@ -59,8 +60,7 @@
 	      dired-kill-when-opening-new-dired-buffer t
 	      ediff-window-setup-function 'ediff-setup-windows-plain
 	      ediff-split-window-function (quote split-window-horizontally)
-	      magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
-
+	      )
 
 (require 'eglot)
 (with-eval-after-load 'eglot
@@ -83,7 +83,7 @@
 					    ("rr" "- [ ]")
 					    ("cd" "// TODO(cditzel MB): ")))
 
-(defun ditzel/visit-emacs-config () (interactive) (find-file "~/.emacs.d/init.el"))
+
 
 (defun my/get-positions-of-line-or-region ()
   "Return positions (beg . end) of the current line or region."
@@ -113,12 +113,6 @@ there's a region, all lines that region covers will be duplicated."
       (insert region)
       (setq end (point)))
     (goto-char (+ origin (* (length region) arg) arg))))
-
-(defun my/split-and-follow-vertically ()
-  (interactive)
-  (split-window-right)
-  (balance-windows)
-  (other-window 1))
 
 (defun system-is-lenovo ()
   (interactive)
@@ -200,14 +194,16 @@ there's a region, all lines that region covers will be duplicated."
     (define-key map (kbd "<C-return>") 'open-line-below)
     (define-key map (kbd "<S-return>") 'open-line-above)
     (define-key map (kbd "C-o") 'other-window)
-    (define-key map (kbd "C-x 3") 'my/split-and-follow-vertically)
+    (define-key map (kbd "C-x 3") (lambda () (interactive)(split-window-horizontally) (other-window 1)))
     (define-key map (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
     (define-key map (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
+    (define-key map (kbd "C-c e") (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
     ;; (define-key map (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
     (define-key map (kbd "C-1") 'tab-bar-select-tab 1)
     (define-key map (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
     (define-key map (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
     (define-key map (kbd "C-,") 'comment-line)
+    (define-key map (kbd "C-x b") 'ibuffer)
     (define-key map (kbd "C-x k") 'kill-current-buffer)
     (define-key map (kbd "H-i") 'goto-line)
     (define-key map (kbd "M-j") 'smart-join-line)
@@ -230,16 +226,14 @@ there's a region, all lines that region covers will be duplicated."
     (define-key map (kbd "C-'") 'er/expand-region)
     (define-key map (kbd "C-;") 'er/contract-region)
     (define-key map (kbd "M-C-s") 'isearch-forward-thing-at-point)
-    (define-key map (kbd "C-c e") 'ditzel/visit-emacs-config)
     (define-key map (kbd "C-c r") 'eval-buffer)
-    (define-key map (kbd "C-c g") 'magit-status)
     map)
   "my-keys-minor-mode keymap.")
 
 (define-minor-mode my-keys-minor-mode
-   "A minor mode so that my key settings override annoying major modes."
-   :init-value t
-   :lighter " my-keys")
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
 
 (my-keys-minor-mode 1)
 
@@ -374,18 +368,25 @@ in a sequence of invocations."
                              (eq last-command t)))
                     minimal-line-distance))
 
-
-;(add-to-list 'custom-theme-load-path "~/.emacs.d")
-;(load-theme 'manone-theme)  
+(setq-default mode-line-format
+	      (quote
+	       (#(" " 0 1
+		  ())
+		mode-line-modified
+		"    "
+		mode-line-buffer-identification
+		;; "    "
+		(line-number-mode "%l/")
+		(:eval (number-to-string (count-lines (point-min) (point-max))))
+		"    "
+		;; default-directory
+		)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes '(manone))
- '(custom-safe-themes
-   '("6073a55eb6606b86bc23406555778382820fcc870f50aa8c44d47ce6552dfb98" default))
  '(package-selected-packages '(multiple-cursors expand-region avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
