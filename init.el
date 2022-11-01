@@ -2,9 +2,9 @@
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
-(package-install 'magit)
+;(package-install 'magit)
 
-;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el"))
+					;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el"))
 
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
@@ -23,7 +23,6 @@
 (setq-default cursor-in-non-selected-windows nil
 	      inhibit-startup-screen 1
 	      initial-scratch-message nil
-	      mode-line-position (list (concat "%l/"(number-to-string (count-lines (point-min) (point-max)))))
 	      isearch-repeat-on-direction-change t
 	      isearch-lazy-count t
 	      save-interprogram-paste-before-kill t
@@ -127,7 +126,7 @@ there's a region, all lines that region covers will be duplicated."
 (if (system-is-lenovo)
     (set-face-attribute 'default nil :height 200)
   (setq x-super-keysym 'ctrl)
-)
+  )
 
 (defun switch-to-previous-buffer ()
   "Switch to most recent buffer"
@@ -187,9 +186,9 @@ there's a region, all lines that region covers will be duplicated."
   (yank)
   (yank))
 
-;(require 'view)
-;(global-set-key "\C-v"   'View-scroll-half-page-forward)
-;(global-set-key "\M-v"   'View-scroll-half-page-backward)
+					;(require 'view)
+					;(global-set-key "\C-v"   'View-scroll-half-page-forward)
+					;(global-set-key "\M-v"   'View-scroll-half-page-backward)
 
 
 (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
@@ -204,7 +203,8 @@ there's a region, all lines that region covers will be duplicated."
     (define-key map (kbd "C-x 3") 'my/split-and-follow-vertically)
     (define-key map (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
     (define-key map (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
-    (define-key map (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
+    ;; (define-key map (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
+    (define-key map (kbd "C-1") 'tab-bar-select-tab 1)
     (define-key map (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
     (define-key map (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
     (define-key map (kbd "C-,") 'comment-line)
@@ -237,19 +237,19 @@ there's a region, all lines that region covers will be duplicated."
   "my-keys-minor-mode keymap.")
 
 (define-minor-mode my-keys-minor-mode
-  "A minor mode so that my key settings override annoying major modes."
-  :init-value t
-  :lighter " my-keys")
+   "A minor mode so that my key settings override annoying major modes."
+   :init-value t
+   :lighter " my-keys")
 
 (my-keys-minor-mode 1)
 
 (setenv "PATH" (concat (getenv "PATH")"~/cuda-gdb"))
 (setq exec-path (append exec-path '("/home/ubuntu/cuda-gdb")))
 (setq exec-path (append exec-path '("/usr/local/cuda-11.8/bin")))
-;(setq gud-gdb-comanmd-name "cuda-gdb --annotate=3")
+					;(setq gud-gdb-comanmd-name "cuda-gdb --annotate=3")
 (setq gud-gdb-command-name "gdb --i=mi ")
 (setq gdb-many-windows t)
-;(setq gdb-use-separate-io-buffer t)
+					;(setq gdb-use-separate-io-buffer t)
 
 ;; recenter and highlight current line
 (defvar gud-overlay
@@ -277,7 +277,6 @@ there's a region, all lines that region covers will be duplicated."
 ;; C-M-v scroll-other-window and C-M-S-v scroll-other-window-down
 ;; backard / forward paragraph (M-{ / M-}
 ;; C-M-a and C-M-e to move back and forward a function at a time.
-;; [[\[\[https://www.masteringemacs.org/article/effective-editing-movement\]\]][Efficienly move within Emacs]]
 ;; C-u C-s mark word under points -> C-s to find further occurences, also in other windows. After some time C-s retriggers last search
 ;; Use M-{ and M-} to move forward or backward by paragraph.
 ;; Use M-h to mark (highlight) the current paragraph.
@@ -286,26 +285,18 @@ there's a region, all lines that region covers will be duplicated."
 ;; C-l recentres the window while keeping the point on the same line
 ;; M-r moves the point without recentring the window.
 ;; C-s C-w [C-w ... ] to search for a word/expression under a cursor.
-;; M-o oben line above
 ;; undo in marked region only
-;; fido-mode enables nice features such as icomplete-fido-delete-char
-;; (C-d), which deletes the current character or calls dired on the
-;; current directory, and icomplete-fido-kill (C-k), which kills the
-;; current line or, for instance, if we are completing files asks if we
-;; want to delete the selected one. Check icomplete-fido-mode-map for
-;; more details on the available key bindings.
 ;; M-m beginn of indentation
 ;; C-s C-w matching until end of word for search
 ;; M-s . matching entire word
-;; then M-s o calls occur (buffer local) (C-u to call with line ctx) e goes into edit mode
+;; then M-s o calls occur (buffer local) (C-u to call with line ctx) and e goes into edit mode
 ;; C-M-k and M-k
 ;; M-e to edit failed isearch parts
-;; M-s M-.	Search for thing at point (Emacs28)
 ;; M-s h r	Highlight regexp
 ;; M-s h u	Undo the highlight
 ;; C-x n n narrow region
 ;; C-x n w widen region
-;; C-x C-j direc jump
+;; C-x C-j dired-jump
 ;; With the cursor on an opening parenthesis ([{ etc, use C-M-n to jump
 ;; to the matching closing one. This works even if there are nested
 ;; parentheses. You can use C-M-p to go back.
@@ -313,7 +304,7 @@ there's a region, all lines that region covers will be duplicated."
 ;;M-n		isearch-ring-advance
 ;;M-p		isearch-ring-retreat
 ;; C-M-... commands
-;; find-file then M-n for find-file-at-point
+;; find-file then M-n for find-file-at-point, i.e. insert current file
 
 (defvar goto-last-change-undo nil
   "The `buffer-undo-list' entry of the previous \\[goto-last-change] command.")
@@ -383,11 +374,18 @@ in a sequence of invocations."
                              (eq last-command t)))
                     minimal-line-distance))
 
+
+;(add-to-list 'custom-theme-load-path "~/.emacs.d")
+;(load-theme 'manone-theme)  
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes '(manone))
+ '(custom-safe-themes
+   '("6073a55eb6606b86bc23406555778382820fcc870f50aa8c44d47ce6552dfb98" default))
  '(package-selected-packages '(multiple-cursors expand-region avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
