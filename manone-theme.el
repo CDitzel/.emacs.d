@@ -85,7 +85,7 @@ jarring angry fruit salad look to reduce eye fatigue.")
  
 ;'(font-lock-type-face          ((t (:foreground "#00a1c6" :weight bold))))
 ;'(font-lock-type-face          ((t (:foreground "Steelblue3"))))
-'(font-lock-type-face          ((t (:foreground "#22aafF"))))
+'(font-lock-type-face          ((t (:foreground "#00a1c6"))))
 ;'(font-lock-type-face          ((t (:foreground "#3465A4"))))
 
  '(font-lock-regexp-grouping-backslash ((t (:bold t :weight bold))))
@@ -98,7 +98,7 @@ jarring angry fruit salad look to reduce eye fatigue.")
  ;'(font-lock-function-name-face ((t (:foreground "#FCE94F" :bold nil :height 1.0))))
 ;'(font-lock-function-name-face ((t (:foreground "gold4" :bold t :height 1.0))))
  
- '(font-lock-string-face        ((t (:foreground "LightCoral")))) 
+'(font-lock-string-face        ((t (:foreground "LightCora"l))))
  ;'(font-lock-string-face        ((t (:foreground "gold4"))))
  '(font-lock-comment-face       ((t (:italic t :slant oblique :foreground "chocolate1"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "Salmon"))))
@@ -564,11 +564,15 @@ jarring angry fruit salad look to reduce eye fatigue.")
  '(info-node ((t (:italic t :bold t :foreground "white" :slant italic :weight bold))))
  '(info-xref ((t (:bold t :foreground "DodgerBlue1"))))
  '(info-xref ((t (:bold t :foreground "cyan" :weight bold))))
- '(isearch ((t (:background "#00ff33" :foreground "brown4"))))
+ 
+ ;; '(isearch ((t (:bold t :background "limegreen" :foreground "black" :weight bold))))
+ '(isearch ((t (:bold t :background "purple" :foreground "black" :weight bold))))
+
+ 
  '(isearch-fail ((t (:background "red"))))
  ;'(isearch-lazy-highlight-face ((t (:background "#00a1c6"))))
  ;'(isearch-lazy-highlight-face ((t (:background "Blue"))))
- '(isearch-lazy-highlight-face ((t (:background "green" :foreground "black" :weight bold))))
+ '(isearch-lazy-highlight-face ((t (:background "blue" :foreground "black" :weight bold))))
  ;'(isearch-secondary ((t (:foreground "Blue"))))
  '(isearch-secondary ((t (:foreground "red3"))))
  '(italic ((t (:italic t))))
@@ -606,15 +610,16 @@ jarring angry fruit salad look to reduce eye fatigue.")
  
  '(mode-line ((t (:background "grey50" :foreground "Black"
                   :box '(:line-width -1 :style released-button)
-                  :height 0.9))))
+                  :height 1.0 :weight bold))))
  '(mode-line-buffer-id ((t (:background "grey50" :foreground "Black"
-                                        :bold t :weight bold :height 0.9))))
- '(mode-line-emphasis ((t (:bold t :weight bold))))
+                                        :bold t :weight bold :height 1.0))))
+ '(mode-line-emphasis ((t (:bold t :weight bold ))))
  '(mode-line-highlight ((t (:box (:line-width 2 :color "grey35"
                                               :style released-button :height 0.9)))))
- '(mode-line-inactive ((t (:background "grey50" :foreground "Black"
-                                       :box '(:line-width -1 :color "grey35")
-                                       :weight bold :height 0.9))))
+ '(mode-line-inactive ((t (:background "grey10" :foreground "Black"
+                                       :box '(:line-width 2 :color "grey10")
+                                       :weight bold :height 1.0))))
+ 
 
  
  '(mouse ((t (:background "OrangeRed"))))
@@ -725,8 +730,221 @@ jarring angry fruit salad look to reduce eye fatigue.")
 
 (provide-theme 'manone)
 
-;;;;###autoload
-;(when load-file-name
-;  (add-to-list 'custom-theme-load-path
-;               (file-name-as-directory (file-name-directory load-file-name))))
-;
+(setq-default mode-line-format
+	      (quote
+	       (#(" " 0 1
+		  ())
+		mode-line-modified
+		"    "
+		mode-line-buffer-identification
+		"    "
+		(line-number-mode "%l/")
+		(:eval (number-to-string (count-lines (point-min) (point-max))))
+		"    "
+		;; default-directory
+		)))
+
+
+(setq-default mode-line-buffer-identification
+              '(:eval
+                (list (propertize "%b"
+                       'face (if ;; NOPE (eq (selected-window) (get-buffer-window (current-buffer)))
+                                 (eq (current-buffer) (get-buffer "some-buffer"))
+                                 'mode-line-buffer-id
+                               'some-other-face)
+                       'help-echo "Buffer name mouse-1: Previous buffer\nmouse-3: Next buffer"
+                       'mouse-face 'mode-line-highlight
+                       'local-map mode-line-buffer-identification-keymap))))
+
+;; recenter and highlight current line
+(defvar gud-overlay
+  (let* ((ov (make-overlay (point-min) (point-min))))
+    (overlay-put ov 'face '(:background "#22aafF")) ;; colors for Leuven theme
+    ov)
+  "Overlay variable for GUD highlighting.")
+(defadvice gud-display-line (after my-gud-highlight act)
+  "Highlight current line."
+  (let* ((ov gud-overlay)
+	 (bf (gud-find-file true-file)))
+    (save-excursion
+      (with-selected-window (get-buffer-window bf)
+	(save-restriction
+	  (goto-line (ad-get-arg 1))
+	  (recenter)))
+      (set-buffer bf)
+      (move-overlay ov (line-beginning-position) (line-end-position)
+		    (current-buffer)))))
+
+
+
+
+;; Dont kill but switch buffer in the future
+;; C-x TAB after highlighting region to indent
+;; C-M-f,b,a,e,n,p etc. moves in larger chunks
+;; C-u C-SPC back to saved mark
+;; C-M-v scroll-other-window and C-M-S-v scroll-other-window-down
+;; backard / forward paragraph (M-{ / M-}
+;; C-M-a and C-M-e to move back and forward a function at a time.
+;; C-u C-s mark word under points -> C-s to find further occurences, also in other windows. After some time C-s retriggers last search
+;; Use M-h to mark (highlight) the current paragraph.
+;; Pressing C-s or C-r for a second time before entering your search string will reuse the previous search string.
+;; M-C-k und M-C-backspace to delete fwd/bwd up to brackets
+;; C-l recentres the window while keeping the point on the same line
+;; M-r moves the point without recentring the window.
+;; C-s C-w [C-w ... ] to search for a word/expression under a cursor.
+;; undo in marked region only
+;; then M-s o calls occur (buffer local) (C-u to call with line ctx) and e goes into edit mode
+;; C-M-k and M-k
+;; M-e to edit failed isearch parts
+;; M-s h r	Highlight regexp
+;; M-s h u	Undo the highlight
+;; C-x n n narrow region
+;; C-x n w widen region
+;; C-x C-j dired-jump
+;; M-x (M-p) for cached commands
+;; M-n		isearch-ring-advance
+;; M-p		isearch-ring-retreat
+;; C-M-... commands
+;; find-file then M-n for find-file-at-point, i.e. insert current file
+
+					;(run-at-time nil (* 30 60) 'recentf-save-list)
+
+
+
+;; magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
+;; magit-ediff-dwim-show-on-hunks t
+
+
+
+;; (defun my/get-positions-of-line-or-region ()
+;;   "Return positions (beg . end) of the current line or region."
+;;   (let (beg end)
+;;     (if (and mark-active (> (point) (mark)))
+;; 	(exchange-point-and-mark))
+;;     (setq beg (line-beginning-position))
+;;     (if mark-active
+;; 	(exchange-point-and-mark))
+;;     (setq end (line-end-position))
+;;     (cons beg end)))
+
+;; (defun duplicate-and-comment-current-line-or-region (arg)
+;;   "Duplicates and comments the current line or region ARG times.
+;; If there's no region, the current line will be duplicated.  However, if
+;; there's a region, all lines that region covers will be duplicated."
+;;   (interactive "p")
+;;   (pcase-let* ((origin (point))
+;; 	       (`(,beg . ,end) (my/get-positions-of-line-or-region))
+;; 	       (region (buffer-substring-no-properties beg end)))
+;;     (comment-or-uncomment-region beg end)
+;;     (setq end (line-end-position))
+;;     (dotimes (_ arg)
+;;       (goto-char end)
+;;       (unless (use-region-p)
+;; 	(newline))
+;;       (insert region)
+;;       (setq end (point)))
+;;     (goto-char (+ origin (* (length region) arg) arg))))
+
+;; (define-key map (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
+
+
+
+;; (defun duplicate-line ()
+;;   "Duplicate current line"
+;;   (interactive)
+;;   (kill-whole-line)
+;;   (yank)
+;;   (yank))
+
+;; (define-key map (kbd "C-t") 'duplicate-line)
+
+
+
+
+					;(require 'view)
+					;(global-set-key "\C-v"   'View-scroll-half-page-forward)
+					;(global-set-key "\M-v"   'View-scroll-half-page-backward)
+
+
+
+
+;; (setenv "PATH" (concat (getenv "PATH")"~/cuda-gdb"))
+;; (setq exec-path (append exec-path '("/home/ubuntu/cuda-gdb")))
+;; (setq exec-path (append exec-path '("/usr/local/cuda-11.8/bin")))
+
+
+
+					;(setq gud-gdb-comanmd-name "cuda-gdb --annotate=3")
+					;(setq gdb-use-separate-io-buffer t)
+
+
+
+;; (defvar goto-last-change-undo nil
+  ;; "The `buffer-undo-list' entry of the previous \\[goto-last-change] command.")
+;; (make-variable-buffer-local 'goto-last-change-undo)
+
+
+;; (defun goto-last-change-with-auto-marks (&optional minimal-line-distance)
+  ;; "Calls goto-last-change and sets the mark at only the first invocations
+;; in a sequence of invocations."
+  ;; (interactive "P")
+  ;; (goto-last-change (not (or (eq last-command 'goto-last-change-with-auto-marks)
+                             ;; (eq last-command t)))
+                    ;; minimal-line-distance))
+
+
+
+;; (defun goto-last-change (&optional mark-point minimal-line-distance)
+  ;; "Set point to the position of the last change.
+;; Consecutive calls set point to the position of the previous change.
+;; With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
+;; \\[exchange-point-and-mark]
+;; will return point to the current position."
+  ;; (interactive "P")
+  ;; (when (eq buffer-undo-list t)
+    ;; (error "No undo information in this buffer"))
+  ;; (when mark-point
+    ;; (push-mark))
+  ;; (unless minimal-line-distance
+    ;; (setq minimal-line-distance 10))
+  ;; (let ((position nil)
+	;; (undo-list (if (and (eq this-command last-command)
+			    ;; goto-last-change-undo)
+		       ;; (cdr (memq goto-last-change-undo buffer-undo-list))
+		     ;; buffer-undo-list))
+	;; undo)
+    ;; (while (and undo-list
+                ;; (or (not position)
+                    ;; (eql position (point))
+                    ;; (and minimal-line-distance
+                         ;; ;; The first invocation always goes to the last change, subsequent ones skip
+                         ;; ;; changes closer to (point) then minimal-line-distance.
+    ;;                      (memq last-command '(goto-last-change
+    ;;                                           goto-last-change-with-auto-marks))
+    ;;                      (< (count-lines (min position (point-max)) (point))
+    ;;                         minimal-line-distance))))
+    ;;   (setq undo (car undo-list))
+    ;;   (cond ((and (consp undo) (integerp (car undo)) (integerp (cdr undo)))
+    ;; 	     ;; (BEG . END)
+    ;; 	     (setq position (cdr undo)))
+    ;; 	    ((and (consp undo) (stringp (car undo))) ; (TEXT . POSITION)
+    ;; 	     (setq position (abs (cdr undo))))
+    ;; 	    ((and (consp undo) (eq (car undo) t))) ; (t HIGH . LOW)
+    ;; 	    ((and (consp undo) (null (car undo)))
+    ;; 	     ;; (nil PROPERTY VALUE BEG . END)
+    ;; 	     (setq position (cdr (last undo))))
+    ;; 	    ((and (consp undo) (markerp (car undo)))) ; (MARKER . DISTANCE)
+    ;; 	    ((integerp undo))		; POSITION
+    ;; 	    ((null undo))		; nil
+    ;; 	    (t (error "Invalid undo entry: %s" undo)))
+    ;;   (setq undo-list (cdr undo-list)))
+    ;; (cond (position
+    ;; 	   (setq goto-last-change-undo undo)
+    ;; 	   (goto-char (min position (point-max))))
+    ;; 	  ((and (eq this-command last-command)
+    ;; 		goto-last-change-undo)
+    ;; 	   (setq goto-last-change-undo nil)
+    ;; 	   (error "No further undo information"))
+    ;; 	  (t
+    ;; 	   (setq goto-last-change-undo nil)
+    ;; 	   (error "Buffer not modified")))))
