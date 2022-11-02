@@ -98,7 +98,7 @@ jarring angry fruit salad look to reduce eye fatigue.")
  ;'(font-lock-function-name-face ((t (:foreground "#FCE94F" :bold nil :height 1.0))))
 ;'(font-lock-function-name-face ((t (:foreground "gold4" :bold t :height 1.0))))
  
-'(font-lock-string-face        ((t (:foreground "LightCora"l))))
+'(font-lock-string-face        ((t (:foreground "LightCoral"))))
  ;'(font-lock-string-face        ((t (:foreground "gold4"))))
  '(font-lock-comment-face       ((t (:italic t :slant oblique :foreground "chocolate1"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "Salmon"))))
