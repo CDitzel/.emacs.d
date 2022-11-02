@@ -4,7 +4,7 @@
 (package-install 'magit)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
-(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(basic flex))))
+(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring))))
 
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
@@ -20,6 +20,7 @@
 (tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t)
+(global-visual-line-mode 1)
 
 (setq-default cursor-in-non-selected-windows nil
 	      inhibit-startup-screen 1
@@ -69,7 +70,7 @@
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
                '((c-mode c++-mode)
-                 . ("clangd-15"
+                 . ("clangd-14"
                     "-j=8"
                     "--log=error"
                     "--malloc-trim"
@@ -86,36 +87,34 @@
 					    ("rr" "- [ ]")
 					    ("cd" "// TODO(cditzel MB): ")))
 
+;; (defun my/get-positions-of-line-or-region ()
+;;   "Return positions (beg . end) of the current line or region."
+;;   (let (beg end)
+;;     (if (and mark-active (> (point) (mark)))
+;; 	(exchange-point-and-mark))
+;;     (setq beg (line-beginning-position))
+;;     (if mark-active
+;; 	(exchange-point-and-mark))
+;;     (setq end (line-end-position))
+;;     (cons beg end)))
 
-
-(defun my/get-positions-of-line-or-region ()
-  "Return positions (beg . end) of the current line or region."
-v  (let (beg end)
-    (if (and mark-active (> (point) (mark)))
-	(exchange-point-and-mark))
-    (setq beg (line-beginning-position))
-    (if mark-active
-	(exchange-point-and-mark))
-    (setq end (line-end-position))
-    (cons beg end)))
-
-(defun duplicate-and-comment-current-line-or-region (arg)
-  "Duplicates and comments the current line or region ARG times.
-If there's no region, the current line will be duplicated.  However, if
-there's a region, all lines that region covers will be duplicated."
-  (interactive "p")
-  (pcase-let* ((origin (point))
-	       (`(,beg . ,end) (my/get-positions-of-line-or-region))
-	       (region (buffer-substring-no-properties beg end)))
-    (comment-or-uncomment-region beg end)
-    (setq end (line-end-position))
-    (dotimes (_ arg)
-      (goto-char end)
-      (unless (use-region-p)
-	(newline))
-      (insert region)
-      (setq end (point)))
-    (goto-char (+ origin (* (length region) arg) arg))))
+;; (defun duplicate-and-comment-current-line-or-region (arg)
+;;   "Duplicates and comments the current line or region ARG times.
+;; If there's no region, the current line will be duplicated.  However, if
+;; there's a region, all lines that region covers will be duplicated."
+;;   (interactive "p")
+;;   (pcase-let* ((origin (point))
+;; 	       (`(,beg . ,end) (my/get-positions-of-line-or-region))
+;; 	       (region (buffer-substring-no-properties beg end)))
+;;     (comment-or-uncomment-region beg end)
+;;     (setq end (line-end-position))
+;;     (dotimes (_ arg)
+;;       (goto-char end)
+;;       (unless (use-region-p)
+;; 	(newline))
+;;       (insert region)
+;;       (setq end (point)))
+;;     (goto-char (+ origin (* (length region) arg) arg))))
 
 (defun system-is-lenovo ()
   (interactive)
@@ -176,12 +175,12 @@ there's a region, all lines that region covers will be duplicated."
   (forward-line -1)
   (indent-according-to-mode))
 
-(defun duplicate-line ()
-  "Duplicate current line"
-  (interactive)
-  (kill-whole-line)
-  (yank)
-  (yank))
+;; (defun duplicate-line ()
+;;   "Duplicate current line"
+;;   (interactive)
+;;   (kill-whole-line)
+;;   (yank)
+;;   (yank))
 
 					;(require 'view)
 					;(global-set-key "\C-v"   'View-scroll-half-page-forward)
@@ -202,19 +201,19 @@ there's a region, all lines that region covers will be duplicated."
     (define-key map (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
     (define-key map (kbd "C-c e") (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
     (define-key map (kbd "C-c t") (lambda () (interactive) (find-file "~/fritzNAS/test.org")))
-    ;; (define-key map (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
+    (define-key map (kbd "C-a") (lambda () (interactive) (if (= (point) (progn (back-to-indentation) (point))) (beginning-of-line))))
     (define-key map (kbd "C-1") 'tab-bar-select-tab 1)
-    (define-key map (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
-    (define-key map (kbd "C-3") (lambda () (interactive) (tab-bar-select-tab 3)))
+    (define-key map (kbd "C-2") 'tab-bar-select-tab 2)
+    (define-key map (kbd "C-3") 'tab-bar-select-tab 3)
     (define-key map (kbd "C-,") 'comment-line)
     (define-key map (kbd "C-x b") 'ibuffer)
     (define-key map (kbd "C-x k") 'kill-current-buffer)
     (define-key map (kbd "H-i") 'goto-line)
     (define-key map (kbd "M-j") 'smart-join-line)
-    (define-key map (kbd "C-t") 'duplicate-line)
+    ;; (define-key map (kbd "C-t") 'duplicate-line)
     (define-key map (kbd "C-x 2") 'tab-bar-new-tab)
     (define-key map (kbd "C-`") 'switch-to-previous-buffer)
-    (define-key map (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
+    ;; (define-key map (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
     (define-key map (kbd "C-<backspace>") (lambda () (interactive) (kill-line 0)))
     (define-key map (kbd "C-c f") 'bookmark-jump)
     (define-key map (kbd "C-x C-d") 'dired)
@@ -392,6 +391,7 @@ in a sequence of invocations."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(icomplete-compute-delay 0)
  '(package-selected-packages '(magit multiple-cursors expand-region avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
