@@ -1,6 +1,7 @@
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
+(package-install 'magit)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(basic flex))))
@@ -60,6 +61,8 @@
 	      dired-kill-when-opening-new-dired-buffer t
 	      ediff-window-setup-function 'ediff-setup-windows-plain
 	      ediff-split-window-function (quote split-window-horizontally)
+	      magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
+	      magit-ediff-dwim-show-on-hunks t
 	      )
 
 (require 'eglot)
@@ -87,7 +90,7 @@
 
 (defun my/get-positions-of-line-or-region ()
   "Return positions (beg . end) of the current line or region."
-  (let (beg end)
+v  (let (beg end)
     (if (and mark-active (> (point) (mark)))
 	(exchange-point-and-mark))
     (setq beg (line-beginning-position))
@@ -198,6 +201,7 @@ there's a region, all lines that region covers will be duplicated."
     (define-key map (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
     (define-key map (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
     (define-key map (kbd "C-c e") (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
+    (define-key map (kbd "C-c t") (lambda () (interactive) (find-file "~/fritzNAS/test.org")))
     ;; (define-key map (kbd "C-1") (lambda () (interactive) (tab-bar-select-tab 1)))
     (define-key map (kbd "C-1") 'tab-bar-select-tab 1)
     (define-key map (kbd "C-2") (lambda () (interactive) (tab-bar-select-tab 2)))
@@ -227,6 +231,7 @@ there's a region, all lines that region covers will be duplicated."
     (define-key map (kbd "C-;") 'er/contract-region)
     (define-key map (kbd "M-C-s") 'isearch-forward-thing-at-point)
     (define-key map (kbd "C-c r") 'eval-buffer)
+    (define-key map (kbd "C-c g") 'magit-status)
     map)
   "my-keys-minor-mode keymap.")
 
@@ -387,7 +392,7 @@ in a sequence of invocations."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(multiple-cursors expand-region avy)))
+ '(package-selected-packages '(magit multiple-cursors expand-region avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
