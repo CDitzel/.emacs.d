@@ -5,21 +5,6 @@
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
 
-(global-auto-revert-mode 1)
-(add-to-list'default-frame-alist '(fullscreen . maximized))
-(show-paren-mode t)
-(add-to-list 'auto-mode-alist '("\.cu$" . c++-mode))
-(fido-vertical-mode 1)
-(fringe-mode 0)
-(savehist-mode 1)
-(recentf-mode t)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(tooltip-mode -1)
-(scroll-bar-mode -1)
-(delete-selection-mode t)
-(global-visual-line-mode 1)
-
 (setq-default cursor-in-non-selected-windows nil
 	      inhibit-startup-screen 1
 	      initial-scratch-message nil
@@ -44,7 +29,7 @@
 	      tab-bar-mode t
 	      tab-bar-show nil
 	      tab-bar-new-tab-choice "*scratch*"
-	      show-paren-delay 0.001
+	      show-paren-delay 0
 	      use-short-answers t
 	      global-auto-revert-non-file-buffers t
 	      auto-revert-verbose nil
@@ -64,6 +49,21 @@
 	      gdb-many-windows t
 	      x-super-keysym 'ctrl
 	      )
+
+(global-auto-revert-mode 1)
+(add-to-list'default-frame-alist '(fullscreen . maximized))
+(show-paren-mode t)
+(add-to-list 'auto-mode-alist '("\.cu$" . c++-mode))
+(fido-vertical-mode 1)
+(fringe-mode 0)
+(savehist-mode 1)
+(recentf-mode t)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(tooltip-mode -1)
+(scroll-bar-mode -1)
+(delete-selection-mode t)
+(global-visual-line-mode 1)
 
 (require 'eglot)
 (with-eval-after-load 'eglot
@@ -178,8 +178,8 @@
     (define-key map (kbd "C-x d") 'find-name-dired)
     (define-key map (kbd "C-c C-r") 'rgrep)
     (define-key map (kbd "C-r") 'recentf)
-    (define-key map (kbd "s-n") (kbd "C-u 1 C-v"))
-    (define-key map (kbd "s-p") (kbd "C-u 1 M-v"))
+    (define-key map (kbd "M-n") (quote scroll-up-line))
+    (define-key map (kbd "M-p") (quote scroll-down-line))
     (define-key map (kbd "C-.") 'goto-last-change)
     (define-key map (kbd "C-j") 'avy-goto-char-timer)
     (define-key map (kbd "C-c C-SPC") 'mc/edit-lines)
