@@ -6,7 +6,7 @@
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
 
 (setq-default cursor-in-non-selected-windows nil
-	      inhibit-startup-screen 1
+	      inhibit-startup-screen t
 	      initial-scratch-message nil
 	      isearch-repeat-on-direction-change t
 	      isearch-lazy-count t
@@ -15,7 +15,7 @@
 	      lazy-highlight-cleanup nil
 	      lazy-highlight-buffer t
 	      mouse-yank-at-point t
-	      echo-keystrokes 0
+	      echo-keystrokes 0.1
 	      save-place-mode 1
 	      scroll-preserve-screen-position 'always
 	      help-window-select t
@@ -54,7 +54,15 @@
 (add-to-list'default-frame-alist '(fullscreen . maximized))
 (show-paren-mode t)
 (add-to-list 'auto-mode-alist '("\.cu$" . c++-mode))
+					;(fido-vertical-mode 1)
+					;(icomplete-vertical-mode 1)
+  
 (fido-vertical-mode 1)
+(setq icomplete-prospects-height 10)
+(setq max-mini-window-height 10)
+;; (setq resize-mini-windows 'grow-only)
+(setq resize-mini-windows t)
+
 (fringe-mode 0)
 (savehist-mode 1)
 (recentf-mode t)
@@ -66,10 +74,11 @@
 (global-visual-line-mode 1)
 
 (require 'eglot)
+;; additional flags?
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
                '((c-mode c++-mode)
-                 . ("clangd-14"
+                 . ("clangd-15"
                     "-j=8"
                     "--log=error"
                     "--malloc-trim"
@@ -187,6 +196,7 @@
     (define-key map (kbd "C-;") 'er/contract-region)
     (define-key map (kbd "M-C-s") 'isearch-forward-thing-at-point)
     (define-key map (kbd "C-c r") 'eval-buffer)
+    (define-key map (kbd "C-t") 'duplicate-line)
     (define-key map (kbd "C-c g") 'magit-status)
     map))
 
@@ -202,7 +212,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(rainbow-mode multiple-cursors avy expand-region)))
+ '(package-selected-packages '(smex amx rainbow-mode multiple-cursors avy expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
