@@ -54,14 +54,28 @@
 (add-to-list'default-frame-alist '(fullscreen . maximized))
 (show-paren-mode t)
 (add-to-list 'auto-mode-alist '("\.cu$" . c++-mode))
-					;(fido-vertical-mode 1)
-					;(icomplete-vertical-mode 1)
-  
-(fido-vertical-mode 1)
-(setq icomplete-prospects-height 10)
+
+(fido-vertical-mode t)
+(setq icomplete-compute-delay 0)
+
+;(setq icomplete-delay-completions-threshold 400)
+;(setq icomplete-max-delay-chars 2)
+;(setq icomplete-show-matches-on-no-input nil)
+;(setq icomplete-hide-common-prefix nil)
+;(setq icomplete-prospects-height 2)
+;(setq icomplete-in-buffer t)
+;(setq icomplete-prospects-height 2)
+;(setq truncate-lines t)
+;(setq-local completion-ignore-case t)
+;(setq-local read-file-name-completion-ignore-case t)
+;(setq-local read-buffer-completion-ignore-case t)
+
 (setq max-mini-window-height 10)
-;; (setq resize-mini-windows 'grow-only)
-(setq resize-mini-windows t)
+(setq resize-mini-windows 'grow-only)
+
+
+
+
 
 (fringe-mode 0)
 (savehist-mode 1)
@@ -181,7 +195,7 @@
     (define-key map (kbd "C-x 2") 'tab-bar-new-tab)
     (define-key map (kbd "C-`") 'switch-to-previous-buffer)
     (define-key map (kbd "C-<backspace>") (lambda () (interactive) (kill-line 0)))
-    (define-key map (kbd "C-c f") 'bookmark-jump)
+    (define-key map (kbd "C-c C-f") 'bookmark-jump)
     (define-key map (kbd "C-x C-d") 'dired)
     (define-key map (kbd "C-c C-n") 'switch-to-buffer)
     (define-key map (kbd "C-x d") 'find-name-dired)
