@@ -1,6 +1,8 @@
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
+(package-install 'bind-key)
+(package-install 'magit)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
@@ -48,35 +50,20 @@
 	      gud-gdb-command-name "gdb --i=mi "
 	      gdb-many-windows t
 	      x-super-keysym 'ctrl
+	      icomplete-compute-delay -1
+	      max-mini-window-height 10
+	      resize-mini-windows 'grow-only
+	      isearch-wrap-pause 'no
+	      magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
 	      )
 
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
 (show-paren-mode t)
-(add-to-list 'auto-mode-alist '("\.cu$" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
 
 (fido-vertical-mode t)
-(setq icomplete-compute-delay 0)
-
-;(setq icomplete-delay-completions-threshold 400)
-;(setq icomplete-max-delay-chars 2)
-;(setq icomplete-show-matches-on-no-input nil)
-;(setq icomplete-hide-common-prefix nil)
-;(setq icomplete-prospects-height 2)
-;(setq icomplete-in-buffer t)
-;(setq icomplete-prospects-height 2)
-;(setq truncate-lines t)
-;(setq-local completion-ignore-case t)
-;(setq-local read-file-name-completion-ignore-case t)
-;(setq-local read-buffer-completion-ignore-case t)
-
-(setq max-mini-window-height 10)
-(setq resize-mini-windows 'grow-only)
-
-
-
-
-
 (fringe-mode 0)
 (savehist-mode 1)
 (recentf-mode t)
@@ -87,8 +74,9 @@
 (delete-selection-mode t)
 (global-visual-line-mode 1)
 
+(require 'view)
 (require 'eglot)
-;; additional flags?
+
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
                '((c-mode c++-mode)
@@ -172,53 +160,47 @@
 
 (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
 (global-unset-key (kbd "C-x C-z"))
-(define-key isearch-mode-map (kbd "C-j") 'isearch-forward-thing-at-point)
 
-(defvar my-keys-minor-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "<C-return>") 'open-line-below)
-    (define-key map (kbd "<S-return>") 'open-line-above)
-    (define-key map (kbd "C-o") 'other-window)
-    (define-key map (kbd "C-x 3") (lambda () (interactive)(split-window-horizontally) (other-window 1)))
-    (define-key map (kbd "C-c w") (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
-    (define-key map (kbd "C-c d") (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
-    (define-key map (kbd "C-c e") (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
-    (define-key map (kbd "C-a") (lambda () (interactive) (if (= (point) (progn (back-to-indentation) (point))) (beginning-of-line))))
-    (define-key map (kbd "C-1") 'tab-bar-select-tab 1)
-    (define-key map (kbd "C-2") 'tab-bar-select-tab 2)
-    (define-key map (kbd "C-3") 'tab-bar-select-tab 3)
-    (define-key map (kbd "C-,") 'comment-line)
-    (define-key map (kbd "C-x b") 'ibuffer)
-    (define-key map (kbd "C-x k") 'kill-current-buffer)
-    (define-key map (kbd "H-i") 'goto-line)
-    (define-key map (kbd "M-j") 'smart-join-line)
-    (define-key map (kbd "C-x 2") 'tab-bar-new-tab)
-    (define-key map (kbd "C-`") 'switch-to-previous-buffer)
-    (define-key map (kbd "C-<backspace>") (lambda () (interactive) (kill-line 0)))
-    (define-key map (kbd "C-c C-f") 'bookmark-jump)
-    (define-key map (kbd "C-x C-d") 'dired)
-    (define-key map (kbd "C-c C-n") 'switch-to-buffer)
-    (define-key map (kbd "C-x d") 'find-name-dired)
-    (define-key map (kbd "C-c C-r") 'rgrep)
-    (define-key map (kbd "C-r") 'recentf)
-    (define-key map (kbd "M-n") (quote scroll-up-line))
-    (define-key map (kbd "M-p") (quote scroll-down-line))
-    (define-key map (kbd "C-.") 'goto-last-change)
-    (define-key map (kbd "C-j") 'avy-goto-char-timer)
-    (define-key map (kbd "C-c C-SPC") 'mc/edit-lines)
-    (define-key map (kbd "C-'") 'er/expand-region)
-    (define-key map (kbd "C-;") 'er/contract-region)
-    (define-key map (kbd "M-C-s") 'isearch-forward-thing-at-point)
-    (define-key map (kbd "C-c r") 'eval-buffer)
-    (define-key map (kbd "C-t") 'duplicate-line)
-    (define-key map (kbd "C-c g") 'magit-status)
-    map))
-
-(define-minor-mode my-keys-minor-mode
-  "A minor mode so that my key settings override annoying major modes."
-  :init-value t
-  :lighter " my-keys")
-
+(bind-keys*
+ ("C-h C-s" . isearch-forward-symbol-at-point)
+ ("C-o" . other-window)
+ ("<C-return>" . open-line-below)
+ ("<S-return>". open-line-above)
+ ("C-x 3" .  (lambda () (interactive)(split-window-horizontally) (other-window 1)))
+ ("C-c w" . (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
+ ("C-c d" . (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
+ ("C-c e" . (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
+ ("C-a" . (lambda () (interactive) (if (= (point) (progn (back-to-indentation) (point))) (beginning-of-line))))
+ ("C-1" . (lambda () tab-bar-select-tab 1))
+ ("C-2" . (lambda () tab-bar-select-tab 2))
+ ("C-3" . (lambda () tab-bar-select-tab 3))
+ ("C-," . comment-line)
+ ("C-x b". ibuffer)
+ ("C-x k". kill-current-buffer)
+ ("H-i" . goto-line)
+ ("M-j" . smart-join-line)
+ ("C-x 2" . tab-bar-new-tab)
+ ("C-`" . switch-to-previous-buffer)
+ ("C-<backspace>" . (lambda () (interactive) (kill-line 0)))
+ ("C-c C-f" . bookmark-jump)
+ ("C-x C-d" . dired)
+ ("C-c C-n" . switch-to-buffer)
+ ("C-x d" . find-name-dired)
+ ("C-c C-r" . rgrep)
+ ("C-r" . recentf)
+ ("M-n" . scroll-up-line)
+ ("M-p" . scroll-down-line)
+ ("C-." . goto-last-change)
+ ("C-j" . avy-goto-char-timer)
+ ("C-c C-SPC" . mc/edit-lines)
+ ("C-'" . er/expand-region)
+ ("C-;" . er/contract-region)
+ ("C-c r" . eval-buffer)
+ ("C-t" . duplicate-line)
+ ("C-c g" . magit-status)
+ ("C-v" . View-scroll-half-page-forward)
+ ("M-v" . View-scroll-half-page-backward)
+ )
 
 
 (custom-set-variables
@@ -226,7 +208,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(smex amx rainbow-mode multiple-cursors avy expand-region)))
+ '(package-selected-packages '(magit multiple-cursors expand-region bind-key avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

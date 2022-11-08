@@ -849,102 +849,73 @@ jarring angry fruit salad look to reduce eye fatigue.")
 
 
 
-;; (defun duplicate-line ()
-;;   "Duplicate current line"
-;;   (interactive)
-;;   (kill-whole-line)
-;;   (yank)
-;;   (yank))
 
-;; (define-key map (kbd "C-t") 'duplicate-line)
+(defvar goto-last-change-undo nil
+  "The `buffer-undo-list' entry of the previous \\[goto-last-change] command.")
+(make-variable-buffer-local 'goto-last-change-undo)
 
 
-
-
-					;(require 'view)
-					;(global-set-key "\C-v"   'View-scroll-half-page-forward)
-					;(global-set-key "\M-v"   'View-scroll-half-page-backward)
+(defun goto-last-change-with-auto-marks (&optional minimal-line-distance)
+  "Calls goto-last-change and sets the mark at only the first invocations
+in a sequence of invocations."
+  (interactive "P")
+  (goto-last-change (not (or (eq last-command 'goto-last-change-with-auto-marks)
+                             (eq last-command t)))
+                    minimal-line-distance))
 
 
 
-
-;; (setenv "PATH" (concat (getenv "PATH")"~/cuda-gdb"))
-;; (setq exec-path (append exec-path '("/home/ubuntu/cuda-gdb")))
-;; (setq exec-path (append exec-path '("/usr/local/cuda-11.8/bin")))
-
-
-
-					;(setq gud-gdb-comanmd-name "cuda-gdb --annotate=3")
-					;(setq gdb-use-separate-io-buffer t)
-
-
-
-;; (defvar goto-last-change-undo nil
-  ;; "The `buffer-undo-list' entry of the previous \\[goto-last-change] command.")
-;; (make-variable-buffer-local 'goto-last-change-undo)
-
-
-;; (defun goto-last-change-with-auto-marks (&optional minimal-line-distance)
-  ;; "Calls goto-last-change and sets the mark at only the first invocations
-;; in a sequence of invocations."
-  ;; (interactive "P")
-  ;; (goto-last-change (not (or (eq last-command 'goto-last-change-with-auto-marks)
-                             ;; (eq last-command t)))
-                    ;; minimal-line-distance))
-
-
-
-;; (defun goto-last-change (&optional mark-point minimal-line-distance)
-  ;; "Set point to the position of the last change.
-;; Consecutive calls set point to the position of the previous change.
-;; With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
-;; \\[exchange-point-and-mark]
-;; will return point to the current position."
-  ;; (interactive "P")
-  ;; (when (eq buffer-undo-list t)
-    ;; (error "No undo information in this buffer"))
-  ;; (when mark-point
-    ;; (push-mark))
-  ;; (unless minimal-line-distance
-    ;; (setq minimal-line-distance 10))
-  ;; (let ((position nil)
-	;; (undo-list (if (and (eq this-command last-command)
-			    ;; goto-last-change-undo)
-		       ;; (cdr (memq goto-last-change-undo buffer-undo-list))
-		     ;; buffer-undo-list))
-	;; undo)
-    ;; (while (and undo-list
-                ;; (or (not position)
-                    ;; (eql position (point))
-                    ;; (and minimal-line-distance
-                         ;; ;; The first invocation always goes to the last change, subsequent ones skip
-                         ;; ;; changes closer to (point) then minimal-line-distance.
-    ;;                      (memq last-command '(goto-last-change
-    ;;                                           goto-last-change-with-auto-marks))
-    ;;                      (< (count-lines (min position (point-max)) (point))
-    ;;                         minimal-line-distance))))
-    ;;   (setq undo (car undo-list))
-    ;;   (cond ((and (consp undo) (integerp (car undo)) (integerp (cdr undo)))
-    ;; 	     ;; (BEG . END)
-    ;; 	     (setq position (cdr undo)))
-    ;; 	    ((and (consp undo) (stringp (car undo))) ; (TEXT . POSITION)
-    ;; 	     (setq position (abs (cdr undo))))
-    ;; 	    ((and (consp undo) (eq (car undo) t))) ; (t HIGH . LOW)
-    ;; 	    ((and (consp undo) (null (car undo)))
-    ;; 	     ;; (nil PROPERTY VALUE BEG . END)
-    ;; 	     (setq position (cdr (last undo))))
-    ;; 	    ((and (consp undo) (markerp (car undo)))) ; (MARKER . DISTANCE)
-    ;; 	    ((integerp undo))		; POSITION
-    ;; 	    ((null undo))		; nil
-    ;; 	    (t (error "Invalid undo entry: %s" undo)))
-    ;;   (setq undo-list (cdr undo-list)))
-    ;; (cond (position
-    ;; 	   (setq goto-last-change-undo undo)
-    ;; 	   (goto-char (min position (point-max))))
-    ;; 	  ((and (eq this-command last-command)
-    ;; 		goto-last-change-undo)
-    ;; 	   (setq goto-last-change-undo nil)
-    ;; 	   (error "No further undo information"))
-    ;; 	  (t
-    ;; 	   (setq goto-last-change-undo nil)
-    ;; 	   (error "Buffer not modified")))))
+(defun goto-last-change (&optional mark-point minimal-line-distance)
+  "Set point to the position of the last change.
+Consecutive calls set point to the position of the previous change.
+With a prefix arg (optional arg MARK-POINT non-nil), set mark so \
+\\[exchange-point-and-mark]
+will return point to the current position."
+  (interactive "P")
+  (when (eq buffer-undo-list t)
+    (error "No undo information in this buffer"))
+  (when mark-point
+    (push-mark))
+  (unless minimal-line-distance
+    (setq minimal-line-distance 10))
+  (let ((position nil)
+	(undo-list (if (and (eq this-command last-command)
+			    goto-last-change-undo)
+		       (cdr (memq goto-last-change-undo buffer-undo-list))
+		     buffer-undo-list))
+	undo)
+    (while (and undo-list
+                (or (not position)
+                    (eql position (point))
+                    (and minimal-line-distance
+                         ;; The first invocation always goes to the last change, subsequent ones skip
+                         ;; changes closer to (point) then minimal-line-distance.
+                         (memq last-command '(goto-last-change
+                                              goto-last-change-with-auto-marks))
+                         (< (count-lines (min position (point-max)) (point))
+                            minimal-line-distance))))
+      (setq undo (car undo-list))
+      (cond ((and (consp undo) (integerp (car undo)) (integerp (cdr undo)))
+	     ;; (BEG . END)
+	     (setq position (cdr undo)))
+	    ((and (consp undo) (stringp (car undo))) ; (TEXT . POSITION)
+	     (setq position (abs (cdr undo))))
+	    ((and (consp undo) (eq (car undo) t))) ; (t HIGH . LOW)
+	    ((and (consp undo) (null (car undo)))
+	     ;; (nil PROPERTY VALUE BEG . END)
+	     (setq position (cdr (last undo))))
+	    ((and (consp undo) (markerp (car undo)))) ; (MARKER . DISTANCE)
+	    ((integerp undo))		; POSITION
+	    ((null undo))		; nil
+	    (t (error "Invalid undo entry: %s" undo)))
+      (setq undo-list (cdr undo-list)))
+    (cond (position
+	   (setq goto-last-change-undo undo)
+	   (goto-char (min position (point-max))))
+	  ((and (eq this-command last-command)
+		goto-last-change-undo)
+	   (setq goto-last-change-undo nil)
+	   (error "No further undo information"))
+	  (t
+	   (setq goto-last-change-undo nil)
+	   (error "Buffer not modified")))))

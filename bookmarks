@@ -1,8 +1,20 @@
-;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("ndas"
+(("RadarDetectionPreprocessor.cpp"
+ (filename . "~/git-ndas/ndas/src/dwdriveav/dw/perception/object/radar/trackerearlyfusion/RadarDetectionPreprocessor.cpp")
+ (front-context-string . "    else if ((cu")
+ (rear-context-string . "ongRange;\n    }\n")
+ (position . 13546)
+ (last-modified 25450 31793 390121 391000))
+("dwRadarTrackerNodeImpl.cpp"
+ (filename . "~/git-ndas/ndas/src/dwframework/avnodes/perception/dwradartrackernode/impl/dwRadarTrackerNodeImpl.cpp")
+ (front-context-string . "\n    for (uint32")
+ (rear-context-string . "racker paramters")
+ (position . 9132)
+ (last-modified 25450 31710 72769 757000))
+("ndas"
  (filename . "~/git-ndas/ndas/")
  (front-context-string . "3rdparty/\n  drwx")
  (rear-context-string . "0K Oct  4 12:55 ")
