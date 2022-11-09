@@ -776,8 +776,8 @@ jarring angry fruit salad look to reduce eye fatigue.")
 		    (current-buffer)))))
 
 
-
-
+;; C-y M-y paste and cycle
+;; C-x C-o delete all blank lines below
 ;; Dont kill but switch buffer in the future
 ;; C-x TAB after highlighting region to indent
 ;; C-M-f,b,a,e,n,p etc. moves in larger chunks

@@ -39,6 +39,7 @@
 	      window-combination-resize t
 	      completion-auto-help nil
 	      recentf-max-saved-items nil
+	      auto-fill-function 'do-auto-fill
 	      recentf-max-menu-items 25
 	      dired-recursive-copies 'always
 	      dired-recursive-deletes 'always
@@ -98,18 +99,11 @@
 					    ("rr" "- [ ]")
 					    ("cd" "// TODO(cditzel MB): ")))
 
-
 (defun system-is-lenovo ()
   (interactive)
   (string-equal (system-name) "lenovo"))
 (if (system-is-lenovo)
-    (set-face-attribute 'default nil :height 200)
-  )
-
-(defun switch-to-previous-buffer ()
-  "Switch to most recent buffer"
-  (interactive)
-  (switch-to-buffer (other-buffer (current-buffer) 1)))
+    (set-face-attribute 'default nil :height 200))
 
 (defadvice kill-region (before slick-cut activate compile)
   "When called interactively with no active region, kill a single line instead."
@@ -126,46 +120,15 @@
      (message "Copied line")
      (list (line-beginning-position) (line-beginning-position 2)))))
 
-(defun top-join-line ()
-  (interactive)
-  (delete-indentation 1))
-
-(defun join-region (beg end)
-  (interactive "r")
-  (if mark-active
-      (let ((beg (region-beginning))
-	    (end (copy-marker (region-end))))
-	(goto-char beg)
-	(while (< (point) end)
-	  (join-line 1)))))
-
-(defun smart-join-line (beg end)
-  (interactive "r")
-  (if mark-active
-      (join-region beg end)
-    (top-join-line)))
-
-(defun open-line-below ()
-  (interactive)
-  (move-end-of-line nil)
-  (newline-and-indent))
-
-(defun open-line-above ()
-  (interactive)
-  (move-beginning-of-line nil)
-  (newline-and-indent)
-  (forward-line -1)
-  (indent-according-to-mode))
-
-
 (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
 (global-unset-key (kbd "C-x C-z"))
+
 
 (bind-keys*
  ("C-h C-s" . isearch-forward-symbol-at-point)
  ("C-o" . other-window)
- ("<C-return>" . open-line-below)
- ("<S-return>". open-line-above)
+ ("<C-return>" . (lambda () (interactive)(move-end-of-line nil) (newline-and-indent)))
+ ("<S-return>". (lambda () (interactive)(beginning-of-line nil)(newline-and-indent)(forward-line -1) (indent-according-to-mode)))
  ("C-x 3" .  (lambda () (interactive)(split-window-horizontally) (other-window 1)))
  ("C-c w" . (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
  ("C-c d" . (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
@@ -178,9 +141,9 @@
  ("C-x b". ibuffer)
  ("C-x k". kill-current-buffer)
  ("H-i" . goto-line)
- ("M-j" . smart-join-line)
+ ("M-j" . (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
  ("C-x 2" . tab-bar-new-tab)
- ("C-`" . switch-to-previous-buffer)
+ ("C-`" . (lambda () (interactive) (switch-to-buffer (other-buffer (current-buffer) 1))))
  ("C-<backspace>" . (lambda () (interactive) (kill-line 0)))
  ("C-c C-f" . bookmark-jump)
  ("C-x C-d" . dired)
@@ -199,7 +162,8 @@
  ("C-t" . duplicate-line)
  ("C-c g" . magit-status)
  ("C-v" . View-scroll-half-page-forward)
- ("M-v" . View-scroll-half-page-backward)
+ ("M-v" . View-scroll-half-page-backwar)
+ ("C-c g" . magit-status)
  )
 
 
