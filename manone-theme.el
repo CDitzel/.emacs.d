@@ -730,31 +730,6 @@ jarring angry fruit salad look to reduce eye fatigue.")
 
 (provide-theme 'manone)
 
-(setq-default mode-line-format
-	      (quote
-	       (#(" " 0 1
-		  ())
-		mode-line-modified
-		"    "
-		mode-line-buffer-identification
-		"    "
-		(line-number-mode "%l/")
-		(:eval (number-to-string (count-lines (point-min) (point-max))))
-		"    "
-		;; default-directory
-		)))
-
-
-(setq-default mode-line-buffer-identification
-              '(:eval
-                (list (propertize "%b"
-                       'face (if ;; NOPE (eq (selected-window) (get-buffer-window (current-buffer)))
-                                 (eq (current-buffer) (get-buffer "some-buffer"))
-                                 'mode-line-buffer-id
-                               'some-other-face)
-                       'help-echo "Buffer name mouse-1: Previous buffer\nmouse-3: Next buffer"
-                       'mouse-face 'mode-line-highlight
-                       'local-map mode-line-buffer-identification-keymap))))
 
 ;; recenter and highlight current line
 (defvar gud-overlay
@@ -846,6 +821,36 @@ jarring angry fruit salad look to reduce eye fatigue.")
 ;;     (goto-char (+ origin (* (length region) arg) arg))))
 
 ;; (define-key map (kbd "M-t") 'duplicate-and-comment-current-line-or-region)
+
+
+
+
+(setq-default mode-line-format
+	      (quote
+	       (#(" " 0 1
+		  ())
+		mode-line-modified
+		"    "
+		mode-line-buffer-identification
+		"    "
+		(line-number-mode "%l/")
+		(:eval (number-to-string (count-lines (point-min) (point-max))))
+		"    "
+		;; default-directory
+		)))
+
+
+(setq-default mode-line-buffer-identification
+              '(:eval
+                (list (propertize "%b"
+                       'face (if ;; NOPE (eq (selected-window) (get-buffer-window (current-buffer)))
+                                 (eq (current-buffer) (get-buffer "some-buffer"))
+                                 'mode-line-buffer-id
+										;'some-other-face)
+							   )
+                       'help-echo "Buffer name mouse-1: Previous buffer\nmouse-3: Next buffer"
+                       'mouse-face 'mode-line-highlight
+                       'local-map mode-line-buffer-identification-keymap))))
 
 
 

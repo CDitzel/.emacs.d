@@ -1,11 +1,22 @@
+(require 'package)
+;; Any add to list for package-archives (to add marmalade or melpa) goes here
+(add-to-list 'package-archives 
+    '("MELPA" .
+      "http://melpa.org/packages/"))
+(package-initialize)
+
+
+
+
+
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
 (package-install 'bind-key)
 (package-install 'magit)
+(package-install 'rg)
 
-(desktop-read "~/.emacs")
-
+;(desktop-read "~/.emacs")
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
@@ -69,15 +80,11 @@
 			  )
 
 (desktop-save-mode 1)
-(subword-mode 1)
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
 (show-paren-mode t)
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
-
-;; minibuffer should show errors
-;; go to next clang error functinality
 
 (fido-vertical-mode t)
 (fringe-mode 0)
@@ -88,17 +95,21 @@
 (tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t)
-(subword-mode t)
 (global-visual-line-mode 1)
+(global-subword-mode 1)
 
 (require 'view)
 (require 'eglot)
+;(require 'rg)
+;(rg-enable-menu)
+  
+(rg-define-search rg-search-all :files "all"); :dir project)
 
- (with-eval-after-load 'eglot
-   (add-to-list 'eglot-server-programs
-                '((c-mode c++-mode cuda-mode)
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((c-mode c++-mode)
                  . ("clangd-15"
-                    "-j=8"
+                    "-j=16"
                     "--log=error"
                     "--malloc-trim"
                     "--background-index"
@@ -108,19 +119,26 @@
                     "--pch-storage=memory"
                     "--header-insertion=never"
                     "--header-insertion-decorators=0"))))
+(add-hook 'c-mode-hook 'eglot-ensure)
+(add-hook 'c++-mode-hook 'eglot-ensure)
+
 
 
 (define-abbrev-table 'global-abbrev-table '(
-											("ex" " exit(1);")
-											("os" " std::cout << << std::endl;")
+											("pr" "printf(\"%d\\n\", @@);")
+											("ex" "exit(1);")
+											("os" "std::cout << @@ << \"\\n\";")
 											("rr" "- [ ]")
 											("cd" "// TODO(cditzel MB):")))
 
-(defun system-is-lenovo ()
-  (interactive)
-  (string-equal (system-name) "lenovo"))
-(if (system-is-lenovo)
-    (set-face-attribute 'default nil :height 200))
+ (defadvice expand-abbrev (after my-expand-abbrev activate)
+   (if ad-return-value
+       (run-with-idle-timer 0 nil
+                            (lambda ()
+                              (let ((cursor "@@"))
+                                (if (search-backward cursor last-abbrev-location t)
+                                    (delete-char (length cursor))))))))
+
 
 (defadvice kill-region (before slick-cut activate compile)
   "When called interactively with no active region, kill a single line instead."
@@ -150,14 +168,7 @@
     ))
 (setq-default ff-other-file-alist 'my-cpp-other-file-alist)
 
-(add-hook 'eglot-managed-mode-hook
-          (lambda ()
-            ;; Show flymake diagnostics first.
-            (setq eldoc-documentation-functions
-                  (cons #'flymake-eldoc-function
-                        (remove #'flymake-eldoc-function eldoc-documentation-functions)))
-            ;; Show all eldoc feedback.
-            (setq eldoc-documentation-strategy #'eldoc-documentation-compose)))
+(define-key isearch-mode-map (kbd "C-j") 'isearch-forward-thing-at-point)
 
 (bind-keys*
  ("C-h C-s" . isearch-forward-symbol-at-point)
@@ -185,7 +196,7 @@
  ("C-x C-d" . dired)
  ("C-c C-n" . switch-to-buffer)
  ("C-x d" . find-name-dired)
- ("C-c C-r" . rgrep)
+ ("C-c C-r" . rg-search-all)
  ("C-r" . recentf)
  ("M-n" . scroll-up-line)
  ("M-p" . scroll-down-line)
@@ -201,15 +212,20 @@
  ("M-v" . View-scroll-half-page-backward)
  ("C-c g" . magit-status)
  )
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(ccls magit bind-key multiple-cursors avy expand-region)))
+ '(package-selected-packages '(rg magit bind-key multiple-cursors avy expand-region))
+ '(xref-after-jump-hook '(recenter))
+ '(xref-after-return-hook nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(eglot-highlight-symbol-face ((t nil)))
+ '(eglot-mode-line ((t nil))))
