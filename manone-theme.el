@@ -1,70 +1,3 @@
-;;; manoj-dark.el --- A dark theme from Manoj
-
-;; Copyright (C) 2011-2019 Free Software Foundation, Inc.
-
-;; Author: Manoj Srivastava <srivasta@ieee.org>
-;; Keywords: lisp, faces
-
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-;;; Commentary:
-
-;; I spend a lot of time working in front of a screen (many hours in a
-;; dimly lit room) and eye fatigue is an issue. This is a dark color
-;; theme for emacs, which is easier on the eyes than light themes.
-
-;; It does not help that I am blue-green color blind, so subtle
-;; variations are often lost on me. I do want to use color contrast to
-;; increase productivity, but I also want to avoid the jarring angry
-;; fruit salad look, and so I am in the process of crafting a logical
-;; color scheme that is high contrast enough for me, without being too
-;; unpleasing.
-
-;; In circumstances where there a lot of related faces that can be
-;; viewed, for example, the Gnus group buffer, consistent and logical
-;; color choices are the only sane option. Gnus groups can be newa
-;; (blueish) or mail (greenish), have states (large number of under
-;; messages, normal, and empty). The large number unread groups have
-;; highest luminance (appear brighter), and the empty one have lower
-;; luminance (appear grayer), but have the same chroma and saturation.
-;; Sub states and group priorities are rendered using a color series
-;; which has constant luminance and saturation, and vary in hue by a
-;; constant separation -- so all the related groups have the same
-;; brightness ({mail,news}/{unread,normal,empty}), and a graded
-;; selection of foreground colors.  It sounds more complicated that it
-;; looks. The eye is drawn naturally to the unread groups, and first
-;; to the mail, then USENET groups (which is my preference).
-
-;; Similar color variations occur for individual messages in a group;
-;; high scoring messages bubble to the top, and have a higher
-;; luminance.  This color schema has made me slightly faster at
-;; reading mail/USENET.
-
-;; In the message itself, quoted mail messages from different people
-;; are color coordinated, with high contrast between citations that are
-;; close to each other in the hierarchy, so it is less likely that one
-;; misunderstands who said what in a long conversation.
-
-;; The following scheme covers programming languages, Gnus, Erc, mail,
-;; org-mode, CUA-mode, apt-utils, bbdb, compilation buffers, changelog
-;; mode, diff and ediff, eshell, and more. You need emacs-goodies
-;; package on Debian to use this.  See the wiki page at
-;; http://www.emacswiki.org/cgi-bin/wiki?ColorTheme for details. The
-;; project home page is at https://gna.org/projects/color-theme.
-
-;;; Code:
-
 (deftheme manone
   "Very high contrast faces with a black background.
 This theme avoids subtle color variations, while avoiding the
@@ -734,7 +667,7 @@ jarring angry fruit salad look to reduce eye fatigue.")
 ;; recenter and highlight current line
 (defvar gud-overlay
   (let* ((ov (make-overlay (point-min) (point-min))))
-    (overlay-put ov 'face '(:background "#22aafF")) ;; colors for Leuven theme
+    (overlay-put ov 'face '(:background "white")) ;; colors for Leuven theme
     ov)
   "Overlay variable for GUD highlighting.")
 (defadvice gud-display-line (after my-gud-highlight act)
@@ -750,7 +683,11 @@ jarring angry fruit salad look to reduce eye fatigue.")
       (move-overlay ov (line-beginning-position) (line-end-position)
 		    (current-buffer)))))
 
-
+;; https://ftp.gnu.org/old-gnu/Manuals/emacs-20.7/html_chapter/emacs_13.html
+;; M-k Kill to end of sentence (kill-sentence).
+;; Kill word backwards (backward-kill-word).
+;; C-x DEL
+;; Kill back to beginning of sentence (backward-kill-sentence).
 ;; C-y M-y paste and cycle
 ;; C-x C-o delete all blank lines below
 ;; Dont kill but switch buffer in the future
@@ -780,6 +717,8 @@ jarring angry fruit salad look to reduce eye fatigue.")
 ;; M-n		isearch-ring-advance
 ;; M-p		isearch-ring-retreat
 ;; C-M-... commands
+;; C-M-h mark function
+;; C-M-@ mark words
 ;; find-file then M-n for find-file-at-point, i.e. insert current file
 
 					;(run-at-time nil (* 30 60) 'recentf-save-list)

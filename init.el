@@ -1,14 +1,9 @@
 (require 'package)
-;; Any add to list for package-archives (to add marmalade or melpa) goes here
 (add-to-list 'package-archives 
     '("MELPA" .
       "http://melpa.org/packages/"))
 (package-initialize)
-
-
-
-
-
+										;
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
@@ -16,12 +11,12 @@
 (package-install 'magit)
 (package-install 'rg)
 
-;(desktop-read "~/.emacs")
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
+;(add-hook 'text-mode-hook 'turn-on-auto-fill)
 ;(byte-compile-file (expand-file-name "~/.emacs.d/cuda-mode.el") 'load)
-;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
+                                        ;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
+
 
 (setq-default cursor-in-non-selected-windows nil
 			  inhibit-startup-screen t
@@ -74,12 +69,18 @@
 			  tab-width 4
 			  tab-always-indent t
 			  ff-always-try-to-create nil
-              ff-ignore-include t	
+                          ff-ignore-include t	
 			  ff-quiet-mode t
-			  eldoc-echo-area-use-multiline-p 1
+			  eldoc-echo-area-use-multiline-p nil
 			  )
 
-(desktop-save-mode 1)
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 8)
+(setq indent-line-function 'insert-tab)
+(setq c-default-style "linux") 
+(setq c-basic-offset 4) 
+(c-set-offset 'comment-intro 0)
+
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
 (show-paren-mode t)
@@ -95,15 +96,20 @@
 (tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t)
-(global-visual-line-mode 1)
+(global-visual-line-mode 0)
 (global-subword-mode 1)
 
 (require 'view)
 (require 'eglot)
-;(require 'rg)
-;(rg-enable-menu)
+(setq eglot-ignored-server-capabilites '(:documentHighlightProvider))
+
+(require 'rg)
   
-(rg-define-search rg-search-all :files "all"); :dir project)
+(rg-define-search rg-everything
+  "Search everything."
+  :files "everything"
+  :confirm prefix
+  :menu ("Search" "e" "Everything"))
 
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
@@ -122,14 +128,13 @@
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
-
-
 (define-abbrev-table 'global-abbrev-table '(
-											("pr" "printf(\"%d\\n\", @@);")
-											("ex" "exit(1);")
-											("os" "std::cout << @@ << \"\\n\";")
-											("rr" "- [ ]")
-											("cd" "// TODO(cditzel MB):")))
+					    ("pr" "printf(\"%d\\n\", @@);")
+					    ("ex" "exit(1);")
+					    ("os" "std::cout << @@ << \"\\n\";")
+					    ("rr" "- [ ]")
+					    ("fr" "for(int i = 0; i < @@; ++i){}")
+					    ("cd" "// TODO(cditzel MB):")))
 
  (defadvice expand-abbrev (after my-expand-abbrev activate)
    (if ad-return-value
@@ -168,10 +173,7 @@
     ))
 (setq-default ff-other-file-alist 'my-cpp-other-file-alist)
 
-(define-key isearch-mode-map (kbd "C-j") 'isearch-forward-thing-at-point)
-
 (bind-keys*
- ("C-h C-s" . isearch-forward-symbol-at-point)
  ("C-o" . other-window)
  ("<C-return>" . (lambda () (interactive)(move-end-of-line nil) (newline-and-indent)))
  ("<S-return>". (lambda () (interactive)(beginning-of-line nil)(newline-and-indent)(forward-line -1) (indent-according-to-mode)))
@@ -183,20 +185,21 @@
  ("C-1" . (lambda () (interactive)(tab-bar-select-tab 1)))
  ("C-2" . (lambda () (interactive)(tab-bar-select-tab 2)))
  ("C-3" . (lambda () (interactive)(tab-bar-select-tab 3)))
+ ("C-4" . (lambda () (interactive)(tab-bar-select-tab 4)))
  ("C-," . comment-line)
  ("C-x b". ibuffer)
  ("C-x k". kill-current-buffer)
  ("H-i" . goto-line)
  ("M-j" . (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
  ("C-x 2" . tab-bar-new-tab)
- ;; ("C-`" . (lambda () (interactive) (switch-to-buffer (other-buffer (current-buffer) 1))))
- ("C-`" . ff-find-other-file)
- ("C-<backspace>" . (lambda () (interactive) (kill-line 0)))
+ ("C-`" . ff-find-related-file)
+ ;("C-<backspace>" . (lambda () (interactive) (kill-line 0)))
+ ("C-u" . (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
  ("C-c f" . bookmark-jump)
  ("C-x C-d" . dired)
  ("C-c C-n" . switch-to-buffer)
  ("C-x d" . find-name-dired)
- ("C-c C-r" . rg-search-all)
+ ("C-c C-r" . rg-everything)
  ("C-r" . recentf)
  ("M-n" . scroll-up-line)
  ("M-p" . scroll-down-line)
@@ -212,14 +215,18 @@
  ("M-v" . View-scroll-half-page-backward)
  ("C-c g" . magit-status)
  )
-
-
+        
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(rg magit bind-key multiple-cursors avy expand-region))
+ '(custom-safe-themes
+   '("b6c3d87ff5f2b31a9e34955af2b87dc5bdac90a743f31ce5c424c0891e731720" default))
+ '(eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
+ '(mc/always-repeat-command t)
+ '(package-selected-packages
+   '(tree-sitter tree-sitter-langs rg magit bind-key multiple-cursors avy expand-region))
  '(xref-after-jump-hook '(recenter))
  '(xref-after-return-hook nil))
 (custom-set-faces
@@ -229,3 +236,14 @@
  ;; If there is more than one, they won't work right.
  '(eglot-highlight-symbol-face ((t nil)))
  '(eglot-mode-line ((t nil))))
+
+
+(split-window-right)
+(tab-bar-new-tab)
+(split-window-right)
+(tab-bar-new-tab)
+(split-window-right)
+(tab-bar-new-tab)
+(split-window-right)
+(tab-bar-select-tab 1)
+
