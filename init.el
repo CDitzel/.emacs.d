@@ -136,13 +136,13 @@
 					    ("fr" "for(int i = 0; i < @@; ++i){}")
 					    ("cd" "// TODO(cditzel MB):")))
 
- (defadvice expand-abbrev (after my-expand-abbrev activate)
-   (if ad-return-value
-       (run-with-idle-timer 0 nil
-                            (lambda ()
-                              (let ((cursor "@@"))
-                                (if (search-backward cursor last-abbrev-location t)
-                                    (delete-char (length cursor))))))))
+(defadvice expand-abbrev (after my-expand-abbrev activate)
+  (if ad-return-value
+      (run-with-idle-timer 0 nil
+                           (lambda ()
+                             (let ((cursor "@@"))
+                               (if (search-backward cursor last-abbrev-location t)
+                                   (delete-char (length cursor))))))))
 
 
 (defadvice kill-region (before slick-cut activate compile)
@@ -173,6 +173,9 @@
     ))
 (setq-default ff-other-file-alist 'my-cpp-other-file-alist)
 
+;(define-key dired-mode-map (kbd "a") 'dired-up-directory)
+
+
 (bind-keys*
  ("C-o" . other-window)
  ("<C-return>" . (lambda () (interactive)(move-end-of-line nil) (newline-and-indent)))
@@ -193,8 +196,7 @@
  ("M-j" . (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
  ("C-x 2" . tab-bar-new-tab)
  ("C-`" . ff-find-related-file)
- ;("C-<backspace>" . (lambda () (interactive) (kill-line 0)))
- ("C-u" . (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
+ ("C-<backspace>" . (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
  ("C-c f" . bookmark-jump)
  ("C-x C-d" . dired)
  ("C-c C-n" . switch-to-buffer)

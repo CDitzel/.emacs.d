@@ -2,7 +2,19 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("RadarDetectionPreprocessor.cpp"
+(("hier"
+ (filename . "~/git-ndas/ndas/src/dwshared/dwfoundation/dw/cuda/primitives/device/DeviceSelectImpl.cuh")
+ (front-context-string)
+ (rear-context-string . "ICE_SELECT_CUH_\n")
+ (position . 21777)
+ (last-modified 25463 46252 458829 379000))
+("testing"
+ (filename . "~/git-ndas/ndas/src/dwshared/dwfoundation/dw/cuda/test/primitives/device/DeviceSelectTest.cu")
+ (front-context-string . "    DW_CHECK_CUD")
+ (rear-context-string . "cate, stream);\n\n")
+ (position . 4997)
+ (last-modified 25461 3703 885903 897000))
+("RadarDetectionPreprocessor.cpp"
  (filename . "~/git-ndas/ndas/src/dwdriveav/dw/perception/object/radar/trackerearlyfusion/RadarDetectionPreprocessor.cpp")
  (front-context-string . "    else if ((cu")
  (rear-context-string . "ongRange;\n    }\n")
