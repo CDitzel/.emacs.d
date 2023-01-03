@@ -3,7 +3,7 @@
     '("MELPA" .
       "http://melpa.org/packages/"))
 (package-initialize)
-										;
+										
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
@@ -17,6 +17,26 @@
 ;(byte-compile-file (expand-file-name "~/.emacs.d/cuda-mode.el") 'load)
                                         ;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
 
+(defun system-is-lenovo ()
+  (interactive)
+  (string-equal (system-name) "lenovo"))
+
+(if (system-is-lenovo)
+    (set-face-attribute 'default nil :height 160)
+  (setq x-super-keysym 'ctrl)
+  )
+
+(unless (boundp 'done-set-tab-layout)
+  (split-window-right)
+  (tab-bar-new-tab)
+  (split-window-right)
+  (tab-bar-new-tab)
+  (split-window-right)
+  (tab-bar-new-tab)
+  (split-window-right)
+  (tab-bar-select-tab 1)
+  (setq done-set-tab-layout t))
+  
 
 (setq-default cursor-in-non-selected-windows nil
 			  inhibit-startup-screen t
@@ -69,16 +89,16 @@
 			  tab-width 4
 			  tab-always-indent t
 			  ff-always-try-to-create nil
-                          ff-ignore-include t	
+        ff-ignore-include t	
 			  ff-quiet-mode t
 			  eldoc-echo-area-use-multiline-p nil
 			  )
 
 (setq-default indent-tabs-mode nil)
-(setq-default tab-width 8)
+(setq-default tab-width 2)
 (setq indent-line-function 'insert-tab)
 (setq c-default-style "linux") 
-(setq c-basic-offset 4) 
+(setq c-basic-offset 2) 
 (c-set-offset 'comment-intro 0)
 
 (global-auto-revert-mode 1)
@@ -217,7 +237,13 @@
  ("M-v" . View-scroll-half-page-backward)
  ("C-c g" . magit-status)
  )
-        
+
+(require 'treesit)
+(treesit-available-p)
+(setq treesitter-extra-load-path '("/usr/local/lib"))
+;(push '(c-mode) major-mode-remap-alist)  
+;(push '(c++-mode) major-mode-remap-alist)
+  
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -239,13 +265,4 @@
  '(eglot-highlight-symbol-face ((t nil)))
  '(eglot-mode-line ((t nil))))
 
-
-(split-window-right)
-(tab-bar-new-tab)
-(split-window-right)
-(tab-bar-new-tab)
-(split-window-right)
-(tab-bar-new-tab)
-(split-window-right)
-(tab-bar-select-tab 1)
 
