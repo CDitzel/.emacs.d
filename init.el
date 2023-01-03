@@ -1,9 +1,9 @@
 (require 'package)
 (add-to-list 'package-archives 
-    '("MELPA" .
-      "http://melpa.org/packages/"))
+             '("MELPA" .
+               "http://melpa.org/packages/"))
 (package-initialize)
-										
+
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
@@ -12,10 +12,9 @@
 (package-install 'rg)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
-(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
+;; (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
 ;(add-hook 'text-mode-hook 'turn-on-auto-fill)
-;(byte-compile-file (expand-file-name "~/.emacs.d/cuda-mode.el") 'load)
-                                        ;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
+(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
 
 (defun system-is-lenovo ()
   (interactive)
@@ -25,6 +24,68 @@
     (set-face-attribute 'default nil :height 160)
   (setq x-super-keysym 'ctrl)
   )
+
+
+
+(setq-default cursor-in-non-selected-windows nil
+			        inhibit-startup-screen t
+			        initial-scratch-message nil
+			        isearch-repeat-on-direction-change t
+			        isearch-lazy-count t
+			        lazy-highlight-initial-delay 0
+			        save-interprogram-paste-before-kill t
+			        lazy-highlight-cleanup nil
+			        lazy-highlight-buffer t
+			        mouse-yank-at-point t
+			        echo-keystrokes 0.1
+			        save-place-mode t
+			        scroll-preserve-screen-position 'always
+			        help-window-select t
+			        confirm-kill-emacs 'y-or-n-p
+			        use-dialog-box nil
+			        create-lockfiles nil
+			        auto-save-default nil
+			        make-backup-files nil
+			        abbrev-mode t
+			        avy-timeout-seconds 0.2
+			        tab-bar-mode t
+			        tab-bar-show nil
+			        tab-bar-new-tab-choice "*scratch*"
+			        show-paren-delay 0
+			        use-short-answers t
+			        global-auto-revert-non-file-buffers t
+			        auto-revert-verbose nil
+			        dired-auto-revert-buffer t
+			        window-combination-resize t
+			        completion-auto-help nil
+			        recentf-max-saved-items nil
+			        recentf-max-menu-items 25
+			        dired-recursive-copies 'always
+			        dired-recursive-deletes 'always
+			        dired-dwim-target t
+			        dired-listing-switches "-lAFGh1v --group-directories-first"
+			        dired-kill-when-opening-new-dired-buffer t
+			        ediff-window-setup-function 'ediff-setup-windows-plain
+			        ediff-split-window-function (quote split-window-horizontally)
+			        gud-gdb-command-name "gdb --i=mi "
+			        gdb-many-windows t
+			        x-super-keysym 'ctrl
+			        icomplete-compute-delay 0 
+			        max-mini-window-height 10
+			        resize-mini-windows 'grow-only
+			        isearch-wrap-pause 'no
+			        magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
+			        tab-width 4
+			        tab-always-indent t
+			        ff-always-try-to-create nil
+					ff-ignore-include t
+			        ff-quiet-mode t
+			        eldoc-echo-area-use-multiline-p 1
+					xref-after-return-hook nil
+					xref-after-jump-hook '(recenter)
+              ;ff-other-file-alist 'my-cpp-other-file-alist
+			        )
+
 
 (unless (boundp 'done-set-tab-layout)
   (split-window-right)
@@ -36,70 +97,15 @@
   (split-window-right)
   (tab-bar-select-tab 1)
   (setq done-set-tab-layout t))
-  
 
-(setq-default cursor-in-non-selected-windows nil
-			  inhibit-startup-screen t
-			  initial-scratch-message nil
-			  isearch-repeat-on-direction-change t
-			  isearch-lazy-count t
-			  lazy-highlight-initial-delay 0
-			  save-interprogram-paste-before-kill t
-			  lazy-highlight-cleanup nil
-			  lazy-highlight-buffer t
-			  mouse-yank-at-point t
-			  echo-keystrokes 0.1
-			  save-place-mode t
-			  scroll-preserve-screen-position 'always
-			  help-window-select t
-			  confirm-kill-emacs 'y-or-n-p
-			  use-dialog-box nil
-			  create-lockfiles nil
-			  auto-save-default nil
-			  make-backup-files nil
-			  abbrev-mode t
-			  avy-timeout-seconds 0.2
-			  tab-bar-mode t
-			  tab-bar-show nil
-			  tab-bar-new-tab-choice "*scratch*"
-			  show-paren-delay 0
-			  use-short-answers t
-			  global-auto-revert-non-file-buffers t
-			  auto-revert-verbose nil
-			  dired-auto-revert-buffer t
-			  window-combination-resize t
-			  completion-auto-help nil
-			  recentf-max-saved-items nil
-			  recentf-max-menu-items 25
-			  dired-recursive-copies 'always
-			  dired-recursive-deletes 'always
-			  dired-dwim-target t
-			  dired-listing-switches "-lAFGh1v --group-directories-first"
-			  dired-kill-when-opening-new-dired-buffer t
-			  ediff-window-setup-function 'ediff-setup-windows-plain
-			  ediff-split-window-function (quote split-window-horizontally)
-			  gud-gdb-command-name "gdb --i=mi "
-			  gdb-many-windows t
-			  x-super-keysym 'ctrl
-			  icomplete-compute-delay 0 
-			  max-mini-window-height 10
-			  resize-mini-windows 'grow-only
-			  isearch-wrap-pause 'no
-			  magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
-			  tab-width 4
-			  tab-always-indent t
-			  ff-always-try-to-create nil
-        ff-ignore-include t	
-			  ff-quiet-mode t
-			  eldoc-echo-area-use-multiline-p nil
-			  )
 
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-(setq indent-line-function 'insert-tab)
-(setq c-default-style "linux") 
-(setq c-basic-offset 2) 
-(c-set-offset 'comment-intro 0)
+;(setq-default indent-tabs-mode nil)
+;(setq-default tab-width 2)
+;(setq indent-line-function 'insert-tab)
+;(setq c-default-style "linux") 
+;(setq-default c-basic-offset 2) 
+;(c-set-offset 'comment-intro 0)
+
 
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
@@ -107,26 +113,28 @@
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
 
+
 (fido-vertical-mode t)
 (fringe-mode 0)
-(savehist-mode 1)
+(savehist-mode 1) ;; save minibuffer history
 (recentf-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t)
-(global-visual-line-mode 0)
+;(global-visual-line-mode 0)
 (global-subword-mode 1)
+(global-eldoc-mode nil)
 
 (require 'view)
-(require 'eglot)
-(setq eglot-ignored-server-capabilites '(:documentHighlightProvider))
+;(require 'rg)
+;(require 'eglot)
+;(setq eglot-ignored-server-capabilites '(:documentHighlightProvider))
+(setq eglot-ignored-server-capabilites '(:hoverProvider))
 
-(require 'rg)
-  
+
 (rg-define-search rg-everything
-  "Search everything."
   :files "everything"
   :confirm prefix
   :menu ("Search" "e" "Everything"))
@@ -148,13 +156,14 @@
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
+
 (define-abbrev-table 'global-abbrev-table '(
-					    ("pr" "printf(\"%d\\n\", @@);")
-					    ("ex" "exit(1);")
-					    ("os" "std::cout << @@ << \"\\n\";")
-					    ("rr" "- [ ]")
-					    ("fr" "for(int i = 0; i < @@; ++i){}")
-					    ("cd" "// TODO(cditzel MB):")))
+					                                  ("pr" "printf(\"%d\\n\", @@);")
+					                                  ("ex" "exit(1);")
+					                                  ("os" "std::cout << @@ << \"\\n\";")
+					                                  ("rr" "- [ ]")
+					                                  ("fr" "for(int i = 0; i < @@; ++i){}")
+					                                  ("cd" "// TODO(cditzel MB):")))
 
 (defadvice expand-abbrev (after my-expand-abbrev activate)
   (if ad-return-value
@@ -183,17 +192,16 @@
 (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
 (global-unset-key (kbd "C-x C-z"))
 
-(defvar my-cpp-other-file-alist
-  '(("\\.cpp\\'" (".hpp" ".cuh"))
-    ("\\.hpp\\'" (".cpp"".cu"))
-    ("\\.cuh\\'" (".cu" ".cpp"))
-    ("\\.cu\\'" (".cuh" ".hpp"))
-    ("\\.c\\'" (".h"))
-    ("\\.h\\'" (".c"))
-    ))
-(setq-default ff-other-file-alist 'my-cpp-other-file-alist)
+;(defvar my-cpp-other-file-alist
+;  '(("\\.cpp\\'" (".hpp" ".cuh"))
+;    ("\\.hpp\\'" (".cpp"".cu"))
+;    ("\\.cuh\\'" (".cu" ".cpp"))
+;    ("\\.cu\\'" (".cuh" ".hpp"))
+;    ("\\.c\\'" (".h"))
+;    ("\\.h\\'" (".c"))
+;    ))
 
-;(define-key dired-mode-map (kbd "a") 'dired-up-directory)
+                                        ;(define-key dired-mode-map (kbd "a") 'dired-up-directory)
 
 
 (bind-keys*
@@ -221,16 +229,16 @@
  ("C-x C-d" . dired)
  ("C-c C-n" . switch-to-buffer)
  ("C-x d" . find-name-dired)
- ("C-c C-r" . rg-everything)
+ ("C-u C-r" . rg-everything)
  ("C-r" . recentf)
  ("M-n" . scroll-up-line)
  ("M-p" . scroll-down-line)
  ("C-." . goto-last-change)
  ("C-j" . avy-goto-char-timer)
  ("C-c C-e" . mc/edit-lines)
- ("C-'" . er/expand-region)
- ("C-;" . er/contract-region)
- ("C-c r" . eval-buffer)
+ ;("C-'" . er/expand-region)
+ ;("C-;" . er/contract-region)
+ ;("C-c r" . eval-buffer)
  ("C-t" . duplicate-line)
  ("C-c g" . magit-status)
  ("C-v" . View-scroll-half-page-forward)
@@ -238,31 +246,17 @@
  ("C-c g" . magit-status)
  )
 
-(require 'treesit)
-(treesit-available-p)
-(setq treesitter-extra-load-path '("/usr/local/lib"))
-;(push '(c-mode) major-mode-remap-alist)  
-;(push '(c++-mode) major-mode-remap-alist)
-  
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("b6c3d87ff5f2b31a9e34955af2b87dc5bdac90a743f31ce5c424c0891e731720" default))
- '(eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
- '(mc/always-repeat-command t)
  '(package-selected-packages
-   '(tree-sitter tree-sitter-langs rg magit bind-key multiple-cursors avy expand-region))
- '(xref-after-jump-hook '(recenter))
- '(xref-after-return-hook nil))
+   '(expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(eglot-highlight-symbol-face ((t nil)))
- '(eglot-mode-line ((t nil))))
-
-
+ )
