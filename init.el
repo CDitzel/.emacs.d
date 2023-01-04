@@ -203,6 +203,9 @@
 
                                         ;(define-key dired-mode-map (kbd "a") 'dired-up-directory)
 
+(defun my-ff-find-other-file ()
+  (interactive)
+  (ff-find-other-file nil t))
 
 (bind-keys*
  ("C-o" . other-window)
@@ -223,7 +226,8 @@
  ("H-i" . goto-line)
  ("M-j" . (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
  ("C-x 2" . tab-bar-new-tab)
- ("C-`" . ff-find-related-file)
+ ;("C-`" . ff-find-related-file)
+ ("C-`" . my-ff-find-other-file)
  ("C-<backspace>" . (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
  ("C-c f" . bookmark-jump)
  ("C-x C-d" . dired)
