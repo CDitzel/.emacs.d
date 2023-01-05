@@ -12,9 +12,10 @@
 (package-install 'rg)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
-;; (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
+;(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
+;(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
 ;(add-hook 'text-mode-hook 'turn-on-auto-fill)
-(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
+;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
 
 (defun system-is-lenovo ()
   (interactive)
@@ -25,8 +26,9 @@
   (setq x-super-keysym 'ctrl)
   )
 
-
-
+;; timemachine
+; copy word undeer cursor
+; mark all within bracket
 (setq-default cursor-in-non-selected-windows nil
 			        inhibit-startup-screen t
 			        initial-scratch-message nil
@@ -77,13 +79,14 @@
 			        magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
 			        tab-width 4
 			        tab-always-indent t
-			        ff-always-try-to-create nil
-					ff-ignore-include t
-			        ff-quiet-mode t
+			        ;ff-always-try-to-create nil
+					;ff-ignore-include t
+			        ;ff-quiet-mode t
 			        eldoc-echo-area-use-multiline-p 1
 					xref-after-return-hook nil
 					xref-after-jump-hook '(recenter)
-              ;ff-other-file-alist 'my-cpp-other-file-alist
+					ff-other-file-alist 'my-cpp-other-file-alist
+					;; ff-other-file-alist '("\\.cu\\'" (".cuh" ".hpp"))
 			        )
 
 
@@ -105,7 +108,6 @@
 ;(setq c-default-style "linux") 
 ;(setq-default c-basic-offset 2) 
 ;(c-set-offset 'comment-intro 0)
-
 
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
@@ -158,12 +160,12 @@
 
 
 (define-abbrev-table 'global-abbrev-table '(
-					                                  ("pr" "printf(\"%d\\n\", @@);")
-					                                  ("ex" "exit(1);")
-					                                  ("os" "std::cout << @@ << \"\\n\";")
-					                                  ("rr" "- [ ]")
-					                                  ("fr" "for(int i = 0; i < @@; ++i){}")
-					                                  ("cd" "// TODO(cditzel MB):")))
+					                        ("pr" "printf(\"%d\\n\", @@);")
+					                        ("ex" "exit(1);")
+					                        ("os" "std::cout << @@ << \"\\n\";")
+					                        ("rr" "- [ ]")
+					                        ("fr" "for(int i = 0; i < @@; ++i){}")
+					                        ("cd" "// TODO(cditzel MB):")))
 
 (defadvice expand-abbrev (after my-expand-abbrev activate)
   (if ad-return-value
@@ -192,14 +194,15 @@
 (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
 (global-unset-key (kbd "C-x C-z"))
 
-;(defvar my-cpp-other-file-alist
-;  '(("\\.cpp\\'" (".hpp" ".cuh"))
-;    ("\\.hpp\\'" (".cpp"".cu"))
-;    ("\\.cuh\\'" (".cu" ".cpp"))
-;    ("\\.cu\\'" (".cuh" ".hpp"))
-;    ("\\.c\\'" (".h"))
-;    ("\\.h\\'" (".c"))
-;    ))
+(defvar my-cpp-other-file-alist
+  '(
+	("\\.cpp\\'" (".hpp" ".cuh"))
+   ("\\.hpp\\'" (".cpp"".cu"))
+   ("\\.cuh\\'" (".cu" ".cpp"))
+   ("\\.cu\\'" (".cuh" ".hpp"))
+   ("\\.c\\'" (".h"))
+   ("\\.h\\'" (".c"))
+   ))
 
                                         ;(define-key dired-mode-map (kbd "a") 'dired-up-directory)
 
@@ -225,9 +228,8 @@
  ("C-x k". kill-current-buffer)
  ("H-i" . goto-line)
  ("M-j" . (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
- ("C-x 2" . tab-bar-new-tab)
- ;("C-`" . ff-find-related-file)
- ("C-`" . my-ff-find-other-file)
+ ;("C-`" . my-ff-find-other-file)
+ ("C-`" . (lambda () (interactive) (ff-find-other-file nil t)))
  ("C-<backspace>" . (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
  ("C-c f" . bookmark-jump)
  ("C-x C-d" . dired)

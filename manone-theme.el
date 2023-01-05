@@ -720,8 +720,9 @@ jarring angry fruit salad look to reduce eye fatigue.")
 ;; C-M-h mark function
 ;; C-M-@ mark words
 ;; find-file then M-n for find-file-at-point, i.e. insert current file
+;; M-; insert comment
+;; C-c C-c comment
 
-					;(run-at-time nil (* 30 60) 'recentf-save-list)
 
 
 
