@@ -10,25 +10,16 @@
 (package-install 'bind-key)
 (package-install 'magit)
 (package-install 'rg)
+(package-install 'git-timemachine)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
-;(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring flex))))
-;(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
+(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
 ;(add-hook 'text-mode-hook 'turn-on-auto-fill)
-;(byte-compile-file (expand-file-name "~/.emacs.d/bazel.el") 'load)
 
-(defun system-is-lenovo ()
-  (interactive)
-  (string-equal (system-name) "lenovo"))
-
-(if (system-is-lenovo)
+(if (string-equal (system-name) "lenovo")
     (set-face-attribute 'default nil :height 160)
-  (setq x-super-keysym 'ctrl)
-  )
+  (setq x-super-keysym 'ctrl))
 
-;; timemachine
-; copy word undeer cursor
-; mark all within bracket
 (setq-default cursor-in-non-selected-windows nil
 			        inhibit-startup-screen t
 			        initial-scratch-message nil
@@ -108,6 +99,8 @@
 ;(setq c-default-style "linux") 
 ;(setq-default c-basic-offset 2) 
 ;(c-set-offset 'comment-intro 0)
+(setq c-default-style "linux") 
+(setq c-basic-offset 4)
 
 (global-auto-revert-mode 1)
 (add-to-list'default-frame-alist '(fullscreen . maximized))
@@ -116,6 +109,7 @@
 (add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
 
 
+(electric-pair-mode 1)
 (fido-vertical-mode t)
 (fringe-mode 0)
 (savehist-mode 1) ;; save minibuffer history
@@ -125,7 +119,7 @@
 (tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t)
-;(global-visual-line-mode 0)
+(global-visual-line-mode t)
 (global-subword-mode 1)
 (global-eldoc-mode nil)
 
@@ -204,11 +198,25 @@
    ("\\.h\\'" (".c"))
    ))
 
-                                        ;(define-key dired-mode-map (kbd "a") 'dired-up-directory)
+(defun prot-search-isearch-abort-dwim ()
+  "Delete failed `isearch' input, single char, or cancel search.
 
-(defun my-ff-find-other-file ()
+This is a modified variant of `isearch-abort' that allows us to
+perform the following, based on the specifics of the case: (i)
+delete the entirety of a non-matching part, when present; (ii)
+delete a single character, when possible; (iii) exit current
+search if no character is present and go back to point where the
+search started."
   (interactive)
-  (ff-find-other-file nil t))
+  (if (eq (length isearch-string) 0)
+      (isearch-cancel)
+    (isearch-del-char)
+    (while (or (not isearch-success) isearch-error)
+      (isearch-pop-state)))
+  (isearch-update))
+
+(define-key isearch-mode-map (kbd "<backspace>") 'prot-search-isearch-abort-dwim)
+
 
 (bind-keys*
  ("C-o" . other-window)
@@ -217,7 +225,6 @@
  ("C-x 3" .  (lambda () (interactive)(split-window-horizontally) (other-window 1)))
  ("C-c w" . (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
  ("C-c d" . (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
- ("C-c e" . (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
  ("C-a" . (lambda () (interactive) (if (= (point) (progn (back-to-indentation) (point))) (beginning-of-line))))
  ("C-1" . (lambda () (interactive)(tab-bar-select-tab 1)))
  ("C-2" . (lambda () (interactive)(tab-bar-select-tab 2)))
@@ -228,28 +235,27 @@
  ("C-x k". kill-current-buffer)
  ("H-i" . goto-line)
  ("M-j" . (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
- ;("C-`" . my-ff-find-other-file)
  ("C-`" . (lambda () (interactive) (ff-find-other-file nil t)))
  ("C-<backspace>" . (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
  ("C-c f" . bookmark-jump)
  ("C-x C-d" . dired)
- ("C-c C-n" . switch-to-buffer)
  ("C-x d" . find-name-dired)
- ("C-u C-r" . rg-everything)
- ("C-r" . recentf)
+ ("C-r" . rg-everything)
+ ("C-c C-n" . recentf)
  ("M-n" . scroll-up-line)
  ("M-p" . scroll-down-line)
  ("C-." . goto-last-change)
  ("C-j" . avy-goto-char-timer)
- ("C-c C-e" . mc/edit-lines)
+ ("C-c e" . mc/edit-lines)
  ;("C-'" . er/expand-region)
  ;("C-;" . er/contract-region)
- ;("C-c r" . eval-buffer)
  ("C-t" . duplicate-line)
  ("C-c g" . magit-status)
  ("C-v" . View-scroll-half-page-forward)
  ("M-v" . View-scroll-half-page-backward)
  ("C-c g" . magit-status)
+ ("C-c t" . git-timemachine)
+ ("C-M-w" . (lambda () (interactive) (kill-new (thing-at-point 'symbol))))
  )
 
 
@@ -259,7 +265,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
+   '(git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

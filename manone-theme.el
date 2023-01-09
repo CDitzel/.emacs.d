@@ -718,7 +718,7 @@ jarring angry fruit salad look to reduce eye fatigue.")
 ;; M-p		isearch-ring-retreat
 ;; C-M-... commands
 ;; C-M-h mark function
-;; C-M-@ mark words
+;; C-M-@ mark words or C-M-SPC
 ;; find-file then M-n for find-file-at-point, i.e. insert current file
 ;; M-; insert comment
 ;; C-c C-c comment
