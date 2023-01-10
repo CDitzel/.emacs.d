@@ -499,7 +499,7 @@ jarring angry fruit salad look to reduce eye fatigue.")
  '(info-xref ((t (:bold t :foreground "cyan" :weight bold))))
  
  ;; '(isearch ((t (:bold t :background "limegreen" :foreground "black" :weight bold))))
- '(isearch ((t (:bold t :background "purple" :foreground "black" :weight bold))))
+ '(isearch ((t (:bold t :background "yellow" :foreground "black" :weight bold))))
 
  
  '(isearch-fail ((t (:background "red"))))

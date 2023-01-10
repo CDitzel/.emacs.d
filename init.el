@@ -70,7 +70,7 @@
 			        magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
 			        tab-width 4
 			        tab-always-indent t
-			        ;ff-always-try-to-create nil
+			        ff-always-try-to-create nil
 					;ff-ignore-include t
 			        ;ff-quiet-mode t
 			        eldoc-echo-area-use-multiline-p 1
@@ -79,7 +79,6 @@
 					ff-other-file-alist 'my-cpp-other-file-alist
 					;; ff-other-file-alist '("\\.cu\\'" (".cuh" ".hpp"))
 			        )
-
 
 (unless (boundp 'done-set-tab-layout)
   (split-window-right)
@@ -92,7 +91,6 @@
   (tab-bar-select-tab 1)
   (setq done-set-tab-layout t))
 
-
 ;(setq-default indent-tabs-mode nil)
 ;(setq-default tab-width 2)
 ;(setq indent-line-function 'insert-tab)
@@ -102,13 +100,13 @@
 (setq c-default-style "linux") 
 (setq c-basic-offset 4)
 
-(global-auto-revert-mode 1)
+
 (add-to-list'default-frame-alist '(fullscreen . maximized))
-(show-paren-mode t)
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
 
-
+(global-auto-revert-mode 1)
+(show-paren-mode t)
 (electric-pair-mode 1)
 (fido-vertical-mode t)
 (fringe-mode 0)
@@ -128,7 +126,6 @@
 ;(require 'eglot)
 ;(setq eglot-ignored-server-capabilites '(:documentHighlightProvider))
 (setq eglot-ignored-server-capabilites '(:hoverProvider))
-
 
 (rg-define-search rg-everything
   :files "everything"
@@ -218,6 +215,36 @@ search started."
 (define-key isearch-mode-map (kbd "<backspace>") 'prot-search-isearch-abort-dwim)
 
 
+(defun my-isearch-forward-symbol-at-point ()
+  "`isearch-forward-symbol-at-point', but copy symbol name to `kill-ring'."
+  (interactive)
+  (isearch-forward-symbol nil 1)
+  (let* ((bounds  (find-tag-default-bounds))
+         (string  (and bounds  (buffer-substring-no-properties
+                                 (car bounds) (cdr bounds)))))
+    (cond
+     (string
+      (kill-new string)
+      (when (< (car bounds) (point))(goto-char (car bounds)))
+      (isearch-yank-string string))
+     (t
+      (setq isearch-error "No symbol at point")
+      (isearch-push-state)
+      (isearch-update)))))
+
+;(define-key isearch-mode-map "C-j" 'my-isearch-forward-symbol-at-point)
+
+(defun endless/isearch-symbol-with-prefix (p)
+  "Like isearch, unless prefix argument is provided.
+With a prefix argument P, isearch for the symbol at point."
+  (interactive "P")
+  (let ((current-prefix-arg nil))
+    (call-interactively
+     ;(if p #'isearch-forward-symbol-at-point #'isearch-forward))))
+     (if p #'my-isearch-forward-symbol-at-point #'isearch-forward))))
+
+(global-set-key [remap isearch-forward] #'endless/isearch-symbol-with-prefix)
+
 (bind-keys*
  ("C-o" . other-window)
  ("<C-return>" . (lambda () (interactive)(move-end-of-line nil) (newline-and-indent)))
@@ -255,7 +282,7 @@ search started."
  ("M-v" . View-scroll-half-page-backward)
  ("C-c g" . magit-status)
  ("C-c t" . git-timemachine)
- ("C-M-w" . (lambda () (interactive) (kill-new (thing-at-point 'symbol))))
+ ("M-s ." . my-isearch-forward-symbol-at-point)
  )
 
 
