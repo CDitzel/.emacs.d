@@ -196,9 +196,7 @@
    ))
 
 (defun prot-search-isearch-abort-dwim ()
-  "Delete failed `isearch' input, single char, or cancel search.
-
-This is a modified variant of `isearch-abort' that allows us to
+"This is a modified variant of `isearch-abort' that allows us to
 perform the following, based on the specifics of the case: (i)
 delete the entirety of a non-matching part, when present; (ii)
 delete a single character, when possible; (iii) exit current
@@ -232,7 +230,6 @@ search started."
       (isearch-push-state)
       (isearch-update)))))
 
-;(define-key isearch-mode-map "C-j" 'my-isearch-forward-symbol-at-point)
 
 (defun endless/isearch-symbol-with-prefix (p)
   "Like isearch, unless prefix argument is provided.
@@ -244,6 +241,36 @@ With a prefix argument P, isearch for the symbol at point."
      (if p #'my-isearch-forward-symbol-at-point #'isearch-forward))))
 
 (global-set-key [remap isearch-forward] #'endless/isearch-symbol-with-prefix)
+
+(defun mark-inside-sexp ()
+  "Mark inside a sexp."
+  (interactive)
+  (let (beg end)
+    (backward-up-list 1 t t)
+    (setq beg (1+ (point)))
+    (forward-sexp)
+    (setq end (1- (point)))
+    (goto-char beg)
+    (push-mark)
+    (goto-char end))
+  (activate-mark))
+
+(defun move-line-down ()
+  (interactive)
+  (let ((col (current-column)))
+    (save-excursion
+      (forward-line)
+      (transpose-lines 1))
+    (forward-line)
+    (move-to-column col)))
+
+(defun move-line-up ()
+  (interactive)
+  (let ((col (current-column)))
+    (save-excursion
+      (forward-line)
+      (transpose-lines -1))
+    (move-to-column col)))
 
 (bind-keys*
  ("C-o" . other-window)
@@ -271,6 +298,8 @@ With a prefix argument P, isearch for the symbol at point."
  ("C-c C-n" . recentf)
  ("M-n" . scroll-up-line)
  ("M-p" . scroll-down-line)
+ ("s-p" . move-line-up)
+ ("s-n" . move-line-down)
  ("C-." . goto-last-change)
  ("C-j" . avy-goto-char-timer)
  ("C-c e" . mc/edit-lines)
@@ -283,6 +312,7 @@ With a prefix argument P, isearch for the symbol at point."
  ("C-c g" . magit-status)
  ("C-c t" . git-timemachine)
  ("M-s ." . my-isearch-forward-symbol-at-point)
+ ("C-m" . mark-inside-sexp)
  )
 
 
@@ -299,3 +329,15 @@ With a prefix argument P, isearch for the symbol at point."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+
+(global-set-key (kbd "C-x g") 'webjump)
+
+;; Add Urban Dictionary to webjump
+(eval-after-load "webjump"
+'(add-to-list 'webjump-sites
+              '("Urban Dictionary" .
+                [simple-query
+                 "www.urbandictionary.com"
+                 "http://www.urbandictionary.com/define.php?term="
+                 ""])))
