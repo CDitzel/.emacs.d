@@ -11,6 +11,7 @@
 (package-install 'magit)
 (package-install 'rg)
 (package-install 'git-timemachine)
+;(package-install 'markdown)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
@@ -19,6 +20,7 @@
 (if (string-equal (system-name) "lenovo")
     (set-face-attribute 'default nil :height 160)
   (setq x-super-keysym 'ctrl))
+
 
 (setq-default cursor-in-non-selected-windows nil
 			        inhibit-startup-screen t
@@ -121,7 +123,11 @@
 (global-subword-mode 1)
 (global-eldoc-mode nil)
 
+
+(setq font-lock-maximum-decoration t)
+
 (require 'view)
+;(require 'markdown)
 ;(require 'rg)
 ;(require 'eglot)
 ;(setq eglot-ignored-server-capabilites '(:documentHighlightProvider))
@@ -242,18 +248,18 @@ With a prefix argument P, isearch for the symbol at point."
 
 (global-set-key [remap isearch-forward] #'endless/isearch-symbol-with-prefix)
 
-(defun mark-inside-sexp ()
-  "Mark inside a sexp."
-  (interactive)
-  (let (beg end)
-    (backward-up-list 1 t t)
-    (setq beg (1+ (point)))
-    (forward-sexp)
-    (setq end (1- (point)))
-    (goto-char beg)
-    (push-mark)
-    (goto-char end))
-  (activate-mark))
+;(defun mark-inside-sexp ()
+;  "Mark inside a sexp."
+;  (interactive)
+;  (let (beg end)
+;    (backward-up-list 1 t t)
+;    (setq beg (1+ (point)))
+;    (forward-sexp)
+;    (setq end (1- (point)))
+;    (goto-char beg)
+;    (push-mark)
+;    (goto-char end))
+;  (activate-mark))
 
 (defun move-line-down ()
   (interactive)
@@ -271,6 +277,9 @@ With a prefix argument P, isearch for the symbol at point."
       (forward-line)
       (transpose-lines -1))
     (move-to-column col)))
+
+;(define-key dired-mode-map (kbd "e") 'dired-toggle-read-only) 
+
 
 (bind-keys*
  ("C-o" . other-window)
@@ -294,17 +303,17 @@ With a prefix argument P, isearch for the symbol at point."
  ("C-c f" . bookmark-jump)
  ("C-x C-d" . dired)
  ("C-x d" . find-name-dired)
- ("C-r" . rg-everything)
- ("C-c C-n" . recentf)
+ ("C-c C-r" . rg-everything)
+ ("C-r" . recentf)
  ("M-n" . scroll-up-line)
  ("M-p" . scroll-down-line)
- ("s-p" . move-line-up)
- ("s-n" . move-line-down)
+ ;("s-p" . move-line-up)
+ ;("s-n" . move-line-down)
  ("C-." . goto-last-change)
  ("C-j" . avy-goto-char-timer)
  ("C-c e" . mc/edit-lines)
- ;("C-'" . er/expand-region)
- ;("C-;" . er/contract-region)
+ ("C-'" . er/expand-region)
+ ("C-;" . er/contract-region)
  ("C-t" . duplicate-line)
  ("C-c g" . magit-status)
  ("C-v" . View-scroll-half-page-forward)
@@ -312,7 +321,7 @@ With a prefix argument P, isearch for the symbol at point."
  ("C-c g" . magit-status)
  ("C-c t" . git-timemachine)
  ("M-s ." . my-isearch-forward-symbol-at-point)
- ("C-m" . mark-inside-sexp)
+ ;("C-m" . mark-inside-sexp)
  )
 
 
@@ -322,7 +331,7 @@ With a prefix argument P, isearch for the symbol at point."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
+   '(markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
