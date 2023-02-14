@@ -775,8 +775,8 @@ jarring angry fruit salad look to reduce eye fatigue.")
 		"    "
 		(line-number-mode "%l/")
 		(:eval (number-to-string (count-lines (point-min) (point-max))))
-		"    "
-		;; default-directory
+		"                                                                                                                 "
+		(:eval (format-time-string "%H:%M"))
 		)))
 
 

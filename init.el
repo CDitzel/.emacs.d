@@ -17,6 +17,8 @@
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
 ;(add-hook 'text-mode-hook 'turn-on-auto-fill)
 
+;(set-face-attribute 'default nil :height 160)
+
 (if (string-equal (system-name) "lenovo")
     (set-face-attribute 'default nil :height 160)
   (setq x-super-keysym 'ctrl))
@@ -99,8 +101,9 @@
 ;(setq c-default-style "linux") 
 ;(setq-default c-basic-offset 2) 
 ;(c-set-offset 'comment-intro 0)
-(setq c-default-style "linux") 
-(setq c-basic-offset 4)
+
+;(setq c-default-style "linux") 
+;(setq c-basic-offset 4)
 
 
 (add-to-list'default-frame-alist '(fullscreen . maximized))
@@ -124,14 +127,14 @@
 (global-eldoc-mode nil)
 
 
-(setq font-lock-maximum-decoration t)
+;(setq font-lock-maximum-decoration t)
 
 (require 'view)
 ;(require 'markdown)
 ;(require 'rg)
 ;(require 'eglot)
 ;(setq eglot-ignored-server-capabilites '(:documentHighlightProvider))
-(setq eglot-ignored-server-capabilites '(:hoverProvider))
+;(setq eglot-ignored-server-capabilites '(:hoverProvider))
 
 (rg-define-search rg-everything
   :files "everything"
@@ -162,6 +165,7 @@
 					                        ("os" "std::cout << @@ << \"\\n\";")
 					                        ("rr" "- [ ]")
 					                        ("fr" "for(int i = 0; i < @@; ++i){}")
+					                        ("vo" "(void) @@;")
 					                        ("cd" "// TODO(cditzel MB):")))
 
 (defadvice expand-abbrev (after my-expand-abbrev activate)
@@ -243,8 +247,8 @@ With a prefix argument P, isearch for the symbol at point."
   (interactive "P")
   (let ((current-prefix-arg nil))
     (call-interactively
-     ;(if p #'isearch-forward-symbol-at-point #'isearch-forward))))
-     (if p #'my-isearch-forward-symbol-at-point #'isearch-forward))))
+     (if p #'isearch-forward-symbol-at-point #'isearch-forward))))
+     ;(if p #'my-isearch-forward-symbol-at-point #'isearch-forward))))
 
 (global-set-key [remap isearch-forward] #'endless/isearch-symbol-with-prefix)
 
@@ -261,25 +265,24 @@ With a prefix argument P, isearch for the symbol at point."
 ;    (goto-char end))
 ;  (activate-mark))
 
-(defun move-line-down ()
-  (interactive)
-  (let ((col (current-column)))
-    (save-excursion
-      (forward-line)
-      (transpose-lines 1))
-    (forward-line)
-    (move-to-column col)))
-
-(defun move-line-up ()
-  (interactive)
-  (let ((col (current-column)))
-    (save-excursion
-      (forward-line)
-      (transpose-lines -1))
-    (move-to-column col)))
+;(defun move-line-down ()
+;  (interactive)
+;  (let ((col (current-column)))
+;    (save-excursion
+;      (forward-line)
+;      (transpose-lines 1))
+;    (forward-line)
+;    (move-to-column col)))
+;
+;(defun move-line-up ()
+;  (interactive)
+;  (let ((col (current-column)))
+;    (save-excursion
+;      (forward-line)
+;      (transpose-lines -1))
+;    (move-to-column col)))
 
 ;(define-key dired-mode-map (kbd "e") 'dired-toggle-read-only) 
-
 
 (bind-keys*
  ("C-o" . other-window)
@@ -304,11 +307,9 @@ With a prefix argument P, isearch for the symbol at point."
  ("C-x C-d" . dired)
  ("C-x d" . find-name-dired)
  ("C-c C-r" . rg-everything)
- ("C-r" . recentf)
+ ("C-c C-n" . recentf)
  ("M-n" . scroll-up-line)
  ("M-p" . scroll-down-line)
- ;("s-p" . move-line-up)
- ;("s-n" . move-line-down)
  ("C-." . goto-last-change)
  ("C-j" . avy-goto-char-timer)
  ("C-c e" . mc/edit-lines)
@@ -320,10 +321,7 @@ With a prefix argument P, isearch for the symbol at point."
  ("M-v" . View-scroll-half-page-backward)
  ("C-c g" . magit-status)
  ("C-c t" . git-timemachine)
- ("M-s ." . my-isearch-forward-symbol-at-point)
- ;("C-m" . mark-inside-sexp)
  )
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -339,14 +337,3 @@ With a prefix argument P, isearch for the symbol at point."
  ;; If there is more than one, they won't work right.
  )
 
-
-(global-set-key (kbd "C-x g") 'webjump)
-
-;; Add Urban Dictionary to webjump
-(eval-after-load "webjump"
-'(add-to-list 'webjump-sites
-              '("Urban Dictionary" .
-                [simple-query
-                 "www.urbandictionary.com"
-                 "http://www.urbandictionary.com/define.php?term="
-                 ""])))
