@@ -17,11 +17,11 @@
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
 ;(add-hook 'text-mode-hook 'turn-on-auto-fill)
 
-;(set-face-attribute 'default nil :height 160)
 
 (if (string-equal (system-name) "lenovo")
     (set-face-attribute 'default nil :height 160)
   (setq x-super-keysym 'ctrl))
+
 
 
 (setq-default cursor-in-non-selected-windows nil
@@ -95,6 +95,8 @@
   (tab-bar-select-tab 1)
   (setq done-set-tab-layout t))
 
+
+
 ;(setq-default indent-tabs-mode nil)
 ;(setq-default tab-width 2)
 ;(setq indent-line-function 'insert-tab)
@@ -112,9 +114,10 @@
 
 (global-auto-revert-mode 1)
 (show-paren-mode t)
-(electric-pair-mode 1)
+;(electric-pair-mode 1)
 (fido-vertical-mode t)
 (fringe-mode 0)
+
 (savehist-mode 1) ;; save minibuffer history
 (recentf-mode t)
 (tool-bar-mode -1)
@@ -252,6 +255,11 @@ With a prefix argument P, isearch for the symbol at point."
 
 (global-set-key [remap isearch-forward] #'endless/isearch-symbol-with-prefix)
 
+(defconst avy-lead-faces '(avy-lead-face-0
+                           avy-lead-face-0
+                           avy-lead-face-0)
+  "Face sequence for `avy--overlay-at-full'.")
+
 ;(defun mark-inside-sexp ()
 ;  "Mark inside a sexp."
 ;  (interactive)
@@ -282,7 +290,7 @@ With a prefix argument P, isearch for the symbol at point."
 ;      (transpose-lines -1))
 ;    (move-to-column col)))
 
-;(define-key dired-mode-map (kbd "e") 'dired-toggle-read-only) 
+										;(define-key dired-mode-map (kbd "e") 'dired-toggle-read-only)
 
 (bind-keys*
  ("C-o" . other-window)
@@ -329,7 +337,7 @@ With a prefix argument P, isearch for the symbol at point."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
+   '(rainbow-mode markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
