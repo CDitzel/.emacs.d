@@ -11,17 +11,14 @@
 (package-install 'magit)
 (package-install 'rg)
 (package-install 'git-timemachine)
-;(package-install 'markdown)
 
-(add-hook 'after-init-hook (lambda () (load-theme 'manone t)))
+(add-hook 'after-init-hook (lambda () (load-theme 'manone-old t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
-;(add-hook 'text-mode-hook 'turn-on-auto-fill)
 
 
 (if (string-equal (system-name) "lenovo")
     (set-face-attribute 'default nil :height 160)
   (setq x-super-keysym 'ctrl))
-
 
 
 (setq-default cursor-in-non-selected-windows nil
@@ -56,7 +53,6 @@
 			        window-combination-resize t
 			        completion-auto-help nil
 			        recentf-max-saved-items nil
-			        recentf-max-menu-items 25
 			        dired-recursive-copies 'always
 			        dired-recursive-deletes 'always
 			        dired-dwim-target t
@@ -75,13 +71,10 @@
 			        tab-width 4
 			        tab-always-indent t
 			        ff-always-try-to-create nil
-					;ff-ignore-include t
-			        ;ff-quiet-mode t
 			        eldoc-echo-area-use-multiline-p 1
 					xref-after-return-hook nil
 					xref-after-jump-hook '(recenter)
 					ff-other-file-alist 'my-cpp-other-file-alist
-					;; ff-other-file-alist '("\\.cu\\'" (".cuh" ".hpp"))
 			        )
 
 (unless (boundp 'done-set-tab-layout)
@@ -95,18 +88,8 @@
   (tab-bar-select-tab 1)
   (setq done-set-tab-layout t))
 
-
-
-;(setq-default indent-tabs-mode nil)
-;(setq-default tab-width 2)
-;(setq indent-line-function 'insert-tab)
-;(setq c-default-style "linux") 
-;(setq-default c-basic-offset 2) 
-;(c-set-offset 'comment-intro 0)
-
-;(setq c-default-style "linux") 
-;(setq c-basic-offset 4)
-
+(setq c-default-style "linux") 
+(setq c-basic-offset 4)
 
 (add-to-list'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
@@ -114,7 +97,6 @@
 
 (global-auto-revert-mode 1)
 (show-paren-mode t)
-;(electric-pair-mode 1)
 (fido-vertical-mode t)
 (fringe-mode 0)
 
@@ -127,17 +109,9 @@
 (delete-selection-mode t)
 (global-visual-line-mode t)
 (global-subword-mode 1)
-(global-eldoc-mode nil)
-
-
-;(setq font-lock-maximum-decoration t)
+;(global-eldoc-mode nil)
 
 (require 'view)
-;(require 'markdown)
-;(require 'rg)
-;(require 'eglot)
-;(setq eglot-ignored-server-capabilites '(:documentHighlightProvider))
-;(setq eglot-ignored-server-capabilites '(:hoverProvider))
 
 (rg-define-search rg-everything
   :files "everything"
@@ -179,7 +153,6 @@
                                (if (search-backward cursor last-abbrev-location t)
                                    (delete-char (length cursor))))))))
 
-
 (defadvice kill-region (before slick-cut activate compile)
   "When called interactively with no active region, kill a single line instead."
   (interactive
@@ -192,11 +165,8 @@
   (interactive
    (if mark-active
        (list (region-beginning) (region-end))
-     (message "Copied line")
      (list (line-beginning-position) (line-beginning-position 2)))))
 
-(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
-(global-unset-key (kbd "C-x C-z"))
 
 (defvar my-cpp-other-file-alist
   '(
@@ -226,23 +196,6 @@ search started."
 (define-key isearch-mode-map (kbd "<backspace>") 'prot-search-isearch-abort-dwim)
 
 
-(defun my-isearch-forward-symbol-at-point ()
-  "`isearch-forward-symbol-at-point', but copy symbol name to `kill-ring'."
-  (interactive)
-  (isearch-forward-symbol nil 1)
-  (let* ((bounds  (find-tag-default-bounds))
-         (string  (and bounds  (buffer-substring-no-properties
-                                 (car bounds) (cdr bounds)))))
-    (cond
-     (string
-      (kill-new string)
-      (when (< (car bounds) (point))(goto-char (car bounds)))
-      (isearch-yank-string string))
-     (t
-      (setq isearch-error "No symbol at point")
-      (isearch-push-state)
-      (isearch-update)))))
-
 
 (defun endless/isearch-symbol-with-prefix (p)
   "Like isearch, unless prefix argument is provided.
@@ -251,91 +204,112 @@ With a prefix argument P, isearch for the symbol at point."
   (let ((current-prefix-arg nil))
     (call-interactively
      (if p #'isearch-forward-symbol-at-point #'isearch-forward))))
-     ;(if p #'my-isearch-forward-symbol-at-point #'isearch-forward))))
 
 (global-set-key [remap isearch-forward] #'endless/isearch-symbol-with-prefix)
 
-(defconst avy-lead-faces '(avy-lead-face-0
-                           avy-lead-face-0
-                           avy-lead-face-0)
-  "Face sequence for `avy--overlay-at-full'.")
+(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
+(global-unset-key (kbd "C-x C-z"))
+(global-unset-key (kbd "C-z"))
 
-;(defun mark-inside-sexp ()
-;  "Mark inside a sexp."
-;  (interactive)
-;  (let (beg end)
-;    (backward-up-list 1 t t)
-;    (setq beg (1+ (point)))
-;    (forward-sexp)
-;    (setq end (1- (point)))
-;    (goto-char beg)
-;    (push-mark)
-;    (goto-char end))
-;  (activate-mark))
 
-;(defun move-line-down ()
-;  (interactive)
-;  (let ((col (current-column)))
-;    (save-excursion
-;      (forward-line)
-;      (transpose-lines 1))
-;    (forward-line)
-;    (move-to-column col)))
-;
-;(defun move-line-up ()
-;  (interactive)
-;  (let ((col (current-column)))
-;    (save-excursion
-;      (forward-line)
-;      (transpose-lines -1))
-;    (move-to-column col)))
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+ (define-key map (kbd "C-o") 'other-window)
+ (define-key map (kbd "<C-return>") (lambda () (interactive)(move-end-of-line nil) (newline-and-indent)))
+ (define-key map (kbd "<S-return>") (lambda () (interactive)(beginning-of-line nil)(newline-and-indent)(forward-line -1) (indent-according-to-mode)))
+ (define-key map (kbd "C-x 3" )  (lambda () (interactive)(split-window-horizontally) (other-window 1)))
+ (define-key map (kbd "C-c w" ) (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
+ (define-key map (kbd "C-c d" ) (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
+ (define-key map (kbd "C-a" ) (lambda () (interactive) (if (= (point) (progn (back-to-indentation) (point))) (beginning-of-line))))
+ (define-key map (kbd "C-1" ) (lambda () (interactive)(tab-bar-select-tab 1)))
+ (define-key map (kbd "C-2" ) (lambda () (interactive)(tab-bar-select-tab 2)))
+ (define-key map (kbd "C-3" ) (lambda () (interactive)(tab-bar-select-tab 3)))
+ (define-key map (kbd "C-4" ) (lambda () (interactive)(tab-bar-select-tab 4)))
+ (define-key map (kbd "C-," ) 'comment-line)
+ (define-key map (kbd "C-x b") 'ibuffer)
+ (define-key map (kbd "C-x k") 'kill-current-buffer)
+ (define-key map (kbd "H-i") 'goto-line)
+ (define-key map (kbd "M-j") (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
+ (define-key map (kbd "C-`") (lambda () (interactive) (ff-find-other-file nil t)))
+ (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
+ (define-key map (kbd "C-c f") 'bookmark-jump)
+ (define-key map (kbd "C-x C-d") 'dired)
+ (define-key map (kbd "C-x d") 'find-name-dired)
+ (define-key map (kbd "C-c C-r") 'rg-everything)
+ (define-key map (kbd "M-n") 'scroll-up-line)
+ (define-key map (kbd "M-p") 'scroll-down-line)
+ (define-key map (kbd "C-.") 'goto-last-change)
+ (define-key map (kbd "C-j") 'avy-goto-char-timer)
+ (define-key map (kbd "C-c e") 'mc/edit-lines)
+ (define-key map (kbd "C-'") 'er/expand-region)
+ (define-key map (kbd "C-;") 'er/contract-region)
+ (define-key map (kbd "C-t") 'duplicate-line)
+ (define-key map (kbd "C-c g") 'magit-status)
+ (define-key map (kbd "C-v") 'View-scroll-half-page-forward)
+ (define-key map (kbd "M-v") 'View-scroll-half-page-backward)
+ (define-key map (kbd "C-c g") 'magit-status)
+ (define-key map (kbd "C-c t") 'git-timemachine)
+ map
+ ))
 
-										;(define-key dired-mode-map (kbd "e") 'dired-toggle-read-only)
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
 
-(bind-keys*
- ("C-o" . other-window)
- ("<C-return>" . (lambda () (interactive)(move-end-of-line nil) (newline-and-indent)))
- ("<S-return>". (lambda () (interactive)(beginning-of-line nil)(newline-and-indent)(forward-line -1) (indent-according-to-mode)))
- ("C-x 3" .  (lambda () (interactive)(split-window-horizontally) (other-window 1)))
- ("C-c w" . (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
- ("C-c d" . (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
- ("C-a" . (lambda () (interactive) (if (= (point) (progn (back-to-indentation) (point))) (beginning-of-line))))
- ("C-1" . (lambda () (interactive)(tab-bar-select-tab 1)))
- ("C-2" . (lambda () (interactive)(tab-bar-select-tab 2)))
- ("C-3" . (lambda () (interactive)(tab-bar-select-tab 3)))
- ("C-4" . (lambda () (interactive)(tab-bar-select-tab 4)))
- ("C-," . comment-line)
- ("C-x b". ibuffer)
- ("C-x k". kill-current-buffer)
- ("H-i" . goto-line)
- ("M-j" . (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
- ("C-`" . (lambda () (interactive) (ff-find-other-file nil t)))
- ("C-<backspace>" . (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
- ("C-c f" . bookmark-jump)
- ("C-x C-d" . dired)
- ("C-x d" . find-name-dired)
- ("C-c C-r" . rg-everything)
- ("C-c C-n" . recentf)
- ("M-n" . scroll-up-line)
- ("M-p" . scroll-down-line)
- ("C-." . goto-last-change)
- ("C-j" . avy-goto-char-timer)
- ("C-c e" . mc/edit-lines)
- ("C-'" . er/expand-region)
- ("C-;" . er/contract-region)
- ("C-t" . duplicate-line)
- ("C-c g" . magit-status)
- ("C-v" . View-scroll-half-page-forward)
- ("M-v" . View-scroll-half-page-backward)
- ("C-c g" . magit-status)
- ("C-c t" . git-timemachine)
- )
+(global-set-key [?\C-r] 
+                #'(lambda (_)
+                    (interactive "p")
+                    (cond
+                     ((eq _ 1)
+                      (isearch-backward))
+                     ((eq _ 4)
+                      (call-interactively 'recentf-open)))))
+
+(global-set-key [?\C-f] 
+                #'(lambda (_)
+                    (interactive "p")
+					(cond
+                     ((eq _ 1)
+                      (forward-char))
+                     ((eq _ 4)
+                      (call-interactively 'bookmark-jump)))))
+
+
+;; M-k Kill to end of sentence (kill-sentence).
+;; C-x DEL backward kill sentence
+;; C-y M-y paste and cycle
+;; C-x C-o delete all blank lines below
+;; C-x TAB after highlighting region to indent
+;; C-M-f,b,a,e,n,p etc. moves in larger chunks
+;; C-M-k und C-M-backspace to delete fwd/bwd up to brackets
+;; C-u C-SPC back to saved mark
+;; C-M-v scroll-other-window and C-M-S-v scroll-other-window-down
+;; (M-{ / M-} backard / forward paragraph 
+;; C-M-a and C-M-e to move back and forward a function at a time.
+;; C-u C-s mark word under points -> C-s to find further occurences, also in other windows
+;; Use M-h to mark the current paragraph
+;; Use C-M-h to mark the current function
+;; Pressing C-s or C-r for a second time before entering your search string will reuse the previous search string.
+;; C-l recentres the window while keeping the point on the same line
+;; M-r moves the point without recentring the window.
+;; C-s C-w [C-w ... ] to search for a word/expression under a cursor.
+;; then M-s o calls occur (buffer local) (C-u to call with line ctx) and e goes into edit mode
+;; C-M-@ mark words or C-M-SPC
+;; M-; insert comment
+;; C-c C-c comment
+
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(eldoc-documentation-strategy 'ignore)
+ '(eldoc-idle-delay 0.1)
+ '(eldoc-minor-mode-string " nil")
+ '(global-eldoc-mode nil)
  '(package-selected-packages
    '(rainbow-mode markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
 (custom-set-faces
@@ -343,5 +317,5 @@ With a prefix argument P, isearch for the symbol at point."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(eldoc-highlight-function-argument ((t nil))))
 
