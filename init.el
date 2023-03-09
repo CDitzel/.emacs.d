@@ -11,6 +11,7 @@
 (package-install 'magit)
 (package-install 'rg)
 (package-install 'git-timemachine)
+(package-install 'yaml)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'manone-old t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
@@ -112,6 +113,7 @@
 ;(global-eldoc-mode nil)
 
 (require 'view)
+
 
 (rg-define-search rg-everything
   :files "everything"
@@ -299,19 +301,18 @@ With a prefix argument P, isearch for the symbol at point."
 ;; M-; insert comment
 ;; C-c C-c comment
 
-
+(with-eval-after-load "eglot"
+  (add-to-list 'eglot-stay-out-of 'eldoc))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(eldoc-documentation-strategy 'ignore)
- '(eldoc-idle-delay 0.1)
- '(eldoc-minor-mode-string " nil")
- '(global-eldoc-mode nil)
+ '(org-safe-remote-resources
+   '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
  '(package-selected-packages
-   '(rainbow-mode markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
+   '(yaml rainbow-mode markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
