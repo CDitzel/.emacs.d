@@ -7,7 +7,6 @@
 (package-install 'expand-region)
 (package-install 'avy)
 (package-install 'multiple-cursors)
-(package-install 'bind-key)
 (package-install 'magit)
 (package-install 'rg)
 (package-install 'git-timemachine)
@@ -31,7 +30,7 @@
 			        save-interprogram-paste-before-kill t
 			        lazy-highlight-cleanup nil
 			        lazy-highlight-buffer t
-			        mouse-yank-at-point t
+v			        mouse-yank-at-point t
 			        echo-keystrokes 0.1
 			        save-place-mode t
 			        scroll-preserve-screen-position 'always
@@ -78,6 +77,140 @@
 					ff-other-file-alist 'my-cpp-other-file-alist
 			        )
 
+;(add-hook 'prog-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
+
+
+;(defvar gud-overlay
+;  (let* ((ov (make-overlay (point-min) (point-min))))
+;    (overlay-put ov 'face '(:background "#228B22")) ;; colors for Leuven theme
+;    ov)
+;  "Overlay variable for GUD highlighting.")
+;(defadvice gud-display-line (after my-gud-highlight act)
+;  "Highlight current line."
+;  (let* ((ov gud-overlay)
+;	 (bf (gud-find-file true-file)))
+;    (save-excursion
+;      (with-selected-window (get-buffer-window bf)
+;	(save-restriction
+;	  (goto-line (ad-get-arg 1))
+;	  (recenter)))
+;      (set-buffer bf)
+;      (move-overlay ov (line-beginning-position) (line-end-position)
+;		    (current-buffer)))))
+;
+
+;(defface xwl-gdb-current-line-face
+;  '((((class color))
+;     (:background "medium sea green")))
+;  "")
+
+
+;; Select a register number which is unlikely to get used elsewere
+;(defconst egdbe-windows-config-register 313465989
+;  "Internal used")
+;
+;(defvar egdbe-windows-config nil)
+;
+;(defun set-egdbe-windows-config ()
+;  (interactive)
+;  (setq egdbe-windows-config (window-configuration-to-register egdbe-windows-config-register)))
+;
+;(defun egdbe-restore-windows-config ()
+;  (interactive)
+;  (jump-to-register egdbe-windows-config-register))
+;
+;(defun egdbe-start-gdb (&optional gdb-args)
+;  ""
+;  (interactive)
+;  (set-egdbe-windows-config)
+;  (call-interactively 'gdb))
+;
+;(defun egdbe-quit ()
+;  "finish."
+;  (interactive)
+;  (gud-basic-call "quit")
+;  (egdbe-restore-windows-config))
+;
+;(defun egdbe-gud-mode-hook ()
+;  ""
+;  (local-unset-key (kbd "q"))
+;  (local-set-key (kbd "q") 'egdbe-quit))
+;
+;(add-hook 'gud-mode-hook 'egdbe-gud-mode-hook)
+
+
+(with-eval-after-load 'magit-mode
+  (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
+
+
+(add-hook 'gud-mode-hook
+          (lambda ()
+             (global-set-key (kbd "C-c c") 'gud-cont)
+             (global-set-key (kbd "C-c p") 'gud-print)
+             (global-set-key (kbd "C-c r") 'gud-run)
+             (global-set-key (kbd "C-c j") 'gud-jump)
+             (global-set-key (kbd "C-c u") 'gud-until)
+             (global-set-key (kbd "C-c w") 'gud-watch)
+             (global-set-key (kbd "C-c b") 'gud-break)
+             (global-set-key (kbd "C-c n") 'gud-next)
+             (global-set-key (kbd "C-c f") 'gud-finish)
+             (global-set-key (kbd "C-c <") 'gud-up)
+             (global-set-key (kbd "C-c s") 'gud-step)))
+
+;; Ensure that all source files are opened in the same window when gdb                                                                                                  
+;; is running.                                                                                                                                                          
+;(add-to-list 'display-buffer-alist
+;         (cons 'gdb-source-code-buffer-p
+;           (cons 'display-buffer-use-some-window nil)))
+;
+;(defun gdb-source-code-buffer-p (bufName action)
+;  "Return whether BUFNAME is a source code buffer and gdb is running."
+;  (let ((buf (get-buffer bufName)))
+;    (and buf
+;         (eq gud-minor-mode 'gdbmi)
+;         (with-current-buffer buf
+;           (derived-mode-p buf 'c++-mode 'c-mode)))))
+;
+;
+
+
+
+(setq xwl-gdb-current-line-overlay nil)
+(defun xwl-gdb-highlight-current-line ()
+  (when gud-overlay-arrow-position
+    (with-current-buffer (marker-buffer gud-overlay-arrow-position)
+      (when xwl-gdb-current-line-overlay
+        (delete-overlay xwl-gdb-current-line-overlay))
+      (setq xwl-gdb-current-line-overlay (make-overlay gud-overlay-arrow-position (line-end-position)))
+      (overlay-put xwl-gdb-current-line-overlay 'face 'xwl-gdb-current-line-face))))
+
+(defun xwl-gdb-unhighlight-current-line ()
+ (delete-overlay xwl-gdb-current-line-overlay))
+
+(defface xwl-gdb-breakpoint-line-face
+  '((((class color))
+     (:background "brown4")))
+  "DodgerBlue4")
+
+(defun xwl-gdb-highlight-breakpoint-line (enabled bptno &optional line)
+  (let* ((bp-line (or line (line-number-at-pos)))
+         (points (gdb-line-posns bp-line))
+         (bp-overlay (make-overlay (car points) (cdr points))))
+    (overlay-put bp-overlay 'face 'xwl-gdb-breakpoint-line-face)))
+
+(defun xwl-gdb-unhighlight-breakpoint-lines (start end &optional remove-margin)
+  (dolist (overlay (overlays-in start end))
+    (when (eq (overlay-get overlay 'face) 'xwl-gdb-breakpoint-line-face)
+      (delete-overlay overlay))))
+
+(with-eval-after-load 'gdb-mi
+  (advice-add 'gdb-frame-handler :after 'xwl-gdb-highlight-current-line)
+  (advice-add 'gdb-reset :after 'xwl-gdb-unhighlight-current-line)
+  (advice-add 'gdb-put-breakpoint-icon :after 'xwl-gdb-highlight-breakpoint-line)
+  (advice-add 'gdb-remove-breakpoint-icons :after 'xwl-gdb-unhighlight-breakpoint-lines))
+
+
+
 (unless (boundp 'done-set-tab-layout)
   (split-window-right)
   (tab-bar-new-tab)
@@ -87,6 +220,7 @@
   (tab-bar-new-tab)
   (split-window-right)
   (tab-bar-select-tab 1)
+  (dired "/home/ubuntu/git-ndas/ndas")
   (setq done-set-tab-layout t))
 
 (setq c-default-style "linux") 
@@ -145,7 +279,15 @@
 					                        ("rr" "- [ ]")
 					                        ("fr" "for(int i = 0; i < @@; ++i){}")
 					                        ("vo" "(void) @@;")
-					                        ("cd" "// TODO(cditzel MB):")))
+					                        ("cd" "// TODO(cditzel MB):")
+					                        ("cla_csft" "--processors=LidarToRadarProcessor
+--targetJson=lidar:gt:top:p128:v4p5;$CSFT_INPUT_PATH/dataset-structured.sqlite --rig=/home/ubuntu/git-ndas/ndas/nv/datasets/2dbf6282-b531-11eb-9c5e-00044baf74dc/rig_dynamic_calibration.json --disableSensorsByType=camera,time --disableSensorsByName=uss:valeo,lidar:parking:gt:front:p128,lidar:parking:gt:left:p128,lidar:parking:gt:rear:p128,lidar:parking:gt:right:p128,lidar:front:center:p128:v4p5,lidar:front:center:p128,radar:cross:left,radar:cross:right,radar:rear:left,radar:rear:right,radar:side:left,radar:side:right,time:nvpps:main:a,time:nvpps:main:b,can:1 --offscreen=1")
+											("cla_exp" "--outputFolder=nv --rig=/home/ubuntu/git-ndas/ndas/nv/datasets/2dbf6282-b531-11eb-9c5e-00044baf74dc/rig_dynamic_calibration.json")
+											("csft" "bazel-bin/tools/experimental/lidarperception/crossSensorFusionTool/tools_experimental_cross_sensor_fusion") 
+											("expo" "bazel-bin/tools/experimental/lidarperception/lidarExporterTool/lidar_exporter_tool")
+											)
+  )
+
 
 (defadvice expand-abbrev (after my-expand-abbrev activate)
   (if ad-return-value
@@ -283,7 +425,7 @@ With a prefix argument P, isearch for the symbol at point."
 ;; C-y M-y paste and cycle
 ;; C-x C-o delete all blank lines below
 ;; C-x TAB after highlighting region to indent
-;; C-M-f,b,a,e,n,p etc. moves in larger chunks
+;; C-M-f,b,n,p etc. moves in larger chunks
 ;; C-M-k und C-M-backspace to delete fwd/bwd up to brackets
 ;; C-u C-SPC back to saved mark
 ;; C-M-v scroll-other-window and C-M-S-v scroll-other-window-down
@@ -303,7 +445,27 @@ With a prefix argument P, isearch for the symbol at point."
 
 (with-eval-after-load "eglot"
   (add-to-list 'eglot-stay-out-of 'eldoc))
+(add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
+(setq flymake-mode 0)
 
+;
+;(custom-set-variables
+; ;; custom-set-variables was added by Custom.
+; ;; If you edit it by hand, you could mess it up, so be careful.
+; ;; Your init file should contain only one such instance.
+; ;; If there is more than one, they won't work right.
+; '(org-safe-remote-resources
+;   '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
+; '(package-selected-packages
+;   '(tree-sitter tree-sitter-langs yaml rainbow-mode markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg)))
+;(custom-set-faces
+; ;; custom-set-faces was added by Custom.
+; ;; If you edit it by hand, you could mess it up, so be careful.
+; ;; Your init file should contain only one such instance.
+; ;; If there is more than one, they won't work right.
+; '(eldoc-highlight-function-argument ((t nil))))
+;
+;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -312,11 +474,10 @@ With a prefix argument P, isearch for the symbol at point."
  '(org-safe-remote-resources
    '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
  '(package-selected-packages
-   '(yaml rainbow-mode markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg tree-sitter-langs)))
+   '(rainbow-mode yaml git-timemachine rg magit multiple-cursors avy expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(eldoc-highlight-function-argument ((t nil))))
-
+ )
