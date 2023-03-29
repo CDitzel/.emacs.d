@@ -12,7 +12,7 @@
 (package-install 'git-timemachine)
 (package-install 'yaml)
 
-(add-hook 'after-init-hook (lambda () (load-theme 'manone-old t)))
+(add-hook 'after-init-hook (lambda () (load-theme 'late-night t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
 
 
@@ -30,7 +30,7 @@
 			        save-interprogram-paste-before-kill t
 			        lazy-highlight-cleanup nil
 			        lazy-highlight-buffer t
-v			        mouse-yank-at-point t
+			        mouse-yank-at-point t
 			        echo-keystrokes 0.1
 			        save-place-mode t
 			        scroll-preserve-screen-position 'always
@@ -72,75 +72,16 @@ v			        mouse-yank-at-point t
 			        tab-always-indent t
 			        ff-always-try-to-create nil
 			        eldoc-echo-area-use-multiline-p 1
-					xref-after-return-hook nil
-					xref-after-jump-hook '(recenter)
-					ff-other-file-alist 'my-cpp-other-file-alist
+				xref-after-return-hook nil
+				xref-after-jump-hook '(recenter)
+				ff-other-file-alist 'my-cpp-other-file-alist
 			        )
 
-;(add-hook 'prog-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
 
 
-;(defvar gud-overlay
-;  (let* ((ov (make-overlay (point-min) (point-min))))
-;    (overlay-put ov 'face '(:background "#228B22")) ;; colors for Leuven theme
-;    ov)
-;  "Overlay variable for GUD highlighting.")
-;(defadvice gud-display-line (after my-gud-highlight act)
-;  "Highlight current line."
-;  (let* ((ov gud-overlay)
-;	 (bf (gud-find-file true-file)))
-;    (save-excursion
-;      (with-selected-window (get-buffer-window bf)
-;	(save-restriction
-;	  (goto-line (ad-get-arg 1))
-;	  (recenter)))
-;      (set-buffer bf)
-;      (move-overlay ov (line-beginning-position) (line-end-position)
-;		    (current-buffer)))))
-;
 
-;(defface xwl-gdb-current-line-face
-;  '((((class color))
-;     (:background "medium sea green")))
-;  "")
-
-
-;; Select a register number which is unlikely to get used elsewere
-;(defconst egdbe-windows-config-register 313465989
-;  "Internal used")
-;
-;(defvar egdbe-windows-config nil)
-;
-;(defun set-egdbe-windows-config ()
-;  (interactive)
-;  (setq egdbe-windows-config (window-configuration-to-register egdbe-windows-config-register)))
-;
-;(defun egdbe-restore-windows-config ()
-;  (interactive)
-;  (jump-to-register egdbe-windows-config-register))
-;
-;(defun egdbe-start-gdb (&optional gdb-args)
-;  ""
-;  (interactive)
-;  (set-egdbe-windows-config)
-;  (call-interactively 'gdb))
-;
-;(defun egdbe-quit ()
-;  "finish."
-;  (interactive)
-;  (gud-basic-call "quit")
-;  (egdbe-restore-windows-config))
-;
-;(defun egdbe-gud-mode-hook ()
-;  ""
-;  (local-unset-key (kbd "q"))
-;  (local-set-key (kbd "q") 'egdbe-quit))
-;
-;(add-hook 'gud-mode-hook 'egdbe-gud-mode-hook)
-
-
-(with-eval-after-load 'magit-mode
-  (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
+;(with-eval-after-load 'magit-mode
+;  (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
 
 
 (add-hook 'gud-mode-hook
@@ -244,7 +185,12 @@ v			        mouse-yank-at-point t
 (delete-selection-mode t)
 (global-visual-line-mode t)
 (global-subword-mode 1)
-;(global-eldoc-mode nil)
+
+
+  (add-hook 'eglot-managed-mode-hook (lambda ()
+                   (remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
+
+
 
 (require 'view)
 
@@ -419,7 +365,7 @@ With a prefix argument P, isearch for the symbol at point."
                      ((eq _ 4)
                       (call-interactively 'bookmark-jump)))))
 
-
+;; C-x C-j dired to current dir
 ;; M-k Kill to end of sentence (kill-sentence).
 ;; C-x DEL backward kill sentence
 ;; C-y M-y paste and cycle
