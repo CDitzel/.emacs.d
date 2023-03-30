@@ -20,7 +20,6 @@
     (set-face-attribute 'default nil :height 160)
   (setq x-super-keysym 'ctrl))
 
-
 (setq-default cursor-in-non-selected-windows nil
 			        inhibit-startup-screen t
 			        initial-scratch-message nil
@@ -97,22 +96,6 @@
              (global-set-key (kbd "C-c f") 'gud-finish)
              (global-set-key (kbd "C-c <") 'gud-up)
              (global-set-key (kbd "C-c s") 'gud-step)))
-
-;; Ensure that all source files are opened in the same window when gdb                                                                                                  
-;; is running.                                                                                                                                                          
-;(add-to-list 'display-buffer-alist
-;         (cons 'gdb-source-code-buffer-p
-;           (cons 'display-buffer-use-some-window nil)))
-;
-;(defun gdb-source-code-buffer-p (bufName action)
-;  "Return whether BUFNAME is a source code buffer and gdb is running."
-;  (let ((buf (get-buffer bufName)))
-;    (and buf
-;         (eq gud-minor-mode 'gdbmi)
-;         (with-current-buffer buf
-;           (derived-mode-p buf 'c++-mode 'c-mode)))))
-;
-;
 
 
 

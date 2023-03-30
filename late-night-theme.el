@@ -41,7 +41,7 @@
 '(font-lock-keyword-face       ((t (:foreground "LimeGreen" :bold t))))
  
  '(font-lock-builtin-face ((t (:bold t :foreground "#777"))))
- '(font-lock-comment-face ((t (:foreground "#555"))))
+ '(font-lock-comment-face       ((t (:italic t :slant oblique :foreground "#333"))))
  '(font-lock-constant-face ((t (:foreground "#777"))))
  '(font-lock-doc-string-face ((t (:foreground "#777"))))
  '(font-lock-doc-face ((t (:foreground "#777"))))
@@ -72,7 +72,9 @@
  '(minibuffer-prompt ((t (:foreground "#00a1c6" :weight bold))))
  '(completions-common-part ((t (:width normal :weight normal :slant normal :foreground "#00a1c6"))))
  '(modeline ((t (:background "#111" :foreground "#444"))))
- '(mode-line-inactive ((t (:background "#000" :foreground "#444"))))
+ '(mode-line-inactive ((t (:background "grey30" :foreground "Black"
+                                       :box '(:line-width 2 :color "grey30")
+                                       :weight bold :height 1.0))))
  '(modeline-buffer-id ((t (:background "#000" :foreground "#555"))))
  '(modeline-mousable ((t (:background "#000" :foreground "#555"))))
  '(modeline-mousable-minor-mode ((t (:background "#000" :foreground "#555"))))
@@ -90,6 +92,34 @@
  '(paren-no-match-face ((t (:bold t :background "white" :foreground "red"))))
  '(show-paren-match ((t (:background "red"))))
  '(show-paren-match-face ((t (:background "red"))))
+
+  '(diff-function-face ((t (:foreground "blue"))))
+;'(ediff-current-diff-face-A ((t (:foreground "pink" :background "pale green"))))
+ ;'(ediff-current-diff-face-Ancestor ((t (:foreground "Black" :background "VioletRed"))))
+ ;'(ediff-current-diff-face-C ((t (:foreground "Navy" :background "Pink"))))
+ ;'(ediff-even-diff-face-A ((t (:foreground "Black" :background "light grey"))))
+ ;'(ediff-even-diff-face-Ancestor ((t (:foreground "White" :background "Grey"))))
+
+ ;'(ediff-even-diff-face-C ((t (:foreground "Black" :background "light grey"))))
+ ;'(ediff-fine-diff-face-A ((t (:foreground "Navy" :background "sky blue"))))
+ ;'(ediff-fine-diff-face-Ancestor ((t (:foreground "Black" :background "Green"))))
+ ;'(ediff-fine-diff-face-B ((t (:foreground "Black" :background "cyan"))))
+ ;'(ediff-fine-diff-face-C ((t (:foreground "Black" :background "Turquoise"))))
+ ;'(ediff-odd-diff-face-A ((t (:foreground "White" :background "Grey"))))
+ ;'(ediff-odd-diff-face-Ancestor ((t (:foreground "Black" :background "light grey"))))
+ ;'(ediff-odd-diff-face-C ((t (:foreground "White" :background "Grey"))))
+
+  '(ediff-current-diff-A ((t (:foreground "White" :background "brown"))))
+  '(ediff-current-diff-B ((t (:foreground "White" :background "DarkGreen"))))
+  '(ediff-fine-diff-B ((t (:foreground "White" :background "DarkGreen"))))
+  '(ediff-current-diff-C ((t (:foreground "White" :background "#00a1c6"))))
+  '(ediff-fine-diff-Ancestor ((t (:foreground "White" :background "#00a1c6"))))
+
+
+  
+  '(ediff-even-diff-face-B ((t (:foreground "DarkGreen" :background "Grey"))))
+  '(ediff-current-diff-face-B ((t (:foreground "DarkGreen" :background "Yellow"))))
+  '(ediff-odd-diff-face-B ((t (:foreground "DarkGreen" :background "DarkGreen"))))
 
  )
 
