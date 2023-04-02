@@ -144,7 +144,7 @@
   (tab-bar-new-tab)
   (split-window-right)
   (tab-bar-select-tab 1)
-  (dired "/home/ubuntu/git-ndas/ndas")
+;  (dired "/home/ubuntu/git-ndas/ndas")
   (setq done-set-tab-layout t))
 
 (setq c-default-style "linux") 
@@ -348,6 +348,8 @@ With a prefix argument P, isearch for the symbol at point."
                      ((eq _ 4)
                       (call-interactively 'bookmark-jump)))))
 
+
+;; C-M-\ indent pasted region
 ;; C-x C-j dired to current dir
 ;; M-k Kill to end of sentence (kill-sentence).
 ;; C-x DEL backward kill sentence
@@ -410,3 +412,4 @@ With a prefix argument P, isearch for the symbol at point."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'scroll-left 'disabled nil)
