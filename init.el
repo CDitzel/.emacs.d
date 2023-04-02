@@ -16,6 +16,7 @@
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
 
 
+
 (if (string-equal (system-name) "lenovo")
     (set-face-attribute 'default nil :height 160)
   (setq x-super-keysym 'ctrl))
@@ -71,9 +72,10 @@
 			        tab-always-indent t
 			        ff-always-try-to-create nil
 			        eldoc-echo-area-use-multiline-p 1
-				xref-after-return-hook nil
-				xref-after-jump-hook '(recenter)
-				ff-other-file-alist 'my-cpp-other-file-alist
+					xref-after-return-hook nil
+					xref-after-jump-hook '(recenter)
+					ff-other-file-alist 'my-cpp-other-file-alist
+					set-mark-command-repeat-pop t ; hit C-u C-spc, leave C pressed and jump by hitting space repeatedly
 			        )
 
 
@@ -348,8 +350,9 @@ With a prefix argument P, isearch for the symbol at point."
                      ((eq _ 4)
                       (call-interactively 'bookmark-jump)))))
 
-
 ;; C-M-\ indent pasted region
+;; C-u C-spc pop local-mark-ring (buffer-wise)
+;; C-x C-spc pop global-mark-ring 
 ;; C-x C-j dired to current dir
 ;; M-k Kill to end of sentence (kill-sentence).
 ;; C-x DEL backward kill sentence
