@@ -4,22 +4,19 @@
                "http://melpa.org/packages/"))
 (package-initialize)
 
-(package-install 'expand-region)
-(package-install 'avy)
-(package-install 'multiple-cursors)
-(package-install 'magit)
 (package-install 'rg)
+(package-install 'avy)
+(package-install 'magit)
 (package-install 'git-timemachine)
-(package-install 'yaml)
 
-(add-hook 'after-init-hook (lambda () (load-theme 'late-night t)))
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
-
-
 
 (if (string-equal (system-name) "lenovo")
     (set-face-attribute 'default nil :height 160)
   (setq x-super-keysym 'ctrl))
+
+;(setq desktop-path '("~/.emacs.d/")) 
+;(desktop-save-mode 1)
 
 (setq-default cursor-in-non-selected-windows nil
 			        inhibit-startup-screen t
@@ -62,6 +59,7 @@
 			        ediff-split-window-function (quote split-window-horizontally)
 			        gud-gdb-command-name "gdb --i=mi "
 			        gdb-many-windows t
+					gdb-debuginfod-enable 0
 			        x-super-keysym 'ctrl
 			        icomplete-compute-delay 0 
 			        max-mini-window-height 10
@@ -77,64 +75,6 @@
 					ff-other-file-alist 'my-cpp-other-file-alist
 					set-mark-command-repeat-pop t ; hit C-u C-spc, leave C pressed and jump by hitting space repeatedly
 			        )
-
-
-
-
-;(with-eval-after-load 'magit-mode
-;  (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
-
-
-(add-hook 'gud-mode-hook
-          (lambda ()
-             (global-set-key (kbd "C-c c") 'gud-cont)
-             (global-set-key (kbd "C-c p") 'gud-print)
-             (global-set-key (kbd "C-c r") 'gud-run)
-             (global-set-key (kbd "C-c j") 'gud-jump)
-             (global-set-key (kbd "C-c u") 'gud-until)
-             (global-set-key (kbd "C-c w") 'gud-watch)
-             (global-set-key (kbd "C-c b") 'gud-break)
-             (global-set-key (kbd "C-c n") 'gud-next)
-             (global-set-key (kbd "C-c f") 'gud-finish)
-             (global-set-key (kbd "C-c <") 'gud-up)
-             (global-set-key (kbd "C-c s") 'gud-step)))
-
-
-
-(setq xwl-gdb-current-line-overlay nil)
-(defun xwl-gdb-highlight-current-line ()
-  (when gud-overlay-arrow-position
-    (with-current-buffer (marker-buffer gud-overlay-arrow-position)
-      (when xwl-gdb-current-line-overlay
-        (delete-overlay xwl-gdb-current-line-overlay))
-      (setq xwl-gdb-current-line-overlay (make-overlay gud-overlay-arrow-position (line-end-position)))
-      (overlay-put xwl-gdb-current-line-overlay 'face 'xwl-gdb-current-line-face))))
-
-(defun xwl-gdb-unhighlight-current-line ()
- (delete-overlay xwl-gdb-current-line-overlay))
-
-(defface xwl-gdb-breakpoint-line-face
-  '((((class color))
-     (:background "brown4")))
-  "DodgerBlue4")
-
-(defun xwl-gdb-highlight-breakpoint-line (enabled bptno &optional line)
-  (let* ((bp-line (or line (line-number-at-pos)))
-         (points (gdb-line-posns bp-line))
-         (bp-overlay (make-overlay (car points) (cdr points))))
-    (overlay-put bp-overlay 'face 'xwl-gdb-breakpoint-line-face)))
-
-(defun xwl-gdb-unhighlight-breakpoint-lines (start end &optional remove-margin)
-  (dolist (overlay (overlays-in start end))
-    (when (eq (overlay-get overlay 'face) 'xwl-gdb-breakpoint-line-face)
-      (delete-overlay overlay))))
-
-(with-eval-after-load 'gdb-mi
-  (advice-add 'gdb-frame-handler :after 'xwl-gdb-highlight-current-line)
-  (advice-add 'gdb-reset :after 'xwl-gdb-unhighlight-current-line)
-  (advice-add 'gdb-put-breakpoint-icon :after 'xwl-gdb-highlight-breakpoint-line)
-  (advice-add 'gdb-remove-breakpoint-icons :after 'xwl-gdb-unhighlight-breakpoint-lines))
-
 
 
 (unless (boundp 'done-set-tab-layout)
@@ -160,7 +100,6 @@
 (show-paren-mode t)
 (fido-vertical-mode t)
 (fringe-mode 0)
-
 (savehist-mode 1) ;; save minibuffer history
 (recentf-mode t)
 (tool-bar-mode -1)
@@ -171,19 +110,23 @@
 (global-visual-line-mode t)
 (global-subword-mode 1)
 
-
-  (add-hook 'eglot-managed-mode-hook (lambda ()
-                   (remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
-
+(add-hook 'eglot-managed-mode-hook (lambda ()
+									 (remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
 
 
 (require 'view)
-
 
 (rg-define-search rg-everything
   :files "everything"
   :confirm prefix
   :menu ("Search" "e" "Everything"))
+
+(rg-define-search rg-everything-from-project-root
+  :files "everything"
+  :confirm prefix
+  :dir project
+  :menu ("Search" "e" "Everything"))
+
 
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
@@ -208,16 +151,11 @@
 					                        ("ex" "exit(1);")
 					                        ("os" "std::cout << @@ << \"\\n\";")
 					                        ("rr" "- [ ]")
-					                        ("fr" "for(int i = 0; i < @@; ++i){}")
+					                        ("fr" "for(uint32_t i = 0; i < @@; ++i){}")
 					                        ("vo" "(void) @@;")
 					                        ("cd" "// TODO(cditzel MB):")
-					                        ("cla_csft" "--processors=LidarToRadarProcessor
---targetJson=lidar:gt:top:p128:v4p5;$CSFT_INPUT_PATH/dataset-structured.sqlite --rig=/home/ubuntu/git-ndas/ndas/nv/datasets/2dbf6282-b531-11eb-9c5e-00044baf74dc/rig_dynamic_calibration.json --disableSensorsByType=camera,time --disableSensorsByName=uss:valeo,lidar:parking:gt:front:p128,lidar:parking:gt:left:p128,lidar:parking:gt:rear:p128,lidar:parking:gt:right:p128,lidar:front:center:p128:v4p5,lidar:front:center:p128,radar:cross:left,radar:cross:right,radar:rear:left,radar:rear:right,radar:side:left,radar:side:right,time:nvpps:main:a,time:nvpps:main:b,can:1 --offscreen=1")
-											("cla_exp" "--outputFolder=nv --rig=/home/ubuntu/git-ndas/ndas/nv/datasets/2dbf6282-b531-11eb-9c5e-00044baf74dc/rig_dynamic_calibration.json")
-											("csft" "bazel-bin/tools/experimental/lidarperception/crossSensorFusionTool/tools_experimental_cross_sensor_fusion") 
-											("expo" "bazel-bin/tools/experimental/lidarperception/lidarExporterTool/lidar_exporter_tool")
-											)
-  )
+											("db" "std::cout << \"==========MY_DEBUG========== \" << @@ << \"\\n\";")
+											))
 
 
 (defadvice expand-abbrev (after my-expand-abbrev activate)
@@ -271,7 +209,6 @@ search started."
 (define-key isearch-mode-map (kbd "<backspace>") 'prot-search-isearch-abort-dwim)
 
 
-
 (defun endless/isearch-symbol-with-prefix (p)
   "Like isearch, unless prefix argument is provided.
 With a prefix argument P, isearch for the symbol at point."
@@ -285,7 +222,6 @@ With a prefix argument P, isearch for the symbol at point."
 (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
 (global-unset-key (kbd "C-x C-z"))
 (global-unset-key (kbd "C-z"))
-
 
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
@@ -307,17 +243,16 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "M-j") (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
  (define-key map (kbd "C-`") (lambda () (interactive) (ff-find-other-file nil t)))
  (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
- (define-key map (kbd "C-c f") 'bookmark-jump)
+ ;(define-key map (kbd "C-c f") 'bookmark-jump)
  (define-key map (kbd "C-x C-d") 'dired)
  (define-key map (kbd "C-x d") 'find-name-dired)
  (define-key map (kbd "C-c C-r") 'rg-everything)
+ (define-key map (kbd "C-c r") 'rg-everything-from-project-root)
  (define-key map (kbd "M-n") 'scroll-up-line)
  (define-key map (kbd "M-p") 'scroll-down-line)
  (define-key map (kbd "C-.") 'goto-last-change)
  (define-key map (kbd "C-j") 'avy-goto-char-timer)
  (define-key map (kbd "C-c e") 'mc/edit-lines)
- (define-key map (kbd "C-'") 'er/expand-region)
- (define-key map (kbd "C-;") 'er/contract-region)
  (define-key map (kbd "C-t") 'duplicate-line)
  (define-key map (kbd "C-c g") 'magit-status)
  (define-key map (kbd "C-v") 'View-scroll-half-page-forward)
@@ -360,7 +295,6 @@ With a prefix argument P, isearch for the symbol at point."
 ;; C-x TAB after highlighting region to indent
 ;; C-M-f,b,n,p etc. moves in larger chunks
 ;; C-M-k und C-M-backspace to delete fwd/bwd up to brackets
-;; C-u C-SPC back to saved mark
 ;; C-M-v scroll-other-window and C-M-S-v scroll-other-window-down
 ;; (M-{ / M-} backard / forward paragraph 
 ;; C-M-a and C-M-e to move back and forward a function at a time.
@@ -375,42 +309,37 @@ With a prefix argument P, isearch for the symbol at point."
 ;; C-M-@ mark words or C-M-SPC
 ;; M-; insert comment
 ;; C-c C-c comment
+;; M-s h r	Highlight regexp
+;; M-s h u	Undo the highlight
 
 (with-eval-after-load "eglot"
   (add-to-list 'eglot-stay-out-of 'eldoc))
 (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
-(setq flymake-mode 0)
 
-;
-;(custom-set-variables
-; ;; custom-set-variables was added by Custom.
-; ;; If you edit it by hand, you could mess it up, so be careful.
-; ;; Your init file should contain only one such instance.
-; ;; If there is more than one, they won't work right.
-; '(org-safe-remote-resources
-;   '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
-; '(package-selected-packages
-;   '(tree-sitter tree-sitter-langs yaml rainbow-mode markdown markdown-mode git-timemachine expand-region avy multiple-cursors bind-key magit rg)))
-;(custom-set-faces
-; ;; custom-set-faces was added by Custom.
-; ;; If you edit it by hand, you could mess it up, so be careful.
-; ;; Your init file should contain only one such instance.
-; ;; If there is more than one, they won't work right.
-; '(eldoc-highlight-function-argument ((t nil))))
-;
-;
+(add-hook 'after-init-hook (lambda () (load-theme 'late-night t)))
+
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("85dfc58d150f35da8c788e04b21e282e45dc09c8ace7ff669c3c7b5a35f95afc" default))
+ '(eglot-menu-string "")
+ '(gdb-debuginfod-enable-setting t)
  '(org-safe-remote-resources
    '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
  '(package-selected-packages
-   '(rainbow-mode yaml git-timemachine rg magit multiple-cursors avy expand-region)))
+   '(json-mode git-timemachine rg magit multiple-cursors avy expand-region)))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(which-func ((t (:foreground "black")))))

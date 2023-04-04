@@ -32,31 +32,34 @@
 (custom-theme-set-faces
  'late-night
 
- '(default ((t (:background "black" :foreground "#666"))))
- ;'(cursor ((t (:background "#00a1c6"))))
- '(cursor ((t (:background "#00ff33"))))
- '(cursor ((t (:foregound "#888"))))
- ;'(border ((t (:foregound "#000"))))
+ ;'(default ((t (:background "black" :foreground "#999"))))
+ '(default ((t (:background "black" :foreground "#D3D7CF"))))
+ '(cursor ((t (:background "#00ff33" :foregound "#888"))))
 
 '(font-lock-keyword-face       ((t (:foreground "LimeGreen" :bold t))))
- 
+'(font-lock-type-face          ((t (:foreground "#00a1c6"))))
+'(font-lock-variable-name-face ((t (:foreground "dark cyan")))) 
+'(font-lock-dired-directory ((t (:foreground "green"))))
+'(dired-directory ((t (:foreground "#739FCF" :bold t))))
+'(font-lock-constant-face      ((t (:foreground "#8480FF" :bold nil))))
  '(font-lock-builtin-face ((t (:bold t :foreground "#777"))))
- '(font-lock-comment-face       ((t (:italic t :slant oblique :foreground "#333"))))
+ '(font-lock-comment-face       ((t (:italic t :slant oblique :foreground "#555"))))
  '(font-lock-constant-face ((t (:foreground "#777"))))
  '(font-lock-doc-string-face ((t (:foreground "#777"))))
  '(font-lock-doc-face ((t (:foreground "#777"))))
- '(font-lock-function-name-face ((t (:bold t :foreground "#777"))))
+ '(font-lock-function-name-face ((t (:foreground "gold"))))
  '(font-lock-keyword-face ((t (:foreground "#777"))))
  '(font-lock-preprocessor-face ((t (:foreground "#777"))))
  '(font-lock-reference-face ((t (:foreground "#777"))))
  '(font-lock-string-face ((t (:foreground "#777"))))
- '(font-lock-type-face ((t (:bold t))))
  '(font-lock-variable-name-face ((t (:bold t :foreground "#888"))))
  '(font-lock-warning-face ((t (:bold t :foreground "#999"))))
 
  '(isearch ((t (:bold t :background "yellow" :foreground "black" :weight bold))))
  '(isearch-fail ((t (:background "red"))))
  '(isearch-lazy-highlight-face ((t (:background "blue" :foreground "black" :weight bold))))
+ '(lazy-highlight ((t (:background "blue4" :foreground "#888888" :bold t))))
+ '(isearch-secondary ((t (:foreground "red3"))))
  
  '(bold ((t (:bold t))))
  '(button ((t (:bold t))))
@@ -71,7 +74,13 @@
  ;;'(minibuffer-prompt ((t (:foreground "cyan" :weight bold))))
  '(minibuffer-prompt ((t (:foreground "#00a1c6" :weight bold))))
  '(completions-common-part ((t (:width normal :weight normal :slant normal :foreground "#00a1c6"))))
- '(modeline ((t (:background "#111" :foreground "#444"))))
+ 
+ ;'(modeline ((t (:background "#111" :foreground "#444"))))
+
+ '(mode-line ((t (:background "grey80" :foreground "Black"
+                  :box '(:line-width -1 :style released-button)
+                  :height 1.0 :weight bold))))
+ 
  '(mode-line-inactive ((t (:background "grey30" :foreground "Black"
                                        :box '(:line-width 2 :color "grey30")
                                        :weight bold :height 1.0))))
@@ -94,29 +103,11 @@
  '(show-paren-match-face ((t (:background "red"))))
 
   '(diff-function-face ((t (:foreground "blue"))))
-;'(ediff-current-diff-face-A ((t (:foreground "pink" :background "pale green"))))
- ;'(ediff-current-diff-face-Ancestor ((t (:foreground "Black" :background "VioletRed"))))
- ;'(ediff-current-diff-face-C ((t (:foreground "Navy" :background "Pink"))))
- ;'(ediff-even-diff-face-A ((t (:foreground "Black" :background "light grey"))))
- ;'(ediff-even-diff-face-Ancestor ((t (:foreground "White" :background "Grey"))))
-
- ;'(ediff-even-diff-face-C ((t (:foreground "Black" :background "light grey"))))
- ;'(ediff-fine-diff-face-A ((t (:foreground "Navy" :background "sky blue"))))
- ;'(ediff-fine-diff-face-Ancestor ((t (:foreground "Black" :background "Green"))))
- ;'(ediff-fine-diff-face-B ((t (:foreground "Black" :background "cyan"))))
- ;'(ediff-fine-diff-face-C ((t (:foreground "Black" :background "Turquoise"))))
- ;'(ediff-odd-diff-face-A ((t (:foreground "White" :background "Grey"))))
- ;'(ediff-odd-diff-face-Ancestor ((t (:foreground "Black" :background "light grey"))))
- ;'(ediff-odd-diff-face-C ((t (:foreground "White" :background "Grey"))))
-
   '(ediff-current-diff-A ((t (:foreground "White" :background "brown"))))
   '(ediff-current-diff-B ((t (:foreground "White" :background "DarkGreen"))))
   '(ediff-fine-diff-B ((t (:foreground "White" :background "DarkGreen"))))
   '(ediff-current-diff-C ((t (:foreground "White" :background "#00a1c6"))))
   '(ediff-fine-diff-Ancestor ((t (:foreground "White" :background "#00a1c6"))))
-
-
-  
   '(ediff-even-diff-face-B ((t (:foreground "DarkGreen" :background "Grey"))))
   '(ediff-current-diff-face-B ((t (:foreground "DarkGreen" :background "Yellow"))))
   '(ediff-odd-diff-face-B ((t (:foreground "DarkGreen" :background "DarkGreen"))))
@@ -164,6 +155,28 @@
 
 
 
+;(setq-default mode-line-misc-info
+;              (list (propertize " %l " 'face 'mode-line)))
+
+
+;(setq-default which-func-format
+;              (propertize which-func-current
+;                          'face '(:weight bold)))
+;(setq which-func-format
+;      `(:propertize which-func-current
+;                    face font-lock-function-name-face))
+;
+;
+;;; Show the current function name in the header line
+;(which-function-mode)
+;  (eval-after-load "which-func"
+;      '(setq which-func-modes '(c++-mode c-mode)))
+;
+;
+;(setq mode-line-misc-info
+;      (remove 'project mode-line-misc-info))
+										;
+
 (setq-default mode-line-format
 	      (quote
 	       (#(" " 0 1
@@ -174,12 +187,28 @@
 		"    "
 		(line-number-mode "%l/")
 		(:eval (number-to-string (count-lines (point-min) (point-max))))		
-				 
-		"                                                                                                  "
-		(:eval   (if (eq ml-selected-window (selected-window))
-        (format-time-string "%H:%M")
-        ))
+		"    "
+										;mode-line-misc-info
+		   ;(:propertize which-func-format
+            ;                 local-map mode-line-major-mode-keymap
+                             ;mouse-face mode-line-highlight
+										;face font-lock-function-name-face
+			;				 )
+		"    "
 		)))
+;   '(which-function-mode ("" which-func-format "--"))
+
+
+;(setq mode-line-format
+;  (list "-"
+;   'mode-line-mule-info
+;   'mode-line-modified
+;   "%b--"
+;   ;; Note that this is evaluated while making the list.
+;   ;; It makes a mode line construct which is just a string.
+;   "   "
+;   '(which-function-mode ("" which-func-format "--"))
+;   '(-3 "%p")))
 
 
 
@@ -191,9 +220,10 @@
                                  'mode-line-buffer-id
 										;'some-other-face)
 							   )
-                       'help-echo "Buffer name mouse-1: Previous buffer\nmouse-3: Next buffer"
-                       'mouse-face 'mode-line-highlight
-                       'local-map mode-line-buffer-identification-keymap))))
+                       ;'help-echo "Buffer name mouse-1: Previous buffer\nmouse-3: Next buffer"
+                       ;'mouse-face 'mode-line-highlight
+                       ;'local-map mode-line-buffer-identification-keymap
+					   ))))
 
 
 
