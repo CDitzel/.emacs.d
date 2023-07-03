@@ -8,6 +8,8 @@
 (package-install 'avy)
 (package-install 'magit)
 (package-install 'git-timemachine)
+(package-install 'expand-region)
+(package-install 'yaml)
 
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
 
@@ -86,7 +88,7 @@
   (tab-bar-new-tab)
   (split-window-right)
   (tab-bar-select-tab 1)
-  (dired "/home/ubuntu/git-ndas/ndas")
+;  (dired "/home/ubuntu/git-ndas/ndas")
   (setq done-set-tab-layout t))
 
 (setq c-default-style "linux") 
@@ -114,7 +116,15 @@
 									 (remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
 
 
+(defun aws ()
+    (interactive)
+    (dired "/ssh:aws:git-ndas/ndas"))
+
+(remove-hook 'tramp-cleanup-connection-hook #'tramp-recentf-cleanup)
+(remove-hook 'tramp-cleanup-all-connections-hook #'tramp-recentf-cleanup-all)
+
 (require 'view)
+(require 'yaml)
 
 (rg-define-search rg-everything
   :files "everything"
@@ -251,6 +261,8 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "M-p") 'scroll-down-line)
  (define-key map (kbd "C-j") 'avy-goto-char-timer)
  (define-key map (kbd "C-t") 'duplicate-line)
+ (define-key map (kbd "C-'") 'er/expand-region)
+ (define-key map (kbd "C-;") 'er/contract-region)
  (define-key map (kbd "C-c g") 'magit-status)
  (define-key map (kbd "C-v") 'View-scroll-half-page-forward)
  (define-key map (kbd "M-v") 'View-scroll-half-page-backward)
@@ -323,13 +335,15 @@ With a prefix argument P, isearch for the symbol at point."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("85dfc58d150f35da8c788e04b21e282e45dc09c8ace7ff669c3c7b5a35f95afc" default))
+   '("85dfc58d150f35da8c788e04b21e282e45dc09c8ace7ff669c3c7b5a35f95afc"
+	 default))
  '(eglot-menu-string "")
  '(gdb-debuginfod-enable-setting t)
  '(org-safe-remote-resources
    '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
  '(package-selected-packages
-   '(json-mode git-timemachine rg magit multiple-cursors avy expand-region)))
+   '(json-mode git-timemachine rg magit multiple-cursors avy
+			   expand-region)))
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
