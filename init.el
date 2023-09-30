@@ -1,3 +1,7 @@
+;(setenv "PATH" (concat (getenv "PATH") ":~"))
+
+;(shell-command-to-string "start_agent")
+
 (require 'package)
 (add-to-list 'package-archives 
              '("MELPA" .
@@ -6,19 +10,87 @@
 
 (package-install 'rg)
 (package-install 'avy)
-(package-install 'magit)
-(package-install 'git-timemachine)
+;(package-install 'magit)
+;(package-install 'git-timemachine)
 (package-install 'expand-region)
-(package-install 'yaml)
+(package-install 'yaml-mode)
+(package-install 'json-mode)
+;(package-install 'dired-rsync)
 
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
+;(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(emacs22))))
 
-(if (string-equal (system-name) "lenovo")
-    (set-face-attribute 'default nil :height 160)
-  (setq x-super-keysym 'ctrl))
+(setq winum-keymap
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "M-0") 'winum-select-window-0)
+      (define-key map (kbd "M-1") 'winum-select-window-1)
+      (define-key map (kbd "M-2") 'winum-select-window-2)
+      (define-key map (kbd "M-3") 'winum-select-window-3)
+      (define-key map (kbd "M-4") 'winum-select-window-4)
+      map))
+
+(require 'winum)
+(winum-mode)
+
+;(setq completion-auto-help 'visible)
+;(setq completion-auto-select 'second-tab)
+
+(add-hook 'occur-hook (lambda () (switch-to-buffer-other-window "*Occur*")))
+
+
+;(require 'treesit)
+;(add-to-list
+; 'treesit-language-source-alist
+; '(
+
+;;   (add-to-list 'major-mode-remap-alist
+				;'(sh-mode . bash-ts-mode))
+
+;(if (string-equal (system-name) "lenovo")
+;(set-face-attribute 'default nil :height 100)
+(set-frame-font "DejaVu Sans Mono 10" nil t)
+
+;(setq x-super-keysym 'ctrl)
+;)
 
 ;(setq desktop-path '("~/.emacs.d/")) 
 ;(desktop-save-mode 1)
+
+;(setenv "PATH" (concat (getenv "PATH") ":/usr/bin/"))
+;(setq exec-path (append exec-path '("/usr/bin")))
+
+;; (defun set-exec-path-from-shell-PATH ()
+;;   "Set up Emacs' `exec-path' and PATH environment variable to match
+;; that used by the user's shell.
+
+;; This is particularly useful under Mac OS X and macOS, where GUI
+;; apps are not started from a shell."
+;;   (interactive)
+;;   (let ((path-from-shell (replace-regexp-in-string
+;; 			  "[ \t\n]*$" "" (shell-command-to-string
+;; 					  "$SHELL --login -c 'echo $PATH'"
+;; 						    ))))
+;;     (setenv "PATH" path-from-shell)
+;;     (setq exec-path (split-string path-from-shell path-separator))))
+
+;; (set-exec-path-from-shell-PATH)
+
+
+(add-hook 'dired-mode-hook 'dired-hide-details-mode)
+
+					;(define-key map dired-mode-map (kbd "e") 'dired-up-directory)
+
+(eval-after-load "dired" '(progn
+							(define-key dired-mode-map (kbd "e") 'dired-up-directory) ))
+(eval-after-load "dired" '(progn
+  (define-key dired-mode-map (kbd "w") 'dired-toggle-read-only) ))
+
+;(define-key dired-mode-map "e"
+;    (lambda ()
+;      (interactive)
+;      (find-alternate-file "..")))
+
+(setq savehist-additional-variables '(register-alist-kill-ring))
 
 (setq-default cursor-in-non-selected-windows nil
 			        inhibit-startup-screen t
@@ -49,6 +121,7 @@
 			        global-auto-revert-non-file-buffers t
 			        auto-revert-verbose nil
 			        dired-auto-revert-buffer t
+					auto-revert-remote-files t
 			        window-combination-resize t
 			        completion-auto-help nil
 			        recentf-max-saved-items nil
@@ -78,7 +151,8 @@
 					set-mark-command-repeat-pop t ; hit C-u C-spc, leave C pressed and jump by hitting space repeatedly
 			        )
 
-
+(setq split-width-threshold nil)
+1
 (unless (boundp 'done-set-tab-layout)
   (split-window-right)
   (tab-bar-new-tab)
@@ -112,19 +186,78 @@
 (global-visual-line-mode t)
 (global-subword-mode 1)
 
-(add-hook 'eglot-managed-mode-hook (lambda ()
-									 (remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
+
+;(add-hook 'eglot-managed-mode-hook (lambda ()
+;(remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
 
 
 (defun aws ()
-    (interactive)
-    (dired "/ssh:aws:git-ndas/ndas"))
+  (interactive)
+  (dired "/ssh:aws:git-ndas/ndas"))
+
+
+;(setq lsp-pyls-server-command "/usr/bin/pylsp")
+
+;(customize-set-variable 'tramp-use-ssh-controlmaster-options nil)
+;(setq tramp-use-ssh-controlmaster-options nil)
+;(setq enable-remote-dir-locals t)
+;(setq file-name-inhibit-locks t)
+;(setq tramp-inline-compress-start-size 1000)
+;(setq tramp-copy-size-limit 10000)
+;(setq tramp-default-method "scp")
+
+;;; alternatively
+;(customize-set-variable
+; 'tramp-ssh-controlmaster-options
+; (concat
+;"-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
+;"-o ControlMaster=auto -o ControlPersist=yes"))
+;(setq tramp-default-method "ssh")
 
 (remove-hook 'tramp-cleanup-connection-hook #'tramp-recentf-cleanup)
 (remove-hook 'tramp-cleanup-all-connections-hook #'tramp-recentf-cleanup-all)
 
+ ;; cache file-name forever
+;(setq remote-file-name-inhibit-cache nil)
+(setq vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
+ ;; make sure vc stuff is not making tramp slower
+;(setq vc-ignore-dir-regexp (format "%s\\|%s" vc-ignore-dir-regexp tramp-file-name-regexp))
+
+;(setq tramp-auto-save-directory "~/tmp/tramp/")
+;(setq tramp-chunksize 2000)
+
 (require 'view)
-(require 'yaml)
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(require 'json-mode)
+
+;
+;(with-eval-after-load 'eglot
+;  (add-to-list 'eglot-server-programs
+;               '((c-mode c++-mode)
+;                 . ("clangd-15"
+;                    "-j=16"
+;                    "--log=error"
+;                    "--malloc-trim"
+;                    "--background-index"
+;                    "--clang-tidy"
+;                    "--cross-file-rename"
+;                    "--completion-style=detailed"
+;                    "--pch-storage=memory"
+;                    "--header-insertion=never"
+;                    "--header-insertion-decorators=0")))
+; (add-to-list 'eglot-server-programs '(python-mode . ("pylsp")))
+; )
+;(add-hook 'c-mode-hook 'eglot-ensure)
+;(add-hook 'c++-mode-hook 'eglot-ensure)
+;(add-hook 'python-mode-hook 'eglot-ensure)
+
+; py-related (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+
+;(with-eval-after-load 'eglot
+;(add-to-list 'eglot-server-programs '(python-mode . ("/usr/bin/pylsp"))))
+;(add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server"))))
+;(add-hook 'python-mode-hook 'eglot-ensure)
 
 (rg-define-search rg-everything
   :files "everything"
@@ -137,25 +270,6 @@
   :dir project
   :menu ("Search" "e" "Everything"))
 
-
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '((c-mode c++-mode)
-                 . ("clangd-15"
-                    "-j=16"
-                    "--log=error"
-                    "--malloc-trim"
-                    "--background-index"
-                    "--clang-tidy"
-                    "--cross-file-rename"
-                    "--completion-style=detailed"
-                    "--pch-storage=memory"
-                    "--header-insertion=never"
-                    "--header-insertion-decorators=0"))))
-(add-hook 'c-mode-hook 'eglot-ensure)
-(add-hook 'c++-mode-hook 'eglot-ensure)
-
-
 (define-abbrev-table 'global-abbrev-table '(
 					                        ("pr" "printf(\"%d\\n\", @@);")
 					                        ("ex" "exit(1);")
@@ -164,6 +278,7 @@
 					                        ("fr" "for(uint32_t i = 0; i < @@; ++i){}")
 					                        ("vo" "(void) @@;")
 					                        ("cd" "// TODO(cditzel MB):")
+					                        ("cdp" "# TODO(cditzel MB):")
 											("db" "std::cout << \"==========MY_DEBUG========== \" << @@ << \"\\n\";")
 											))
 
@@ -198,6 +313,7 @@
    ("\\.cuh\\'" (".cu" ".cpp"))
    ("\\.cu\\'" (".cuh" ".hpp"))
    ("\\.c\\'" (".h"))
+   ("\\.h\\'" ("interface.cpp"))
    ("\\.h\\'" (".c"))
    ))
 
@@ -217,6 +333,8 @@ search started."
   (isearch-update))
 
 (define-key isearch-mode-map (kbd "<backspace>") 'prot-search-isearch-abort-dwim)
+
+;(define-key dired-mode-map (kbd "C-c C-t") 'dired-rsync)
 
 
 (defun endless/isearch-symbol-with-prefix (p)
@@ -250,6 +368,7 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "C-x b") 'ibuffer)
  (define-key map (kbd "C-x k") 'kill-current-buffer)
  (define-key map (kbd "H-i") 'goto-line)
+ (define-key map (kbd "C-M-a") 'beginning-of-defun)
  (define-key map (kbd "M-j") (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
  (define-key map (kbd "C-`") (lambda () (interactive) (ff-find-other-file nil t)))
  (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
@@ -266,7 +385,6 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "C-c g") 'magit-status)
  (define-key map (kbd "C-v") 'View-scroll-half-page-forward)
  (define-key map (kbd "M-v") 'View-scroll-half-page-backward)
- (define-key map (kbd "C-c g") 'magit-status)
  (define-key map (kbd "C-c t") 'git-timemachine)
  map
  ))
@@ -294,6 +412,8 @@ With a prefix argument P, isearch for the symbol at point."
                      ((eq _ 4)
                       (call-interactively 'bookmark-jump)))))
 
+;; C-x C-x exhange mark, if you forget to mark text before
+;; C-d to confirm file renaming with partial existing subword
 ;; C-u C-spc pop local-mark-ring (buffer-wise)
 ;; C-x C-spc pop global-mark-ring 
 ;; C-x C-j dired to current dir
@@ -321,36 +441,35 @@ With a prefix argument P, isearch for the symbol at point."
 ;; M-s h r	Highlight regexp
 ;; M-s h u	Undo the highlight
 
-(with-eval-after-load "eglot"
-  (add-to-list 'eglot-stay-out-of 'eldoc))
-(add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
-
+;(with-eval-after-load "eglot"
+;(add-to-list 'eglot-stay-out-of 'eldoc))
+;(add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
+;
 (add-hook 'after-init-hook (lambda () (load-theme 'late-night t)))
 
 
-
+;(getenv "SSH_AGENT_PID")  
+;(getenv "SSH_AUTH_SOCK")
+;(setq tramp-shell-prompt-pattern "^[^$>\n]*[#$%>] *\\(\[[0-9;]*[a-zA-Z] *\\)*")
+;(connection-local-set-profile-variables
+; 'remote-without-auth-sources '((auth-sources . nil)))
+;
+;(connection-local-set-profiles
+; '(:application tramp) 'remote-without-auth-sources)
+;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("85dfc58d150f35da8c788e04b21e282e45dc09c8ace7ff669c3c7b5a35f95afc"
-	 default))
- '(eglot-menu-string "")
- '(gdb-debuginfod-enable-setting t)
+ '(icomplete-in-buffer t)
  '(org-safe-remote-resources
    '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
- '(package-selected-packages
-   '(json-mode git-timemachine rg magit multiple-cursors avy
-			   expand-region)))
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.)
+ '(package-selected-packages nil)
+ '(tramp-verbose 1))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(which-func ((t (:foreground "black")))))
+ '(highlight ((t (:foreground "#00a1c6" :weight heavy)))))

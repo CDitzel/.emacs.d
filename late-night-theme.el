@@ -38,14 +38,15 @@
 
 '(font-lock-keyword-face       ((t (:foreground "LimeGreen" :bold t))))
 '(font-lock-type-face          ((t (:foreground "#00a1c6"))))
-'(font-lock-variable-name-face ((t (:foreground "dark cyan")))) 
+;'(font-lock-variable-name-face ((t (:foreground "dark cyan")))) 
+'(font-lock-variable-name-face ((t (:foreground "cyan3")))) 
 '(font-lock-dired-directory ((t (:foreground "green"))))
 '(dired-directory ((t (:foreground "#739FCF" :bold t))))
 '(font-lock-constant-face      ((t (:foreground "#8480FF" :bold nil))))
  '(font-lock-builtin-face ((t (:bold t :foreground "#777"))))
  '(font-lock-comment-face       ((t (:italic t :slant oblique :foreground "#555"))))
  '(font-lock-constant-face ((t (:foreground "#777"))))
- '(font-lock-doc-string-face ((t (:foreground "#777"))))
+ '(font-lock-doc-string-face ((t (:foreground "chocolate"))))
  '(font-lock-doc-face ((t (:foreground "#777"))))
  '(font-lock-function-name-face ((t (:foreground "gold"))))
  '(font-lock-keyword-face ((t (:foreground "#777"))))
@@ -177,6 +178,23 @@
 ;      (remove 'project mode-line-misc-info))
 										;
 
+
+
+(setq-default mode-line-format
+	      (quote
+	       (#(" " 0 1
+		  ())
+		mode-line-modified
+		"    "
+		mode-line-buffer-identification
+		"    "
+		(line-number-mode "%l/")
+		(:eval (number-to-string (count-lines (point-min) (point-max))))
+		"                                                                                                       "
+		(:eval (format-time-string "%H:%M"))
+		)))
+
+
 (setq-default mode-line-format
 	      (quote
 	       (#(" " 0 1
@@ -187,16 +205,12 @@
 		"    "
 		(line-number-mode "%l/")
 		(:eval (number-to-string (count-lines (point-min) (point-max))))		
-		"    "
-										;mode-line-misc-info
-		   ;(:propertize which-func-format
-            ;                 local-map mode-line-major-mode-keymap
-                             ;mouse-face mode-line-highlight
-										;face font-lock-function-name-face
-			;				 )
+		"              "
+;		(:eval (format-time-string "%H:%M"))
 		"    "
 		)))
-;   '(which-function-mode ("" which-func-format "--"))
+		  ;'(which-function-mode ("" which-func-format "--"))
+		  ;)
 
 
 ;(setq mode-line-format
