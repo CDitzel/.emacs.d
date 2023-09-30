@@ -216,7 +216,8 @@
 
 (remove-hook 'tramp-cleanup-connection-hook #'tramp-recentf-cleanup)
 (remove-hook 'tramp-cleanup-all-connections-hook #'tramp-recentf-cleanup-all)
-
+(setq tramp-auto-save-directory "~/tmp/tramp/")
+(setq tramp-chunksize 2000)
  ;; cache file-name forever
 ;(setq remote-file-name-inhibit-cache nil)
 (setq vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
