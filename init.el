@@ -1,4 +1,3 @@
-;(setenv "PATH" (concat (getenv "PATH") ":~"))
 
 ;(shell-command-to-string "start_agent")
 
@@ -15,23 +14,24 @@
 (package-install 'expand-region)
 (package-install 'yaml-mode)
 (package-install 'json-mode)
+;(package-install 'winum-mode)
 ;(package-install 'dired-rsync)
 
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
 ;(add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(emacs22))))
 
-(setq winum-keymap
-    (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "M-0") 'winum-select-window-0)
-      (define-key map (kbd "M-1") 'winum-select-window-1)
-      (define-key map (kbd "M-2") 'winum-select-window-2)
-      (define-key map (kbd "M-3") 'winum-select-window-3)
-      (define-key map (kbd "M-4") 'winum-select-window-4)
-      map))
-
-(require 'winum)
-(winum-mode)
-
+;(setq winum-keymap
+;    (let ((map (make-sparse-keymap)))
+;      (define-key map (kbd "M-0") 'winum-select-window-0)
+;      (define-key map (kbd "M-1") 'winum-select-window-1)
+;      (define-key map (kbd "M-2") 'winum-select-window-2)
+;      (define-key map (kbd "M-3") 'winum-select-window-3)
+;      (define-key map (kbd "M-4") 'winum-select-window-4)
+;      map))
+;
+;(require 'winum)
+;(winum-mode)
+;
 ;(setq completion-auto-help 'visible)
 ;(setq completion-auto-select 'second-tab)
 
@@ -358,8 +358,8 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "<C-return>") (lambda () (interactive)(move-end-of-line nil) (newline-and-indent)))
  (define-key map (kbd "<S-return>") (lambda () (interactive)(beginning-of-line nil)(newline-and-indent)(forward-line -1) (indent-according-to-mode)))
  (define-key map (kbd "C-x 3" )  (lambda () (interactive)(split-window-horizontally) (other-window 1)))
- (define-key map (kbd "C-c w" ) (lambda () (interactive) (find-file "~/org/wiki/wiki.org")))
- (define-key map (kbd "C-c d" ) (lambda () (interactive) (find-file "~/org/wiki/daimler.org")))
+ (define-key map (kbd "C-c w" ) (lambda () (interactive) (find-file "~/mega/wiki/wiki.org")))
+ (define-key map (kbd "C-c d" ) (lambda () (interactive) (find-file "~/mega/daimler/daimler.org")))
  (define-key map (kbd "C-a" ) (lambda () (interactive) (if (= (point) (progn (back-to-indentation) (point))) (beginning-of-line))))
  (define-key map (kbd "C-1" ) (lambda () (interactive)(tab-bar-select-tab 1)))
  (define-key map (kbd "C-2" ) (lambda () (interactive)(tab-bar-select-tab 2)))
@@ -463,10 +463,11 @@ With a prefix argument P, isearch for the symbol at point."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(icomplete-in-buffer t)
+ '(icomplete-in-buffer t t)
  '(org-safe-remote-resources
    '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
- '(package-selected-packages nil)
+ '(package-selected-packages
+   '(yaml-mode yaml tree-sitter-ispell tree-sitter-indent tree-sitter-ess-r rg multiple-cursors magit json-mode git-timemachine expand-region avy 0blayout))
  '(tramp-verbose 1))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
