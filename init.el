@@ -1,5 +1,5 @@
 
-;(shell-command-to-string "start_agent")
+(shell-command-to-string "start_agent")
 
 (require 'package)
 (add-to-list 'package-archives 
@@ -14,6 +14,7 @@
 (package-install 'expand-region)
 (package-install 'yaml-mode)
 (package-install 'json-mode)
+(package-install 'whole-line-or-region)
 ;(package-install 'winum-mode)
 ;(package-install 'dired-rsync)
 
@@ -185,7 +186,7 @@
 (delete-selection-mode t)
 (global-visual-line-mode t)
 (global-subword-mode 1)
-
+(whole-line-or-region-global-mode t)
 
 ;(add-hook 'eglot-managed-mode-hook (lambda ()
 ;(remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
@@ -227,6 +228,7 @@
 ;(setq tramp-auto-save-directory "~/tmp/tramp/")
 ;(setq tramp-chunksize 2000)
 
+(require 'whole-line-or-region)
 (require 'view)
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
@@ -292,19 +294,19 @@
                                (if (search-backward cursor last-abbrev-location t)
                                    (delete-char (length cursor))))))))
 
-(defadvice kill-region (before slick-cut activate compile)
-  "When called interactively with no active region, kill a single line instead."
-  (interactive
-   (if mark-active
-       (list (region-beginning) (region-end))
-     (list (line-beginning-position) (line-beginning-position 2)))))
-
-(defadvice kill-ring-save (before slick-copy activate compile)
-  "When called interactively with no active region, copy a single line instead."
-  (interactive
-   (if mark-active
-       (list (region-beginning) (region-end))
-     (list (line-beginning-position) (line-beginning-position 2)))))
+;(defadvice kill-region (before slick-cut activate compile)
+;  "When called interactively with no active region, kill a single line instead."
+;  (interactive
+;   (if mark-active
+;       (list (region-beginning) (region-end))
+;     (list (line-beginning-position) (line-beginning-position 2)))))
+;
+;(defadvice kill-ring-save (before slick-copy activate compile)
+;  "When called interactively with no active region, copy a single line instead."
+;  (interactive
+;   (if mark-active
+;       (list (region-beginning) (region-end))
+;     (list (line-beginning-position) (line-beginning-position 2)))))
 
 
 (defvar my-cpp-other-file-alist
@@ -366,6 +368,7 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "C-3" ) (lambda () (interactive)(tab-bar-select-tab 3)))
  (define-key map (kbd "C-4" ) (lambda () (interactive)(tab-bar-select-tab 4)))
  (define-key map (kbd "C-," ) 'comment-line)
+ (define-key map (kbd "M-o" ) 'delete-blank-lines)
  (define-key map (kbd "C-x b") 'ibuffer)
  (define-key map (kbd "C-x k") 'kill-current-buffer)
  (define-key map (kbd "H-i") 'goto-line)
@@ -382,7 +385,7 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "C-j") 'avy-goto-char-timer)
  (define-key map (kbd "C-t") 'duplicate-line)
  (define-key map (kbd "C-'") 'er/expand-region)
- (define-key map (kbd "C-;") 'er/contract-region)
+ ;(define-key map (kbd "C-;") 'er/contract-region)
  (define-key map (kbd "C-c g") 'magit-status)
  (define-key map (kbd "C-v") 'View-scroll-half-page-forward)
  (define-key map (kbd "M-v") 'View-scroll-half-page-backward)
@@ -463,12 +466,12 @@ With a prefix argument P, isearch for the symbol at point."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(icomplete-in-buffer t t)
+ '(icomplete-in-buffer t)
  '(org-safe-remote-resources
    '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
- '(package-selected-packages
-   '(yaml-mode yaml tree-sitter-ispell tree-sitter-indent tree-sitter-ess-r rg multiple-cursors magit json-mode git-timemachine expand-region avy 0blayout))
- '(tramp-verbose 1))
+ '(package-selected-packages nil)
+ '(tramp-verbose 1)
+ '(whole-line-or-region-global-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
