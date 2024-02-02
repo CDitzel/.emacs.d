@@ -69,7 +69,7 @@
   (define-key dired-mode-map (kbd "w") 'dired-toggle-read-only) ))
 
 ;(setq savehist-additional-variables '(register-alist-kill-ring))
-;
+
 (setq-default cursor-in-non-selected-windows nil
 			        inhibit-startup-screen t
 			        initial-scratch-message nil
@@ -82,7 +82,7 @@
 			        lazy-highlight-buffer t
 ;			        mouse-yank-at-point t
 ;			        echo-keystrokes 0.1
-;			        save-place-mode t
+			        save-place-mode t
 			        scroll-preserve-screen-position 'always
 ;			        help-window-select t
 			        confirm-kill-emacs 'y-or-n-p
@@ -97,10 +97,10 @@
 ;			        tab-bar-new-tab-choice "*scratch*"
 ;			        show-paren-delay 0
 			        use-short-answers t
-;			        global-auto-revert-non-file-buffers t
-;			        auto-revert-verbose nil
-;			        dired-auto-revert-buffer t
-;				auto-revert-remote-files t
+			        global-auto-revert-non-file-buffers t
+			        auto-revert-verbose nil
+			        dired-auto-revert-buffer t
+				auto-revert-remote-files t
 			        window-combination-resize t
 ;			        completion-auto-help nil
 			        recentf-max-saved-items nil
@@ -115,7 +115,7 @@
 ;			        gdb-many-windows t
 ;				gdb-debuginfod-enable 0
 ;			        x-super-keysym 'ctrl
-			        icomplete-compute-delay -1
+			        icomplete-compute-delay 0
 			        max-mini-window-height 10
 ;			        resize-mini-windows 'grow-only
 			        isearch-wrap-pause 'no
@@ -155,21 +155,21 @@
 ;(setq magit-diff-hide-trailing-cr-characters t)
 ;
 ;(global-eldoc-mode -1) 
-;;(global-auto-revert-mode 1)
+;(global-auto-revert-mode 1)
 ;(show-paren-mode t)
 (fido-vertical-mode t)
-;(fringe-mode 0)
+(fringe-mode 0)
 (savehist-mode 1) ;; save minibuffer history
-;(recentf-mode t)
+(recentf-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 ;(tooltip-mode -1)
 (scroll-bar-mode -1)
 (delete-selection-mode t)
-;(global-visual-line-mode t)
+(global-visual-line-mode t)
 (global-subword-mode 1)
-;(whole-line-or-region-global-mode t)
-;
+(whole-line-or-region-global-mode t)
+
 ;;(add-hook 'eglot-managed-mode-hook (lambda ()
 ;;(remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
 
@@ -210,8 +210,8 @@
 ;;;"-o ControlMaster=auto -o ControlPersist=yes"))
 ;;;(setq tramp-default-method "ssh")
 ;;
-;(remove-hook 'tramp-cleanup-connection-hook #'tramp-recentf-cleanup)
-;(remove-hook 'tramp-cleanup-all-connections-hook #'tramp-recentf-cleanup-all)
+(remove-hook 'tramp-cleanup-connection-hook #'tramp-recentf-cleanup)
+(remove-hook 'tramp-cleanup-all-connections-hook #'tramp-recentf-cleanup-all)
 ;;
 ;;;  (setq tramp-inline-compress-start-size 1000)
 ;;;  (setq tramp-copy-size-limit 10000)
@@ -230,7 +230,7 @@
 ;;;(setq tramp-auto-save-directory "~/tmp/tramp/")
 ;;;(setq tramp-chunksize 2000)
 ;;
-;;(require 'whole-line-or-region)
+(require 'whole-line-or-region)
 (require 'view)
 ;;(require 'yaml-mode)
 ;;(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
@@ -272,16 +272,16 @@
 ;;
 ;;;(setq org-startup-with-inline-images t)
 ;;
-;(rg-define-search rg-everything
-;  :files "everything"
-;  :confirm prefix
-;  :menu ("Search" "e" "Everything"))
-;
-;(rg-define-search rg-everything-from-project-root
-;  :files "everything"
-;  :confirm prefix
-;  :dir project
-;  :menu ("Search" "e" "Everything"))
+(rg-define-search rg-everything
+  :files "everything"
+  :confirm prefix
+  :menu ("Search" "e" "Everything"))
+
+(rg-define-search rg-everything-from-project-root
+  :files "everything"
+  :confirm prefix
+  :dir project
+  :menu ("Search" "e" "Everything"))
 ;
 (define-abbrev-table 'global-abbrev-table '(
 					                        ("pr" "print(f\"{@@= }\")")
@@ -331,22 +331,22 @@
 ;    ("\\.h\\'" (".c"))
 ;    ))
 ;
-;(defun prot-search-isearch-abort-dwim ()
-;"This is a modified variant of `isearch-abort' that allows us to
-;perform the following, based on the specifics of the case: (i)
-;delete the entirety of a non-matching part, when present; (ii)
-;delete a single character, when possible; (iii) exit current
-;search if no character is present and go back to point where the
-;search started."
-;  (interactive)
-;  (if (eq (length isearch-string) 0)
-;      (isearch-cancel)
-;    (isearch-del-char)
-;    (while (or (not isearch-success) isearch-error)
-;      (isearch-pop-state)))
-;  (isearch-update))
-;
-;(define-key isearch-mode-map (kbd "<backspace>") 'prot-search-isearch-abort-dwim)
+(defun prot-search-isearch-abort-dwim ()
+"This is a modified variant of `isearch-abort' that allows us to
+perform the following, based on the specifics of the case: (i)
+delete the entirety of a non-matching part, when present; (ii)
+delete a single character, when possible; (iii) exit current
+search if no character is present and go back to point where the
+search started."
+  (interactive)
+  (if (eq (length isearch-string) 0)
+      (isearch-cancel)
+    (isearch-del-char)
+    (while (or (not isearch-success) isearch-error)
+      (isearch-pop-state)))
+  (isearch-update))
+
+(define-key isearch-mode-map (kbd "<backspace>") 'prot-search-isearch-abort-dwim)
 ;
 ;;(define-key dired-mode-map (kbd "C-c C-t") 'dired-rsync)
 ;
@@ -360,10 +360,10 @@ With a prefix argument P, isearch for the symbol at point."
      (if p #'isearch-forward-symbol-at-point #'isearch-forward))))
 
 (global-set-key [remap isearch-forward] #'endless/isearch-symbol-with-prefix)
-;
-;(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
-;(global-unset-key (kbd "C-x C-z"))
-;(global-unset-key (kbd "C-z"))
+
+(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
+(global-unset-key (kbd "C-x C-z"))
+(global-unset-key (kbd "C-z"))
 
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
@@ -382,7 +382,8 @@ With a prefix argument P, isearch for the symbol at point."
 ; (define-key map (kbd "M-o" ) 'delete-blank-lines)
 ; (define-key map (kbd "C-x b") 'ibuffer)
  (define-key map (kbd "C-x k") 'kill-current-buffer)
-; (define-key map (kbd "H-i") 'goto-line)
+ (define-key map (kbd "C-x C-k") 'kill-current-buffer)
+ (define-key map (kbd "H-i") 'goto-line)
 ; ;(define-key map (kbd "C-M-a") 'beginning-of-defun)
  (define-key map (kbd "M-j") (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
  (define-key map (kbd "C-`") (lambda () (interactive) (ff-find-other-file nil t)))
@@ -394,9 +395,9 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "M-n") 'scroll-up-line)
  (define-key map (kbd "M-p") 'scroll-down-line)
  (define-key map (kbd "C-j") 'avy-goto-char-timer)
-; (define-key map (kbd "C-t") 'duplicate-line)
-; (define-key map (kbd "C-'") 'er/expand-region)
-; (define-key map (kbd "C-;") 'er/contract-region)
+ (define-key map (kbd "C-t") 'duplicate-line)
+ (define-key map (kbd "C-'") 'er/expand-region)
+ (define-key map (kbd "C-;") 'er/contract-region)
 ; (define-key map (kbd "C-c g") 'magit-status)
  (define-key map (kbd "C-v") 'View-scroll-half-page-forward)
  (define-key map (kbd "M-v") 'View-scroll-half-page-backward)
@@ -418,15 +419,15 @@ With a prefix argument P, isearch for the symbol at point."
                      ((eq _ 4)
                       (call-interactively 'recentf-open)))))
 
-;(global-set-key [?\C-f] 
-;                #'(lambda (_)
-;                    (interactive "p")
-;					(cond
-;                     ((eq _ 1)
-;                      (forward-char))
-;                     ((eq _ 4)
-;                      (call-interactively 'bookmark-jump)))))
-;
+(global-set-key [?\C-f] 
+                #'(lambda (_)
+                    (interactive "p")
+					(cond
+                     ((eq _ 1)
+                      (forward-char))
+                     ((eq _ 4)
+                      (call-interactively 'bookmark-jump)))))
+
 ;;; C-x C-x exhange mark, if you forget to mark text before
 ;;; C-d to confirm file renaming with partial existing subword
 ;;; C-u C-spc pop local-mark-ring (buffer-wise)
@@ -460,7 +461,7 @@ With a prefix argument P, isearch for the symbol at point."
 ;;;(add-to-list 'eglot-stay-out-of 'eldoc))
 ;;;(add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
 ;;
-;(add-hook 'after-init-hook (lambda () (load-theme 'late-night t)))
+(add-hook 'after-init-hook (lambda () (load-theme 'late-night t)))
 ;;
 ;;
 ;;;(getenv "SSH_AGENT_PID")  
@@ -519,8 +520,10 @@ With a prefix argument P, isearch for the symbol at point."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-safe-remote-resources
+   '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"))
  '(package-selected-packages
-   '(yaml-mode whole-line-or-region rg magit json-mode expand-region avy)))
+   '(rainbow-mode yaml-mode whole-line-or-region rg magit json-mode expand-region avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
