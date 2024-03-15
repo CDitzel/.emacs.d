@@ -19,9 +19,15 @@
 
 (set-face-attribute 'default nil :font "Monospace" :height 100)
 
-
-
+; (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
+;  (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers)
+;  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
+;  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
+;  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
+;  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
+;;
 (add-hook 'icomplete-minibuffer-setup-hook (lambda () (setq-local completion-styles '(substring basic))))
+(add-hook 'find-file-hook 'recentf-save-list)
 
 ;(setq winum-keymap
 ;    (let ((map (make-sparse-keymap)))
@@ -48,19 +54,16 @@
 ; that used by the user's shell.
 ;; This is particularly useful under Mac OS X and macOS, where GUI
 ; apps are not started from a shell."
-;;   (interactive)
-;;   (let ((path-from-shell (replace-regexp-in-string
-;; 			  "[ \t\n]*$" "" (shell-command-to-string
-;; 					  "$SHELL --login -c 'echo $PATH'"
-;; 						    ))))
-;;     (setenv "PATH" path-from-shell)
-;;     (setq exec-path (split-string path-from-shell path-separator))))
-
-;; (set-exec-path-from-shell-PATH)
-
+;   (interactive)
+;   (let ((path-from-shell (replace-regexp-in-string
+; 			  "[ \t\n]*$" "" (shell-command-to-string
+;					  "$SHELL --login -c 'echo $PATH'"
+; 						    ))))
+;     (setenv "PATH" path-from-shell)
+;     (setq exec-path (split-string path-from-shell path-separator))))
+; (set-exec-path-from-shell-PATH)
 
 (add-hook 'dired-mode-hook 'dired-hide-details-mode)
-
 
 (eval-after-load "dired" '(progn
 
@@ -86,7 +89,7 @@
 			        scroll-preserve-screen-position 'always
 ;			        help-window-select t
 			        confirm-kill-emacs 'y-or-n-p
-;			        use-dialog-box nil
+			        use-dialog-box nil
 			        create-lockfiles nil
 ;			        auto-save-default nil
 			        make-backup-files nil
@@ -97,9 +100,9 @@
 ;			        tab-bar-new-tab-choice "*scratch*"
 ;			        show-paren-delay 0
 			        use-short-answers t
-			        global-auto-revert-non-file-buffers t
-			        auto-revert-verbose nil
-			        dired-auto-revert-buffer t
+;			        global-auto-revert-non-file-buffers t
+			        ;auto-revert-verbose nil
+			        ;dired-auto-revert-buffer t
 				auto-revert-remote-files t
 			        window-combination-resize t
 ;			        completion-auto-help nil
@@ -126,7 +129,7 @@
 ;;			        eldoc-echo-area-use-multiline-p 1
 ;;				xref-after-return-hook nil
 ;;				xref-after-jump-hook '(recenter)
-;				ff-other-file-alist 'my-cpp-other-file-alist
+				ff-other-file-alist 'my-cpp-other-file-alist
 				set-mark-command-repeat-pop t ; hit C-u C-spc, leave C pressed and jump by hitting space repeatedly
 				split-width-threshold nil
 			        )
@@ -155,7 +158,7 @@
 ;(setq magit-diff-hide-trailing-cr-characters t)
 ;
 ;(global-eldoc-mode -1) 
-;(global-auto-revert-mode 1)
+(global-auto-revert-mode 1)
 ;(show-paren-mode t)
 (fido-vertical-mode t)
 (fringe-mode 0)
@@ -170,12 +173,18 @@
 (global-subword-mode 1)
 (whole-line-or-region-global-mode t)
 
-;;(add-hook 'eglot-managed-mode-hook (lambda ()
-;;(remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
+;; Source: https://www.emacswiki.org/emacs/misc-cmds.el
+(defun revert-buffer-no-confirm ()
+    "Revert buffer without confirmation."
+    (interactive)
+    (revert-buffer :ignore-auto :noconfirm))
 
-;(defun aws ()
-;  (interactive)
-;  (dired "/ssh:aws:git-ndas/ndas"))
+;(add-hook 'eglot-managed-mode-hook (lambda ()
+;(remove-hook 'flymake-diagnostic-functions 'eglot-flymake-backend)))
+
+(defun aws ()
+ (interactive)
+ (dired "/ssh:aws:git-ndas/ndas"))
 
 (defun coder ()
   (interactive)
@@ -184,7 +193,19 @@
 ;(setq debug-ignored-errors
 ;      (cons 'remote-file-error debug-ignored-errors))
 ;
-;
+;(customize-set-variable
+; 'tramp-ssh-controlmaster-options
+; (concat
+;   "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
+;   "-o ControlMaster=auto -o ControlPersist=yes"))
+(setq tramp-verbose 1)
+(setq tramp-chunksize 500)
+
+
+
+(setq tramp-ssh-controlmaster-options
+      (concat "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=yes"))
+
 ;(customize-set-variable
 ; 'tramp-ssh-controlmaster-options
 ; (concat
@@ -237,21 +258,20 @@
 ;;(require 'json-mode)
 ;
 ;
-;;;(with-eval-after-load 'eglot
-;;;  (add-to-list 'eglot-server-programs
-;;;               '((c-mode c++-mode)
-;;;                 . ("clangd-15"
-;;;                    ;; "-j=16"
-;;;                    ;; "--log=error"
-;;;                    ;; "--malloc-trim"
-;;;                    ;; "--background-index"
-;;;                    ;; "--clang-tidy=0"
-;;;                    ;; "--cross-file-rename"
-;;;                    ;; "--completion-style=detailed"
-;;;                    ;; "--pch-storage=memory"
-;;;                    ;; "--header-insertion=never"
-;;;                    ;; "--header-insertion-decorators=0"
-;;;					)))
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((c-mode c++-mode)
+                 . ("clangd-15"
+                     "-j=16"
+                     "--log=error"
+                     "--malloc-trim"
+                     "--background-index"
+                     "--clang-tidy=0"
+                     "--cross-file-rename"
+                     "--completion-style=detailed"
+                     "--pch-storage=memory"
+                     "--header-insertion=never"
+                     "--header-insertion-decorators=0"))))
 ;;; ;(add-to-list 'eglot-server-programs '(python-mode . ("pylsp")))
 ;;; )
 ;;;(set-face-attribute 'default nil :height 90)
@@ -259,8 +279,8 @@
 ;(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 ;;
 ;;
-;;;(add-hook 'c-mode-hook 'eglot-ensure)
-;;;(add-hook 'c++-mode-hook 'eglot-ensure)
+;(add-hook 'c-mode-hook 'eglot-ensure)
+;(add-hook 'c++-mode-hook 'eglot-ensure)
 ;;;(add-hook 'python-mode-hook 'eglot-ensure)
 ;;
 ;;; py-related (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
@@ -320,17 +340,17 @@
 ;;     (list (line-beginning-position) (line-beginning-position 2)))))
 ;
 ;
-;(defvar my-cpp-other-file-alist
-;  '(
-;    ("\\.cpp\\'" (".hpp" ".cuh"))
-;    ("\\.hpp\\'" (".cpp"".cu"))
-;    ("\\.cuh\\'" (".cu" ".cpp"))
-;    ("\\.cu\\'" (".cuh" ".hpp"))
-;    ("\\.c\\'" (".h"))
-;    ("\\.h\\'" ("interface.cpp"))
-;    ("\\.h\\'" (".c"))
-;    ))
-;
+(defvar my-cpp-other-file-alist
+  '(
+    ("\\.cpp\\'" (".hpp" ".cuh"))
+    ("\\.hpp\\'" (".cpp"".cu"))
+    ("\\.cuh\\'" (".cu" ".cpp"))
+    ("\\.cu\\'" (".cuh" ".hpp"))
+    ("\\.c\\'" (".h"))
+    ("\\.h\\'" ("interface.cpp"))
+    ("\\.h\\'" (".c"))
+    ))
+
 (defun prot-search-isearch-abort-dwim ()
 "This is a modified variant of `isearch-abort' that allows us to
 perform the following, based on the specifics of the case: (i)
@@ -387,7 +407,11 @@ With a prefix argument P, isearch for the symbol at point."
 ; ;(define-key map (kbd "C-M-a") 'beginning-of-defun)
  (define-key map (kbd "M-j") (lambda () (interactive) (let ((current-prefix-arg 1)) (call-interactively #'delete-indentation))))
  (define-key map (kbd "C-`") (lambda () (interactive) (ff-find-other-file nil t)))
-; (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
+ (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
+ (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
+ (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
+ (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
+ (define-key map (kbd "C-<backspace>") (lambda () (interactive) (let ((opoint  (point))) (back-to-indentation) (delete-region (point) opoint))))
 ; (define-key map (kbd "C-x C-d") 'dired)
 ; (define-key map (kbd "C-x d") 'find-name-dired)
  (define-key map (kbd "C-c C-r") 'rg-everything)
@@ -398,7 +422,7 @@ With a prefix argument P, isearch for the symbol at point."
  (define-key map (kbd "C-t") 'duplicate-line)
  (define-key map (kbd "C-'") 'er/expand-region)
  (define-key map (kbd "C-;") 'er/contract-region)
-; (define-key map (kbd "C-c g") 'magit-status)
+ (define-key map (kbd "C-c g") 'magit-status)
  (define-key map (kbd "C-v") 'View-scroll-half-page-forward)
  (define-key map (kbd "M-v") 'View-scroll-half-page-backward)
 ; (define-key map (kbd "C-c t") 'git-timemachine)
@@ -426,7 +450,17 @@ With a prefix argument P, isearch for the symbol at point."
                      ((eq _ 1)
                       (forward-char))
                      ((eq _ 4)
+                      (call-interactively 'switch-to-buffer)))))
+
+(global-set-key [?\C-b] 
+                #'(lambda (_)
+                    (interactive "p")
+					(cond
+                     ((eq _ 1)
+                      (backward-char))
+                     ((eq _ 4)
                       (call-interactively 'bookmark-jump)))))
+
 
 ;;; C-x C-x exhange mark, if you forget to mark text before
 ;;; C-d to confirm file renaming with partial existing subword
@@ -457,13 +491,36 @@ With a prefix argument P, isearch for the symbol at point."
 ;;; M-s h r	Highlight regexp
 ;;; M-s h u	Undo the highlight
 ;;
-;;;(with-eval-after-load "eglot"
-;;;(add-to-list 'eglot-stay-out-of 'eldoc))
-;;;(add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
-;;
+(with-eval-after-load "eglot"
+(add-to-list 'eglot-stay-out-of 'eldoc))
+(add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
+
+
+
 (add-hook 'after-init-hook (lambda () (load-theme 'late-night t)))
-;;
-;;
+(with-eval-after-load "ispell"
+  ;; Configure `LANG`, otherwise ispell.el cannot find a 'default
+  ;; dictionary' even though multiple dictionaries will be configured
+  ;; in next line.
+  (setenv "LANG" "en_US.UTF-8")
+  (setq ispell-program-name "hunspell")
+  ;; Configure German, Swiss German, and two variants of English.
+  (setq ispell-dictionary "de_DE,en_GB,en_US")
+  ;; ispell-set-spellchecker-params has to be called
+  ;; before ispell-hunspell-add-multi-dic will work
+  (ispell-set-spellchecker-params)
+  (ispell-hunspell-add-multi-dic "de_DE,en_GB,en_US")
+  ;; For saving words to the personal dictionary, don't infer it from
+  ;; the locale, otherwise it would save to ~/.hunspell_de_DE.
+  (setq ispell-personal-dictionary "~/.hunspell_personal"))
+
+;; The personal dictionary file has to exist, otherwise hunspell will
+;; silently not use it.
+;(unless (file-exists-p ispell-personal-dictionary)
+  ;(write-region "" nil ispell-personal-dictionary nil 0))
+					;
+
+
 ;;;(getenv "SSH_AGENT_PID")  
 ;;;(getenv "SSH_AUTH_SOCK")
 ;;;(setq tramp-shell-prompt-pattern "^[^$>\n]*[#$%>] *\\(\[[0-9;]*[a-zA-Z] *\\)*")

@@ -58,7 +58,7 @@
 
  '(isearch ((t (:bold t :background "yellow" :foreground "black" :weight bold))))
  '(isearch-fail ((t (:background "red"))))
- '(isearch-lazy-highlight-face ((t (:background "blue" :foreground "black" :weight bold))))
+ '(isearch-lazy-highlight-face ((t (:background "chocolate" :foreground "black" :weight bold))))
  '(lazy-highlight ((t (:background "blue4" :foreground "#888888" :bold t))))
  '(isearch-secondary ((t (:foreground "red3"))))
  
@@ -82,9 +82,9 @@
                   :box '(:line-width -1 :style released-button)
                   :height 1.0 :weight bold))))
  
- '(mode-line-inactive ((t (:background "grey30" :foreground "Black"
-                                       :box '(:line-width 2 :color "grey30")
-                                       :weight bold :height 1.0))))
+ ;'(mode-line-inactive ((t (:background "grey30" :foreground "Black"
+  ;                                     :box '(:line-width 2 :color "grey30")
+                                       ;:weight bold :height 1.0))))
  '(modeline-buffer-id ((t (:background "#000" :foreground "#555"))))
  '(modeline-mousable ((t (:background "#000" :foreground "#555"))))
  '(modeline-mousable-minor-mode ((t (:background "#000" :foreground "#555"))))
@@ -126,7 +126,6 @@
 (provide-theme 'late-night)
 
 ;;; late-night-theme.el ends here
-
 
 
 
@@ -180,20 +179,20 @@
 
 
 
-(setq-default mode-line-format
-	      (quote
-	       (#(" " 0 1
-		  ())
-		mode-line-modified
-		"    "
-		mode-line-buffer-identification
-		"    "
-		(line-number-mode "%l/")
-		(:eval (number-to-string (count-lines (point-min) (point-max))))
-		"                                                                                                       "
-		(:eval (format-time-string "%H:%M"))
-		)))
-
+;(setq-default mode-line-format
+;	      (quote
+;	       (#(" " 0 1
+;		  ())
+;		mode-line-modified
+;		"    "
+;		mode-line-buffer-identification
+;		"    "
+;		(line-number-mode "%l/")
+;		(:eval (number-to-string (count-lines (point-min) (point-max))))
+;		"                                                                                                       "
+;		(:eval (format-time-string "%H:%M"))
+;		)))
+;
 
 (setq-default mode-line-format
 	      (quote
