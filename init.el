@@ -103,7 +103,7 @@
 ;			        global-auto-revert-non-file-buffers t
 			        ;auto-revert-verbose nil
 			        ;dired-auto-revert-buffer t
-				auto-revert-remote-files t
+				;auto-revert-remote-files t
 			        window-combination-resize t
 ;			        completion-auto-help nil
 			        recentf-max-saved-items nil
@@ -158,7 +158,7 @@
 ;(setq magit-diff-hide-trailing-cr-characters t)
 ;
 ;(global-eldoc-mode -1) 
-(global-auto-revert-mode 1)
+;(global-auto-revert-mode 1)
 ;(show-paren-mode t)
 (fido-vertical-mode t)
 (fringe-mode 0)
